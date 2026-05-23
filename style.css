@@ -2013,6 +2013,7 @@ body {
     backdrop-filter: blur(12px);
     padding: 24px;
     margin-bottom: 16px;
+    overflow: visible;
 }
 
 .hehun-form-grid {
