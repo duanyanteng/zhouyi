@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乾坤易道 - 周易数理命理智能分析系统</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#D4AF37">
+    <!-- 引入 Google Fonts 雅致字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700;900&family=ZCOOL+XiaoWei&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 核心 CSS 样式 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入高精度农历历法与命理计算库 -->
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js" onerror="this.remove(); window.lunarFallback=true; console.warn('lunar-javascript CDN 加载失败，部分历法功能将不可用')"></script>
+    <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\\/script>');</script>
+</head>
+<body>
+    <!-- 金沙粒子背景 Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- 应用全局背景遮罩 -->
+    <div class="bg-vignette"></div>
+
+    <div class="app-container">
+        <!-- 顶栏：实时天时天干地支 -->
+        <header class="app-header">
+            <div class="header-logo">
+                <span class="emblem">☯</span>
+                <div class="logo-text">
+                    <h1>乾坤易道</h1>
+                    <p>周易数理命理智能分析系统</p>
+                </div>
+            </div>
+            <div class="realtime-clock" id="headerClock">
+                <!-- 由 JS 实时渲染当前干支时辰 -->
+                <span class="solar-time">载入中...</span>
+                <span class="lunar-time"></span>
+                <span class="ganzhi-time"></span>
+            </div>
+        </header>
+
+        <!-- 核心工作区：左侧古典侧边导航，右侧动态视窗 -->
+        <div class="app-body">
+            <!-- 古典竖排导航 -->
+            <nav class="side-nav">
+                <ul class="nav-list">
+                    <li class="nav-item active" data-target="dashboard">
+                        <span class="nav-num">壹</span>
+                        <span class="nav-label">太极乾坤</span>
+                        <i class="fa-solid fa-compass nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="bazi">
+                        <span class="nav-num">贰</span>
+                        <span class="nav-label">天星排盘</span>
+                        <i class="fa-solid fa-chart-pie nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="liuyao">
+                        <span class="nav-num">叁</span>
+                        <span class="nav-label">六爻金占</span>
+                        <i class="fa-solid fa-coins nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="huangli">
+                        <span class="nav-num">肆</span>
+                        <span class="nav-label">万年择吉</span>
+                        <i class="fa-solid fa-calendar-days nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="fengshui">
+                        <span class="nav-num">伍</span>
+                        <span class="nav-label">理气布局</span>
+                        <i class="fa-solid fa-house-chimney nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="chat">
+                        <span class="nav-num">陆</span>
+                        <span class="nav-label">乾坤问卜</span>
+                        <i class="fa-solid fa-comment-dots nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="xingming">
+                        <span class="nav-num">柒</span>
+                        <span class="nav-label">姓名五格</span>
+                        <i class="fa-solid fa-signature nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="meihua">
+                        <span class="nav-num">捌</span>
+                        <span class="nav-label">梅花易数</span>
+                        <i class="fa-solid fa-hand-sparkles nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="hehun">
+                        <span class="nav-num">玖</span>
+                        <span class="nav-label">合婚匹配</span>
+                        <i class="fa-solid fa-heart nav-icon"></i>
+                    </li>
+                    <li class="nav-item" data-target="ziwei">
+                        <span class="nav-num">拾</span>
+                        <span class="nav-label">紫微斗数</span>
+                        <i class="fa-solid fa-star nav-icon"></i>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- 动态视窗 -->
+            <main class="viewport">
+                
+                <!-- 1. DASHBOARD 板块 -->
+                <section class="view-panel active" id="panel-dashboard">
+                    <div class="dashboard-layout">
+                        <!-- 左侧：巨幅视差太极罗盘 -->
+                        <div class="compass-showcase">
+                            <div class="compass-wrapper" id="parallaxCompass">
+                                <div class="compass-ring ring-outer"></div>
+                                <div class="compass-ring ring-middle"></div>
+                                <div class="compass-ring ring-inner"></div>
+                                <div class="compass-center">
+                                    <div class="taiji-emblem animate-spin-slow">☯</div>
+                                </div>
+                            </div>
+                            <div class="compass-quote">
+                                <p class="quote-text">“无极生太极，太极生两仪，两仪生四象，四象生八卦，八卦定吉凶。”</p>
+                                <p class="quote-author">——《易经·系辞上》</p>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：今日运势与黄历速览 -->
+                        <div class="dashboard-info">
+                            <div class="glass-card today-huangli-card">
+                                <div class="card-badge">今日天时</div>
+                                <div class="huangli-main-info">
+                                    <div class="lunar-date-display" id="dashLunarDate">丙午年五月初八</div>
+                                    <div class="solar-date-display" id="dashSolarDate">2026年5月23日 星期六</div>
+                                </div>
+                                <div class="huangli-yiji-display">
+                                    <div class="yiji-item yi">
+                                        <span class="label">宜</span>
+                                        <div class="content" id="dashYiList">嫁娶、纳采、出行、开市</div>
+                                    </div>
+                                    <div class="yiji-item ji">
+                                        <span class="label">忌</span>
+                                        <div class="content" id="dashJiList">动土、破土、安葬、作灶</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dashboard-grid">
+                                <div class="glass-card feature-link-card" data-goto="bazi">
+                                    <div class="card-icon"><i class="fa-solid fa-crown"></i></div>
+                                    <h3>八字神数</h3>
+                                    <p>输入生辰八字，解析本命元神与五行强弱，获知人生批导。</p>
+                                    <span class="arrow-btn">开启推演 <i class="fa-solid fa-arrow-right-long"></i></span>
+                                </div>
+                                <div class="glass-card feature-link-card" data-goto="liuyao">
+                                    <div class="card-icon"><i class="fa-solid fa-yin-yang"></i></div>
+                                    <h3>易经六爻</h3>
+                                    <p>手摇乾道通宝，以数起卦，洞察当下事业、财运、情感玄机。</p>
+                                    <span class="arrow-btn">起卦占卜 <i class="fa-solid fa-arrow-right-long"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. 八字排盘板块 -->
+                <section class="view-panel" id="panel-bazi">
+                    <div class="bazi-container">
+                        <!-- 输入面板 -->
+                        <div class="glass-card bazi-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-feather"></i> 天星推演 · 生辰排盘</h2>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="baziName">善信姓名</label>
+                                    <input type="text" id="baziName" value="" placeholder="请输入您的姓名">
+                                </div>
+                                <div class="form-group">
+                                    <label>善信性别</label>
+                                    <div class="gender-radio-group">
+                                        <label class="radio-label">
+                                            <input type="radio" name="baziGender" value="男" checked>
+                                            <span class="custom-radio">乾造 (男)</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="baziGender" value="女">
+                                            <span class="custom-radio">坤造 (女)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="baziDate">出生日期 (公历/阳历)</label>
+                    
+                                    <input type="datetime-local" id="baziDate">
+                                </div>
+                                <div class="form-group btn-group">
+                                    <button class="btn-primary" id="btnCalculateBazi"><i class="fa-solid fa-toggle-on"></i> 排盘解析</button>
+                                </div>
+                            </div>
+                            <div class="helper-tips">
+                                <i class="fa-solid fa-circle-info"></i> 点击排盘即可获取详批。
+                            </div>
+                        </div>
+
+                        <!-- 排盘展示区域 (默认隐藏，计算后淡入显示) -->
+                        <div class="bazi-result-area" id="baziResultArea">
+                            <div class="bazi-result-grid">
+                                <!-- 乾造八字主盘 -->
+                                <div class="glass-card bazi-board-card">
+                                    <div class="card-badge" id="baziBoardTitle">乾造八字命盘</div>
+                                    <div class="bazi-board-wrapper">
+                                        <!-- 四柱表头 -->
+                                        <div class="bazi-column header-col">
+                                            <div class="cell">项目</div>
+                                            <div class="cell bg-gold-tint">天干</div>
+                                            <div class="cell bg-gold-tint">地支</div>
+                                            <div class="cell">藏干</div>
+                                            <div class="cell">十神</div>
+                                            <div class="cell">纳音</div>
+                                            <div class="cell">地势</div>
+                                        </div>
+                                        <!-- 年柱 -->
+                                        <div class="bazi-column" id="colYear">
+                                            <div class="cell title">年柱</div>
+                                            <div class="cell gan font-shufa text-wood">戊</div>
+                                            <div class="cell zhi font-shufa text-wood">寅</div>
+                                            <div class="cell cang">甲,丙,戊</div>
+                                            <div class="cell shishen">七杀</div>
+                                            <div class="cell nayin">城头土</div>
+                                            <div class="cell status">长生</div>
+                                        </div>
+                                        <!-- 月柱 -->
+                                        <div class="bazi-column" id="colMonth">
+                                            <div class="cell title">月柱</div>
+                                            <div class="cell gan font-shufa text-metal">辛</div>
+                                            <div class="cell zhi font-shufa text-metal">酉</div>
+                                            <div class="cell cang">辛</div>
+                                            <div class="cell shishen">正印</div>
+                                            <div class="cell nayin">石榴木</div>
+                                            <div class="cell status">帝旺</div>
+                                        </div>
+                                        <!-- 日柱 (元神) -->
+                                        <div class="bazi-column primary-col" id="colDay">
+                                            <div class="cell title highlight">日柱 (元神)</div>
+                                            <div class="cell gan font-shufa text-water highlight-water">壬</div>
+                                            <div class="cell zhi font-shufa text-fire">午</div>
+                                            <div class="cell cang">丁,己</div>
+                                            <div class="cell shishen">日主</div>
+                                            <div class="cell nayin">杨柳木</div>
+                                            <div class="cell status">胎</div>
+                                        </div>
+                                        <!-- 时柱 -->
+                                        <div class="bazi-column" id="colTime">
+                                            <div class="cell title">时柱</div>
+                                            <div class="cell gan font-shufa text-metal">辛</div>
+                                            <div class="cell zhi font-shufa text-earth">丑</div>
+                                            <div class="cell cang">己,癸,辛</div>
+                                            <div class="cell shishen">正印</div>
+                                            <div class="cell nayin">壁上土</div>
+                                            <div class="cell status">衰</div>
+                                        </div>
+                                    </div>
+                                    <div class="bazi-summary-text" id="baziSummaryText">
+                                        本命元神为 <strong>壬水</strong>，生于仲秋 <strong>酉月</strong>，金白水清，属于 <strong>正印格</strong> 命盘。
+                                    </div>
+                                </div>
+
+                                <!-- 五行能量均衡雷达图 -->
+                                <div class="glass-card bazi-radar-card">
+                                    <div class="card-badge">五行能量分布</div>
+                                    <div class="radar-canvas-container">
+                                        <canvas id="wuxingRadarCanvas" width="280" height="280"></canvas>
+                                    </div>
+                                    <div class="wuxing-bars" id="wuxingBarsContainer">
+                                        <!-- 动态渲染的五行能量柱 -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 大师深度批导 (古风卷轴) -->
+                            <div class="glass-card scroll-card">
+                                <div class="scroll-handle handle-top"></div>
+                                <div class="scroll-content">
+                                    <h3 class="scroll-title font-shufa">大师命批良言</h3>
+                                    <div class="scroll-body" id="baziDetailAnalysis">
+                                        <!-- 动态批语 -->
+                                    </div>
+                                    <div class="scroll-seal">乾坤易道之印</div>
+                                </div>
+                                <div class="scroll-handle handle-bottom"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. 六爻占卜板块 -->
+                <section class="view-panel" id="panel-liuyao">
+                    <div class="liuyao-container">
+                        <!-- 左侧：爻卦绘制与结果卷轴 -->
+                        <div class="liuyao-layout-left">
+                            <div class="glass-card liuyao-board-card">
+                                <div class="card-badge">神算金起卦</div>
+                                <div class="liuyao-board">
+                                    <div class="gua-scroll-canvas" id="guaLinesContainer">
+                                        <!-- 六爻爻线展示 -->
+                                        <div class="empty-gua-tip">
+                                            <p class="font-shufa">“卜以决疑，不疑何卜。”</p>
+                                            <p class="sub">请于右侧凝神静思，摇晃金钱起卦</p>
+                                        </div>
+                                    </div>
+                                    <!-- 起卦进度 -->
+                                    <div class="liuyao-progress-bar" id="liuyaoProgressBar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- 六爻卦辞深度解析 -->
+                            <div class="glass-card scroll-card" id="liuyaoResultScroll" style="display: none;">
+                                <div class="scroll-handle handle-top"></div>
+                                <div class="scroll-content">
+                                    <h3 class="scroll-title font-shufa" id="liuyaoResultTitle">天火同人 变 乾为天</h3>
+                                    <div class="scroll-body" id="liuyaoResultBody">
+                                        <!-- 动态解析 -->
+                                    </div>
+                                    <div class="scroll-seal">六爻神断</div>
+                                </div>
+                                <div class="scroll-handle handle-bottom"></div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：交互式抛硬币控制台 -->
+                        <div class="liuyao-layout-right">
+                            <div class="glass-card liuyao-control-card">
+                                <div class="card-badge">摇卦仪式</div>
+                                <div class="liuyao-instruction" id="liuyaoInstruction">
+                                    <p class="step-title">第一步：虔诚合掌，默念所求</p>
+                                    <p class="step-desc">心诚则灵。请于心中默想所测之事（如事业、婚姻、财运、出行），并选择占问方向：</p>
+                                    <select id="liuyaoCategory" class="custom-select">
+                                        <option value="career">事业升迁 / 谋职创业</option>
+                                        <option value="wealth">求财致富 / 投资理财</option>
+                                        <option value="love">婚姻恋情 / 缘分良缘</option>
+                                        <option value="general">诸事问吉 / 出行谋划</option>
+                                    </select>
+                                    <button class="btn-primary" id="btnStartLiuyao">虔诚起卦</button>
+                                </div>
+
+                                <div class="liuyao-interactive-stage" id="liuyaoStage" style="display: none;">
+                                    <div class="coin-tray">
+                                        <!-- 三枚 3D 铜钱 -->
+                                        <div class="coin-container" id="coin1">
+                                            <div class="coin">
+                                                <div class="coin-face coin-front">乾<br>道</div>
+                                                <div class="coin-face coin-back">通<br>宝</div>
+                                            </div>
+                                        </div>
+                                        <div class="coin-container" id="coin2">
+                                            <div class="coin">
+                                                <div class="coin-face coin-front">乾<br>道</div>
+                                                <div class="coin-face coin-back">通<br>宝</div>
+                                            </div>
+                                        </div>
+                                        <div class="coin-container" id="coin3">
+                                            <div class="coin">
+                                                <div class="coin-face coin-front">乾<br>道</div>
+                                                <div class="coin-face coin-back">通<br>宝</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="shake-control-area">
+                                        <div class="shake-status" id="shakeStatus">已摇卦：0 / 6 次</div>
+                                        <button class="btn-gold-glow animate-pulse" id="btnShakeCoins">
+                                            <i class="fa-solid fa-hand-sparkles"></i> 摇晃并抛出铜钱
+                                        </button>
+                                        <button class="btn-secondary" id="btnResetLiuyao" style="margin-top: 10px;">重新起卦</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. 黄历择吉板块 -->
+                <section class="view-panel" id="panel-huangli">
+                    <div class="huangli-container">
+                        <!-- 左侧：黄历挂历挂卡 -->
+                        <div class="huangli-wood-frame">
+                            <div class="huangli-board-card glass-card">
+                                <div class="calendar-top-bar">
+                                    <span class="year-month-label" id="hlCurrentDateLabel">2026年5月23日</span>
+                                    <div class="hl-nav-btns">
+                                        <button class="hl-nav-btn" id="btnPrevDay"><i class="fa-solid fa-chevron-left"></i></button>
+                                        <button class="hl-nav-btn" id="btnNextDay"><i class="fa-solid fa-chevron-right"></i></button>
+                                    </div>
+                                </div>
+                                <div class="calendar-sheet">
+                                    <div class="cal-sheet-header">
+                                        <div class="lunar-stem-branch" id="hlGanzhiDisplay">丙午年 癸巳月 丁卯日</div>
+                                        <div class="lunar-date-text font-shufa" id="hlLunarDisplay">五月初八</div>
+                                    </div>
+                                    <div class="cal-sheet-body">
+                                        <div class="solar-day font-shufa" id="hlSolarDay">23</div>
+                                        <div class="solar-month-year" id="hlSolarYearMonth">2026-05 | 星期六</div>
+                                        
+                                        <div class="yiji-box">
+                                            <div class="yiji-line yi">
+                                                <span class="yiji-badge">宜</span>
+                                                <div class="yiji-content" id="hlYiList">嫁娶、纳采、出行、祭祀、移徙</div>
+                                            </div>
+                                            <div class="yiji-line ji">
+                                                <span class="yiji-badge">忌</span>
+                                                <div class="yiji-content" id="hlJiList">作灶、动土、安葬、修坟、开市</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="pengzu-section" id="hlPengzu">
+                                            丁不剃头，头必生疮；卯不穿井，泉水不香。
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：日历看板与智能筛吉 -->
+                        <div class="huangli-right-side">
+                            <!-- 喜财福方位罗盘 -->
+                            <div class="glass-card compass-positions-card">
+                                <div class="card-badge">今日吉神方位</div>
+                                <div class="positions-layout">
+                                    <div class="compass-mini-wrapper">
+                                        <div class="mini-compass" id="miniCompass">
+                                            <div class="compass-pointer" id="compassPointer"></div>
+                                            <span class="direction-label north">北</span>
+                                            <span class="direction-label south">南</span>
+                                            <span class="direction-label east">东</span>
+                                            <span class="direction-label west">西</span>
+                                        </div>
+                                    </div>
+                                    <div class="positions-list">
+                                        <div class="position-item" data-deg="135">
+                                            <span class="pos-badge joy">喜神</span>
+                                            <span class="pos-val" id="hlPositionXi">正南 (离)</span>
+                                        </div>
+                                        <div class="position-item" data-deg="270">
+                                            <span class="pos-badge wealth">财神</span>
+                                            <span class="pos-val" id="hlPositionCai">正西 (兑)</span>
+                                        </div>
+                                        <div class="position-item" data-deg="0">
+                                            <span class="pos-badge luck">福神</span>
+                                            <span class="pos-val" id="hlPositionFu">正北 (坎)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 智能吉日筛选 -->
+                            <div class="glass-card jiri-filter-card">
+                                <div class="card-badge">择吉选日</div>
+                                <p class="card-desc">选择重要事项，系统将自动扫描未来30天，筛选出与大吉天时共振的吉日。</p>
+                                <div class="filter-controls">
+                                    <select id="jiriEventSelect" class="custom-select">
+                                        <option value="嫁娶">结婚嫁娶 (大吉之始)</option>
+                                        <option value="移徙">搬家入宅 (乔迁纳气)</option>
+                                        <option value="开市">开业开市 (鸿图大展)</option>
+                                        <option value="出行">出行商旅 (顺风扬帆)</option>
+                                        <option value="动土">建房动土 (奠基破土)</option>
+                                    </select>
+                                    <button class="btn-primary" id="btnFilterJiri">筛选吉日</button>
+                                </div>
+                                <div class="filter-results-list" id="jiriResultsList">
+                                    <!-- 筛选结果列表 -->
+                                    <div class="empty-list-tip">请选择事项并点击筛选</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. 八宅风水板块 -->
+                <section class="view-panel" id="panel-fengshui">
+                    <div class="fengshui-container">
+                        <!-- 左侧：九宫交互格 -->
+                        <div class="fengshui-layout-left">
+                            <div class="glass-card fengshui-grid-card">
+                                <div class="card-badge">八宅乾坤气场</div>
+                                <div class="fengshui-house-selector">
+                                    <label for="houseSitDirection">房屋坐向：</label>
+                                    <select id="houseSitDirection" class="custom-select">
+                                        <option value="坐北朝南">坎宅 (坐北朝南 - 推荐)</option>
+                                        <option value="坐南朝北">离宅 (坐南朝北)</option>
+                                        <option value="坐东朝西">震宅 (坐东朝西)</option>
+                                        <option value="坐西朝东">兑宅 (坐西朝东)</option>
+                                        <option value="坐东南朝西北">巽宅 (坐东南朝西北)</option>
+                                        <option value="坐西北朝东南">乾宅 (坐西北朝东南)</option>
+                                        <option value="坐西南朝东北">坤宅 (坐西南朝东北)</option>
+                                        <option value="坐东北朝西南">艮宅 (坐东北朝西南)</option>
+                                    </select>
+                                </div>
+
+                                <!-- 互动九宫格 -->
+                                <div class="nine-grid-layout" id="nineGridLayout">
+                                    <!-- 巽(东南) 离(正南) 坤(西南) -->
+                                    <!-- 震(正东) 中宫      兑(正西) -->
+                                    <!-- 艮(东北) 坎(正北) 乾(西北) -->
+                                    <div class="grid-cell" data-pos="SE">
+                                        <span class="cell-direction">东南 (巽)</span>
+                                        <span class="cell-star">生气木</span>
+                                        <span class="cell-luck status-good">大吉</span>
+                                    </div>
+                                    <div class="grid-cell" data-pos="S">
+                                        <span class="cell-direction">正南 (离)</span>
+                                        <span class="cell-star">延年金</span>
+                                        <span class="cell-luck status-good">大吉</span>
+                                    </div>
+                                    <div class="grid-cell" data-pos="SW">
+                                        <span class="cell-direction">西南 (坤)</span>
+                                        <span class="cell-star">绝命金</span>
+                                        <span class="cell-luck status-bad">大凶</span>
+                                    </div>
+                                    <div class="grid-cell" data-pos="E">
+                                        <span class="cell-direction">正东 (震)</span>
+                                        <span class="cell-star">天医土</span>
+                                        <span class="cell-luck status-good">大吉</span>
+                                    </div>
+                                    <div class="grid-cell center-cell">
+                                        <span class="cell-direction">中宫</span>
+                                        <span class="taiji-mini">☯</span>
+                                    </div>
+                                    <div class="grid-cell" data-pos="W">
+                                        <span class="cell-direction">正西 (兑)</span>
+                                        <span class="cell-star">祸害土</span>
+                                        <span class="cell-luck status-bad">小凶</span>
+                                    </div>
+                                    <div class="grid-cell" data-pos="NE">
+                                        <span class="cell-direction">东北 (艮)</span>
+                                        <span class="cell-star">五鬼火</span>
+                                        <span class="cell-luck status-bad">大凶</span>
+                                    </div>
+                                    <div class="grid-cell" data-pos="N">
+                                        <span class="cell-direction">正北 (坎)</span>
+                                        <span class="cell-star">伏位木</span>
+                                        <span class="cell-luck status-good">吉</span>
+                                    </div>
+                                    <div class="grid-cell" data-pos="NW">
+                                        <span class="cell-direction">西北 (乾)</span>
+                                        <span class="cell-star">六煞水</span>
+                                        <span class="cell-luck status-bad">中凶</span>
+                                    </div>
+                                </div>
+                                <div class="helper-tips"><i class="fa-solid fa-circle-info"></i> 点击九宫格内任意方位，即可在右侧查看该方位的风水宜忌与布局指南。</div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：风水布局与化解详细书信 -->
+                        <div class="fengshui-layout-right">
+                            <div class="glass-card scroll-card" style="height: 100%;">
+                                <div class="scroll-handle handle-top"></div>
+                                <div class="scroll-content">
+                                    <h3 class="scroll-title font-shufa" id="fengshuiResultTitle">方位气场分析</h3>
+                                    <div class="scroll-body" id="fengshuiResultBody">
+                                        <p class="empty-fengshui-desc font-shufa" style="text-align: center; margin-top: 50px;">
+                                            “明堂开阔，藏风聚气。”<br><br>
+                                            请在左侧选择房屋坐向，并点击具体宫位，以获取阳宅风水调理之策。
+                                        </p>
+                                    </div>
+                                    <div class="scroll-seal">风水堪舆</div>
+                                </div>
+                                <div class="scroll-handle handle-bottom"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. 乾坤问卜 (大师对话) -->
+                <section class="view-panel" id="panel-chat">
+                    <div class="chat-container">
+                        <!-- 对话区域 -->
+                        <div class="glass-card chat-box-card">
+                            <div class="card-badge chat-mode-badge">
+                                <span class="mode-label">问卜：</span>
+                                <select id="chatModeSelect" class="mini-select">
+                                    <option value="api">乾坤AI (Gemini)</option>
+                                    <option value="local">传统易理</option>
+                                </select>
+                            </div>
+                            <div class="chat-api-config" id="chatApiConfig">
+                                <div class="config-row">
+                                    <label for="apiKeyInput">API Key：</label>
+                                    <input type="password" id="apiKeyInput" placeholder="输入你的 Gemini API Key" class="config-input">
+                                    <span class="config-hint">本地存储，仅你可见</span>
+                                </div>
+                                <div class="config-row">
+                                    <label for="proxyUrlInput">代理地址：</label>
+                                    <input type="text" id="proxyUrlInput" placeholder="留空直连 | 国内用户填反向代理地址" class="config-input">
+                                </div>
+                                <div class="config-row">
+                                    <label for="modelSelect">模型：</label>
+                                    <select id="modelSelect" class="mini-select config-select">
+                                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                        <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-toolbar">
+                                <button class="btn-clear-chat" id="btnClearChat"><i class="fa-solid fa-trash-can"></i> 清除对话</button>
+                            </div>
+                            <div class="chat-history" id="chatHistory">
+                                <!-- 大师欢迎语 -->
+                                <div class="chat-message assistant">
+                                    <div class="avatar">☯</div>
+                                    <div class="message-bubble font-shufa">
+                                        <p>善信你好，老夫在此稽首了。吾观天命人运，皆在阴阳数理消长之中。</p>
+                                        <p>你已在此录入了生辰。老夫已默记于心。关于阁下的一生性格、今年运势、或是方才在系统中摇得的卦象、乃至住宅的风水布局，若有任何不解，皆可向老夫追问。老夫必当依古圣遗留之易理，为你拨云见日，指点迷途。</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="chat-input-area">
+                                <div class="input-wrapper">
+                                    <textarea id="chatInput" placeholder="输入您当下的困惑（如：我今年的事业运势如何？我的八字喜忌是什么？卧室应该怎么摆设？）..." rows="1"></textarea>
+                                    <button class="btn-primary" id="btnSendMessage"><i class="fa-solid fa-feather-pointed"></i> 问卜</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. 姓名五格剖象 -->
+                <section class="view-panel" id="panel-xingming">
+                    <div class="xm-container">
+                        <div class="glass-card xm-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-signature"></i> 姓名五格剖象 · 数理吉凶</h2>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="xmSurname">姓氏</label>
+                                    <input type="text" id="xmSurname" placeholder="请输入姓氏">
+                                </div>
+                                <div class="form-group">
+                                    <label for="xmGivenName">名字</label>
+                                    <input type="text" id="xmGivenName" placeholder="请输入名字">
+                                </div>
+                                <div class="form-group btn-group">
+                                    <button class="btn-primary" id="btnCalcXingming"><i class="fa-solid fa-calculator"></i> 推算五格</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card xm-result-card" id="xmResultCard" style="display:none;">
+                            <div class="card-badge">五格数理详批</div>
+                            <div class="xm-grid" id="xmGrid"></div>
+                            <div class="scroll-body" id="xmAnalysis"></div>
+                            <button class="btn-screenshot" data-target="xmResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. 梅花易数 -->
+                <section class="view-panel" id="panel-meihua">
+                    <div class="meihua-container">
+                        <div class="glass-card meihua-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-hand-sparkles"></i> 梅花易数 · 数字起卦</h2>
+                            <p class="card-desc">心诚则灵。请默念所问之事，输入三个任意数字（或点击随机），系统将据数起卦。</p>
+                            <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr auto; gap:12px;">
+                                <div class="form-group">
+                                    <label for="mhNum1">上卦数</label>
+                                    <input type="number" id="mhNum1" min="1" value="3" class="mh-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="mhNum2">下卦数</label>
+                                    <input type="number" id="mhNum2" min="1" value="8" class="mh-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="mhNum3">动爻数</label>
+                                    <input type="number" id="mhNum3" min="1" value="6" class="mh-input">
+                                </div>
+                                <div class="form-group btn-group" style="align-self:flex-end;">
+                                    <button class="btn-secondary" id="btnMhRandom"><i class="fa-solid fa-dice"></i> 随机</button>
+                                </div>
+                            </div>
+                            <button class="btn-primary" id="btnCalcMeihua" style="margin-top:12px;"><i class="fa-solid fa-yin-yang"></i> 起卦</button>
+                        </div>
+                        <div class="glass-card scroll-card" id="mhResultCard" style="display:none;">
+                            <div class="scroll-handle handle-top"></div>
+                            <div class="scroll-content">
+                                <h3 class="scroll-title font-shufa" id="mhResultTitle"></h3>
+                                <div class="scroll-body" id="mhResultBody"></div>
+                                <div class="scroll-seal">梅花易数</div>
+                            </div>
+                            <div class="scroll-handle handle-bottom"></div>
+                            <button class="btn-screenshot" data-target="mhResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. 合婚匹配 -->
+                <section class="view-panel" id="panel-hehun">
+                    <div class="hehun-container">
+                        <div class="glass-card hehun-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-heart"></i> 八字合婚 · 天作之合</h2>
+                            <div class="hehun-form-grid">
+                                <div class="hehun-person">
+                                    <h4 class="hehun-person-title">男方信息</h4>
+                                    <div class="form-group">
+                                        <label>姓名</label>
+                                        <input type="text" id="hhNameM" placeholder="男方姓名">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>出生日期</label>
+                                        <input type="datetime-local" id="hhDateM">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>性别</label>
+                                        <div class="gender-radio-group">
+                                            <label class="radio-label"><input type="radio" name="hhGenderM" value="男" checked><span class="custom-radio">男</span></label>
+                                            <label class="radio-label"><input type="radio" name="hhGenderM" value="女"><span class="custom-radio">女</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hehun-divider"><span class="hehun-heart">❤</span></div>
+                                <div class="hehun-person">
+                                    <h4 class="hehun-person-title">女方信息</h4>
+                                    <div class="form-group">
+                                        <label>姓名</label>
+                                        <input type="text" id="hhNameF" placeholder="女方姓名">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>出生日期</label>
+                                        <input type="datetime-local" id="hhDateF">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>性别</label>
+                                        <div class="gender-radio-group">
+                                            <label class="radio-label"><input type="radio" name="hhGenderF" value="女" checked><span class="custom-radio">女</span></label>
+                                            <label class="radio-label"><input type="radio" name="hhGenderF" value="男"><span class="custom-radio">男</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-primary" id="btnCalcHehun" style="margin-top:12px;"><i class="fa-solid fa-link"></i> 合婚匹配</button>
+                        </div>
+                        <div class="glass-card scroll-card" id="hhResultCard" style="display:none;">
+                            <div class="scroll-handle handle-top"></div>
+                            <div class="scroll-content">
+                                <h3 class="scroll-title font-shufa" id="hhResultTitle">合婚批断</h3>
+                                <div class="scroll-body" id="hhResultBody"></div>
+                                <div class="scroll-seal">天作之合</div>
+                            </div>
+                            <div class="scroll-handle handle-bottom"></div>
+                            <button class="btn-screenshot" data-target="hhResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. 紫微斗数 -->
+                <section class="view-panel" id="panel-ziwei">
+                    <div class="zw-container">
+                        <div class="glass-card zw-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-star"></i> 紫微斗数 · 命盘推演</h2>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="zwName">善信姓名</label>
+                                    <input type="text" id="zwName" placeholder="请输入姓名">
+                                </div>
+                                <div class="form-group">
+                                    <label>善信性别</label>
+                                    <div class="gender-radio-group">
+                                        <label class="radio-label"><input type="radio" name="zwGender" value="男" checked><span class="custom-radio">男</span></label>
+                                        <label class="radio-label"><input type="radio" name="zwGender" value="女"><span class="custom-radio">女</span></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="zwDate">出生日期</label>
+                                    <input type="datetime-local" id="zwDate">
+                                </div>
+                                <div class="form-group btn-group">
+                                    <button class="btn-primary" id="btnCalcZw"><i class="fa-solid fa-star"></i> 安星排盘</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card zw-result-card" id="zwResultCard" style="display:none;">
+                            <div class="card-badge" id="zwBoardTitle">紫微斗数命盘</div>
+                            <div class="zw-chart" id="zwChart"></div>
+                            <div class="scroll-body" id="zwAnalysis"></div>
+                            <button class="btn-screenshot" data-target="zwResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- html2canvas 截图库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- 核心 JS 逻辑 -->
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "乾坤易道 - 周易命理智能分析系统",
+  "short_name": "乾坤易道",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0A0A0C",
+  "theme_color": "#D4AF37",
+  "description": "八字排盘、六爻占卜、黄历择吉、风水布局、紫微斗数、姓名五格"
+}
