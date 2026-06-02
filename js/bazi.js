@@ -17,6 +17,20 @@ function initBaziModule() {
 
         saveBaziInput(name, gender, dateVal);
 
+        // Show skeleton loading
+        const analysisEl = document.getElementById("baziDetailAnalysis");
+        if (analysisEl) {
+            analysisEl.innerHTML = `
+                <div class="bazi-report-loading">
+                    <div class="skeleton-card"><div class="skeleton-pulse skeleton-block w40"></div><div class="skeleton-pulse skeleton-block"></div><div class="skeleton-pulse skeleton-block w80"></div></div>
+                    <div class="skeleton-card"><div class="skeleton-pulse skeleton-block w40"></div><div class="skeleton-pulse skeleton-block"></div><div class="skeleton-pulse skeleton-block w60"></div><div class="skeleton-pulse skeleton-block"></div></div>
+                    <div class="skeleton-card"><div class="skeleton-pulse skeleton-block w40"></div><div class="skeleton-pulse skeleton-block w80"></div><div class="skeleton-pulse skeleton-block"></div></div>
+                </div>`;
+        }
+
+        // Use setTimeout to let skeleton render before heavy computation
+        setTimeout(() => {
+
         const birthDate = new Date(dateVal);
         const solar = Solar.fromDate(birthDate);
         const lunar = solar.getLunar();
@@ -54,6 +68,10 @@ function initBaziModule() {
         const resultArea = document.getElementById("baziResultArea");
         resultArea.style.display = "block";
         setTimeout(drawWuxingRadar, 100);
+
+        // Dispatch custom event for history save
+        document.dispatchEvent(new CustomEvent('bazi-analysis-complete', { detail: { name, gender, date: dateVal } }));
+    }, 50);
     });
 }
 

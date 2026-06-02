@@ -41,6 +41,9 @@
                 <span class="lunar-time"></span>
                 <span class="ganzhi-time"></span>
             </div>
+            <button class="theme-toggle" id="themeToggle" title="切换主题" aria-label="切换浅色/深色主题">
+                <i class="fa-solid fa-moon"></i>
+            </button>
         </header>
 
         <!-- 核心工作区：左侧古典侧边导航，右侧动态视窗 -->
@@ -143,20 +146,35 @@
                                 </div>
                             </div>
 
-                            <div class="dashboard-grid">
-                                <div class="glass-card feature-link-card" data-goto="bazi">
-                                    <div class="card-icon"><i class="fa-solid fa-crown"></i></div>
-                                    <h3>八字神数</h3>
-                                    <p>输入生辰八字，解析本命元神与五行强弱，获知人生批导。</p>
-                                    <span class="arrow-btn">开启推演 <i class="fa-solid fa-arrow-right-long"></i></span>
-                                </div>
-                                <div class="glass-card feature-link-card" data-goto="liuyao">
-                                    <div class="card-icon"><i class="fa-solid fa-yin-yang"></i></div>
-                                    <h3>易经六爻</h3>
-                                    <p>手摇乾道通宝，以数起卦，洞察当下事业、财运、情感玄机。</p>
-                                    <span class="arrow-btn">起卦占卜 <i class="fa-solid fa-arrow-right-long"></i></span>
-                                </div>
+                        <div class="dashboard-grid">
+                            <div class="glass-card feature-link-card" data-goto="bazi">
+                                <div class="card-icon"><i class="fa-solid fa-crown"></i></div>
+                                <h3>八字神数</h3>
+                                <p>输入生辰八字，解析本命元神与五行强弱，获知人生批导。</p>
+                                <span class="arrow-btn">开启推演 <i class="fa-solid fa-arrow-right-long"></i></span>
                             </div>
+                            <div class="glass-card feature-link-card" data-goto="liuyao">
+                                <div class="card-icon"><i class="fa-solid fa-yin-yang"></i></div>
+                                <h3>易经六爻</h3>
+                                <p>手摇乾道通宝，以数起卦，洞察当下事业、财运、情感玄机。</p>
+                                <span class="arrow-btn">起卦占卜 <i class="fa-solid fa-arrow-right-long"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-grid" style="margin-top:14px;">
+                            <div class="dashboard-card">
+                                <h3><i class="fa-solid fa-shirt"></i> 五行穿搭 · 今日宜着</h3>
+                                <div class="dress-guide" id="dressGuideContainer">
+                                    <div class="skeleton-pulse skeleton-block w80" style="height:20px;"></div>
+                                </div>
+                                <div class="dash-sub" id="dressGuideSub" style="margin-top:6px;"></div>
+                            </div>
+                            <div class="dashboard-card">
+                                <h3><i class="fa-solid fa-clock-rotate-left"></i> 命盘记录</h3>
+                                <div class="bazi-history-list" id="baziHistoryList"></div>
+                                <div class="dash-sub" style="margin-top:4px;text-align:right;"><a href="#" onclick="document.querySelector('[data-target=bazi]').click();return false;" style="color:var(--text-gold);font-size:0.75rem;">新建排盘 →</a></div>
+                            </div>
+                        </div>
                         </div>
                     </div>
                 </section>

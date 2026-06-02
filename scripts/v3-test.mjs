@@ -46,7 +46,7 @@ async function main() {
     // Clear localStorage before loading to prevent auto-calculation
     await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 15000 });
     await page.evaluate(() => localStorage.clear());
-    await page.goto(BASE, { waitUntil: 'networkidle', timeout: 15000 });
+    await page.goto(BASE, { waitUntil: 'networkidle', timeout: 30000 });
     await page.waitForTimeout(3000);
     const navItems = await page.locator('.nav-item').count();
     console.log(`    导航项: ${navItems}`);
