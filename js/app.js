@@ -301,19 +301,71 @@ function initParticleBackground() {
     });
 }
 
-/* ---------- 截图 ---------- */
+/* ---------- 分享卡片 ---------- */
+function generateShareCardHtml(el) {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const bg = isLight ? '#F0EBE0' : '#0A0A0C';
+    const cardBg = isLight ? 'rgba(255,252,245,0.95)' : 'rgba(20,20,25,0.92)';
+    const borderClr = isLight ? '#B8942E' : '#D4AF37';
+    const textClr = isLight ? '#2C2C2C' : '#E5E5EA';
+    const innerHtml = el.innerHTML;
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `position:absolute;left:-9999px;top:0;width:${Math.min(el.scrollWidth + 40, 800)}px;background:${bg};padding:20px;`;
+    wrapper.innerHTML = `
+        <div style="background:${cardBg};border:2px solid ${borderClr};border-radius:12px;padding:24px;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,${borderClr},transparent);"></div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid ${borderClr}44;">
+                <span style="font-size:1.5rem;">☯</span>
+                <div>
+                    <div style="font-size:0.95rem;font-weight:700;color:${borderClr};">乾坤易道</div>
+                    <div style="font-size:0.7rem;color:${textClr}66;">周 易 数 理 命 理 智 能 分 析 系 统</div>
+                </div>
+            </div>
+            <div style="font-size:0.82rem;color:${textClr};line-height:1.7;">${innerHtml}</div>
+            <div style="margin-top:16px;padding-top:10px;border-top:1px solid ${borderClr}33;text-align:center;font-size:0.65rem;color:${textClr}55;">
+                乾坤易道 · 知命而修己
+            </div>
+        </div>`;
+    document.body.appendChild(wrapper);
+    return wrapper;
+}
+
 document.addEventListener("click", (e) => {
     const btn = e.target.closest(".btn-screenshot");
     if (!btn) return;
     const targetId = btn.getAttribute("data-target");
     const el = document.getElementById(targetId);
     if (!el || typeof html2canvas === 'undefined') { alert("截图功能需要 html2canvas 库支持"); return; }
+
+    const wrapper = generateShareCardHtml(el);
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    html2canvas(el, { backgroundColor: isLight ? '#F0EBE0' : '#0A0A0C', scale:2, useCORS:true }).then(canvas => {
-        const link = document.createElement("a");
-        link.download = `${targetId}-${Date.now()}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
+    const bg = isLight ? '#F0EBE0' : '#0A0A0C';
+    html2canvas(wrapper, { backgroundColor: bg, scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
+        document.body.removeChild(wrapper);
+
+        const action = btn.getAttribute("data-action") || 'download';
+        if (action === 'clipboard') {
+            canvas.toBlob(blob => {
+                navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => {
+                    const toast = document.getElementById("copyToast") || (() => { const t = document.createElement("div"); t.id = "copyToast"; t.className = "toast-notification"; document.body.appendChild(t); return t; })();
+                    toast.textContent = "图片已复制到剪贴板";
+                    toast.classList.add("show");
+                    setTimeout(() => toast.classList.remove("show"), 2000);
+                }).catch(() => {
+                    // Fallback: download
+                    const link = document.createElement("a");
+                    link.download = `${targetId}-${Date.now()}.png`;
+                    link.href = canvas.toDataURL("image/png");
+                    link.click();
+                });
+            });
+        } else {
+            const link = document.createElement("a");
+            link.download = `${targetId}-${Date.now()}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
     });
 });
 
