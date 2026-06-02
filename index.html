@@ -12,11 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700;900&family=ZCOOL+XiaoWei&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- 核心 CSS 样式 -->
+    <!-- 核心 CSS 样式（模块化并行加载） -->
+    <link rel="stylesheet" href="css/base.css?v=20260602-1">
+    <link rel="stylesheet" href="css/components.css?v=20260602-1">
+    <link rel="stylesheet" href="css/panels.css?v=20260602-1">
     <link rel="stylesheet" href="style.css?v=20260527-3">
     <!-- 引入高精度农历历法与命理计算库 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js" onerror="this.remove(); window.lunarFallback=true; console.warn('lunar-javascript CDN 加载失败，部分历法功能将不可用')"></script>
-    <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\\/script>');</script>
+    <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\/script>');</script>
+    <!-- 截图功能 html2canvas（CDN 降级） -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" onerror="window.html2canvasFallback=true; console.warn('html2canvas cdnjs 加载失败，尝试 unpkg 降级')"></script>
+    <script>if (window.html2canvasFallback) document.write('<script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"><\/script>');</script>
 </head>
 <body>
     <!-- 金沙粒子背景 Canvas -->

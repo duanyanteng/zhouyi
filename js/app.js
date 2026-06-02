@@ -9,7 +9,7 @@ import { initMeihuaModule } from './meihua.js';
 import { initHehunModule } from './hehun.js';
 import { initZiweiModule } from './ziwei.js';
 import { initHepanModule } from './hepan.js';
-import { getGanWuxing, getWuxingEng } from './utils.js';
+import { getGanWuxing, getWuxingEng, showToast } from './utils.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -352,10 +352,7 @@ document.addEventListener("click", (e) => {
         if (action === 'clipboard') {
             canvas.toBlob(blob => {
                 navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => {
-                    const toast = document.getElementById("copyToast") || (() => { const t = document.createElement("div"); t.id = "copyToast"; t.className = "toast-notification"; document.body.appendChild(t); return t; })();
-                    toast.textContent = "图片已复制到剪贴板";
-                    toast.classList.add("show");
-                    setTimeout(() => toast.classList.remove("show"), 2000);
+                    showToast("图片已复制到剪贴板");
                 }).catch(() => {
                     const link = document.createElement("a");
                     link.download = `${targetId}-${Date.now()}.png`;
@@ -388,10 +385,7 @@ document.addEventListener("click", (e) => {
     if (!el) return;
     const text = el.innerText || el.textContent;
     navigator.clipboard.writeText(text).then(() => {
-        const toast = document.getElementById("copyToast") || (() => { const t = document.createElement("div"); t.id = "copyToast"; t.className = "toast-notification"; document.body.appendChild(t); return t; })();
-        toast.textContent = "已复制到剪贴板";
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 2000);
+        showToast("已复制到剪贴板");
     }).catch(() => alert("复制失败，请手动选择文本复制"));
 });
 

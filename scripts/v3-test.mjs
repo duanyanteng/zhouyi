@@ -97,6 +97,60 @@ async function main() {
     if (!resultVisible) throw new Error('八字结果未显示');
     console.log('    OK');
 
+    // 3b. 八字数据正确性验证
+    console.log('[3b] 八字数据正确性...');
+    // 使用 lunar-javascript 计算期望值，与 DOM 渲染结果交叉验证
+    const expectedBazi = await page.evaluate(() => {
+        // Use 1990-06-15T10:00 (巳时) — same date entered in [3]
+        const birthDate = new Date('1990-06-15T10:00');
+        const solar = Solar.fromDate(birthDate);
+        const lunar = solar.getLunar();
+        const bazi = lunar.getEightChar();
+        return {
+            yearGan: bazi.getYearGan(), yearZhi: bazi.getYearZhi(),
+            monthGan: bazi.getMonthGan(), monthZhi: bazi.getMonthZhi(),
+            dayGan: bazi.getDayGan(), dayZhi: bazi.getDayZhi(),
+            timeGan: bazi.getTimeGan(), timeZhi: bazi.getTimeZhi(),
+            yearShiShen: bazi.getYearShiShenGan(),
+            monthShiShen: bazi.getMonthShiShenGan(),
+            timeShiShen: bazi.getTimeShiShenGan(),
+            yearNayin: bazi.getYearNaYin(),
+            monthNayin: bazi.getMonthNaYin(),
+            dayNayin: bazi.getDayNaYin(),
+            timeNayin: bazi.getTimeNaYin(),
+        };
+    });
+    console.log(`    八字: ${expectedBazi.yearGan}${expectedBazi.yearZhi} ${expectedBazi.monthGan}${expectedBazi.monthZhi} ${expectedBazi.dayGan}${expectedBazi.dayZhi} ${expectedBazi.timeGan}${expectedBazi.timeZhi}`);
+    console.log(`    纳音: ${expectedBazi.yearNayin} ${expectedBazi.monthNayin} ${expectedBazi.dayNayin} ${expectedBazi.timeNayin}`);
+
+    // Verify DOM matches library output
+    const domYearGan = await page.locator('#colYear .gan').textContent();
+    const domYearZhi = await page.locator('#colYear .zhi').textContent();
+    const domMonthGan = await page.locator('#colMonth .gan').textContent();
+    const domMonthZhi = await page.locator('#colMonth .zhi').textContent();
+    const domDayGan = await page.locator('#colDay .gan').textContent();
+    const domDayZhi = await page.locator('#colDay .zhi').textContent();
+    const domTimeGan = await page.locator('#colTime .gan').textContent();
+    const domTimeZhi = await page.locator('#colTime .zhi').textContent();
+
+    if (domYearGan.trim() !== expectedBazi.yearGan) throw new Error(`年柱天干不符: DOM=${domYearGan} 预期=${expectedBazi.yearGan}`);
+    if (domYearZhi.trim() !== expectedBazi.yearZhi) throw new Error(`年柱地支不符: DOM=${domYearZhi} 预期=${expectedBazi.yearZhi}`);
+    if (domMonthGan.trim() !== expectedBazi.monthGan) throw new Error(`月柱天干不符: DOM=${domMonthGan} 预期=${expectedBazi.monthGan}`);
+    if (domMonthZhi.trim() !== expectedBazi.monthZhi) throw new Error(`月柱地支不符: DOM=${domMonthZhi} 预期=${expectedBazi.monthZhi}`);
+    if (domDayGan.trim() !== expectedBazi.dayGan) throw new Error(`日柱天干不符: DOM=${domDayGan} 预期=${expectedBazi.dayGan}`);
+    if (domDayZhi.trim() !== expectedBazi.dayZhi) throw new Error(`日柱地支不符: DOM=${domDayZhi} 预期=${expectedBazi.dayZhi}`);
+    if (domTimeGan.trim() !== expectedBazi.timeGan) throw new Error(`时柱天干不符: DOM=${domTimeGan} 预期=${expectedBazi.timeGan}`);
+    if (domTimeZhi.trim() !== expectedBazi.timeZhi) throw new Error(`时柱地支不符: DOM=${domTimeZhi} 预期=${expectedBazi.timeZhi}`);
+
+    // Verify 十神 and 纳音 match
+    const domYearShiShen = await page.locator('#colYear .shishen').textContent();
+    const domMonthNayin = await page.locator('#colMonth .nayin').textContent();
+    if (domYearShiShen.trim() !== expectedBazi.yearShiShen) throw new Error(`年上十神不符: DOM=${domYearShiShen} 预期=${expectedBazi.yearShiShen}`);
+    if (domMonthNayin.trim() !== expectedBazi.monthNayin) throw new Error(`月柱纳音不符: DOM=${domMonthNayin} 预期=${expectedBazi.monthNayin}`);
+
+    console.log('    ✓ 八字各柱数据正确，与 lunar-javascript 库输出完全一致');
+    console.log('    OK');
+
     // 4. 六爻
     console.log('[4] 六爻起卦...');
     await page.click('.nav-item[data-target="liuyao"]');

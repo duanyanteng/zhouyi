@@ -132,8 +132,17 @@ const ZI_WEI_STARS = {
     ci: ["左辅","右弼","文昌","文曲","地空","地劫","天魁","天钺","禄存","擎羊","陀罗","火星","铃星","天马"]
 };
 
+/* ---------- Toast 通知 ---------- */
+function showToast(msg, duration) {
+    const toast = document.getElementById("copyToast") || (() => { const t = document.createElement("div"); t.id = "copyToast"; t.className = "toast-notification"; document.body.appendChild(t); return t; })();
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), duration || 2000);
+}
+
 export {
     getGanWuxing, getZhiWuxing, getWuxingEng, getMaxWuxing, getMinWuxing,
     getDiShi, getGuaFromDirection, escapeHTML, sanitizeHTML,
-    SIXTY_FOUR_GUA, getGuaInfo, KANGXI_STROKES, SHU_LI, getStroke, ZI_WEI_STARS
+    SIXTY_FOUR_GUA, getGuaInfo, KANGXI_STROKES, SHU_LI, getStroke, ZI_WEI_STARS,
+    showToast
 };
