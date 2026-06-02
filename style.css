@@ -2359,6 +2359,182 @@ body {
     .form-grid { grid-template-columns: 1fr !important; }
 }
 
+/* ===== Bazi Report Card System ===== */
+.bazi-report {
+    padding: 16px 0;
+}
+.bazi-report .report-section {
+    background: linear-gradient(135deg, rgba(20,20,25,0.85), rgba(30,30,38,0.85));
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--text-gold);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+}
+.bazi-report .report-section:hover {
+    border-color: var(--border-hover);
+    border-left-color: var(--gold-primary);
+}
+.bazi-report .report-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 0.95rem;
+    color: var(--text-gold);
+    font-family: 'ZCOOL XiaoWei', serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.bazi-report .report-section p {
+    margin: 6px 0;
+    line-height: 1.7;
+    font-size: 0.85rem;
+}
+.bazi-report .section-subtitle {
+    font-size: 0.82rem;
+    color: var(--text-gold);
+    font-weight: 600;
+    margin: 10px 0 6px 0;
+}
+.bazi-report .nayin-list {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.bazi-report .nayin-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+.bazi-report .nayin-list li .nayin-pilar {
+    font-weight: 700;
+    color: var(--text-gold);
+}
+.bazi-report .nayin-list li .nayin-desc {
+    color: var(--text-gray);
+}
+.bazi-report .ten-god-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 0 0;
+}
+.bazi-report .ten-god-card {
+    background: rgba(212,175,55,0.06);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 6px;
+    padding: 10px 14px;
+    flex: 1 1 180px;
+    min-width: 140px;
+}
+.bazi-report .ten-god-card .god-name {
+    font-weight: 700;
+    color: var(--text-gold);
+    font-size: 0.82rem;
+    display: block;
+    margin-bottom: 4px;
+}
+.bazi-report .ten-god-card .god-trait {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    line-height: 1.5;
+}
+.bazi-report .pill-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin: 2px 3px;
+}
+.bazi-report .pill-tag.pill-metal { background: rgba(230,194,128,0.2); color: var(--color-metal); border: 1px solid rgba(230,194,128,0.3); }
+.bazi-report .pill-tag.pill-wood  { background: rgba(59,156,122,0.2);  color: var(--color-wood);  border: 1px solid rgba(59,156,122,0.3); }
+.bazi-report .pill-tag.pill-water { background: rgba(74,144,226,0.2);  color: var(--color-water); border: 1px solid rgba(74,144,226,0.3); }
+.bazi-report .pill-tag.pill-fire  { background: rgba(201,60,60,0.2);   color: var(--color-fire);  border: 1px solid rgba(201,60,60,0.3); }
+.bazi-report .pill-tag.pill-earth { background: rgba(184,134,11,0.2);  color: var(--color-earth); border: 1px solid rgba(184,134,11,0.3); }
+.bazi-report .da-yun-table {
+    width: 100%;
+    font-size: 0.78rem;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+.bazi-report .da-yun-table th {
+    background: rgba(212,175,55,0.12);
+    color: var(--text-gold);
+    padding: 7px 10px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.75rem;
+}
+.bazi-report .da-yun-table td {
+    padding: 6px 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(212,175,55,0.08);
+}
+.bazi-report .da-yun-table tr:nth-child(even) td {
+    background: rgba(212,175,55,0.03);
+}
+.bazi-report .da-yun-table .row-current td {
+    color: var(--text-gold);
+    font-weight: 700;
+    background: rgba(212,175,55,0.1) !important;
+    box-shadow: inset 0 0 12px rgba(212,175,55,0.06);
+}
+.bazi-report .da-yun-table .row-current td:last-child::after {
+    content: ' ⬅ 当前大运';
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+.bazi-report .advice-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0 0 0;
+}
+.bazi-report .advice-item {
+    background: rgba(212,175,55,0.04);
+    border: 1px solid rgba(212,175,55,0.1);
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+.bazi-report .advice-item .advice-label {
+    font-size: 0.72rem;
+    color: var(--text-gray);
+    display: block;
+    margin-bottom: 2px;
+}
+.bazi-report .advice-item .advice-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.bazi-report .divider-quote {
+    border-left: 3px solid var(--text-gold);
+    padding: 8px 16px;
+    margin: 8px 0 16px 0;
+    font-style: italic;
+    color: var(--text-gray);
+    font-size: 0.82rem;
+    background: rgba(212,175,55,0.04);
+    border-radius: 0 6px 6px 0;
+}
+.bazi-report .footer-note {
+    margin-top: 16px;
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    text-align: center;
+    border-top: 1px solid rgba(212,175,55,0.2);
+    padding-top: 12px;
+}
+
 @media (max-width: 480px) {
     .app-container { padding: 6px; }
     .header-logo .emblem { font-size: 1.6rem; }

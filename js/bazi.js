@@ -345,20 +345,21 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
             const rows = dyList.map((d, i) => {
                 const gz = d.getGanZhi() || (i === 0 ? '入运前' : '');
                 const isCur = i === currentIdx;
-                const highlight = isCur ? ' style="color:var(--text-gold);font-weight:bold;"' : '';
-                return `<tr${highlight}><td>${i === 0 ? '根基' : '第' + i + '步'}</td><td>${gz}</td><td>${d.getStartAge()}岁</td><td>${d.getStartYear()}</td><td>${d.getEndYear()}</td>${isCur ? '<td>⬅ 当前</td>' : '<td></td>'}</tr>`;
+                return `<tr class="${isCur ? 'row-current' : ''}"><td>${i === 0 ? '根基' : '第' + i + '步'}</td><td>${gz}</td><td>${d.getStartAge()}岁</td><td>${d.getStartYear()}</td><td>${d.getEndYear()}</td></tr>`;
             }).join('');
 
             daYunHtml = `
-                <h4 style="margin-top:18px;">📆 大运流转</h4>
-                <p>大运十年一转，掌控人生大趋势。${gender === '男' ? '阳男' : '阴女'}顺排，命主自${dyList[1] ? dyList[1].getStartAge() : '?'}岁起运。目前正值${currentIdx >= 0 && dyList[currentIdx] ? '第' + currentIdx + '步' + dyList[currentIdx].getGanZhi() + '大运': ''}。</p>
-                <div style="overflow-x:auto;"><table style="width:100%;font-size:0.75rem;border-collapse:collapse;margin-top:6px;">
-                <tr style="background:rgba(212,175,55,0.15);"><th>运势</th><th>干支</th><th>年龄</th><th>起始</th><th>结束</th><th></th></tr>
-                ${rows}
-                </table></div>
-            `;
+                <div class="report-section">
+                    <h4>📆 大运流转</h4>
+                    <p>大运十年一转，掌控人生大趋势。${gender === '男' ? '阳男' : '阴女'}顺排，命主自${dyList[1] ? dyList[1].getStartAge() : '?'}岁起运。目前正值${currentIdx >= 0 && dyList[currentIdx] ? '第' + currentIdx + '步' + dyList[currentIdx].getGanZhi() + '大运': ''}。</p>
+                    <div style="overflow-x:auto;">
+                        <table class="da-yun-table">
+                            <tr><th>运势</th><th>干支</th><th>年龄</th><th>起始</th><th>结束</th></tr>
+                            ${rows}
+                        </table>
+                    </div>
+                </div>`;
 
-            /* --- Current year 流年 --- */
             if (currentIdx >= 0) {
                 const curDY = dyList[currentIdx];
                 const lnList = curDY.getLiuNian();
@@ -369,79 +370,100 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
                         const lnG = lnGz[0];
                         const lnZ = lnGz[1];
                         const lnWx = getGanWuxing(lnG);
-                        const dayGanWx = getGanWuxing(dg);
                         const isGoodYear = (() => {
                             if (wx === '水' && ['木','火'].includes(lnWx)) return true;
                             if (wx === '金' && ['水','木'].includes(lnWx)) return true;
                             return false;
                         })();
                         const yearAdvice = isGoodYear
-                            ? `<p>今年${lnGz}年，流年五行${lnWx}对命主${wx}日主有助益，是积极进取的一年，宜把握时机，在事业和财务上大胆布局。</p>`
-                            : `<p>今年${lnGz}年，流年五行${lnWx}对命主${wx}日主带来一定挑战。宜守不宜攻，注重人际关系和身体健康，稳中求进为上。</p>`;
+                            ? `<p>今年${lnGz}年，流年五行<span class="pill-tag pill-${getWuxingEng(lnWx)}">${lnWx}</span>对命主<span class="pill-tag pill-${getWuxingEng(wx)}">${wx}</span>日主有助益，是积极进取的一年，宜把握时机，在事业和财务上大胆布局。</p>`
+                            : `<p>今年${lnGz}年，流年五行<span class="pill-tag pill-${getWuxingEng(lnWx)}">${lnWx}</span>对命主<span class="pill-tag pill-${getWuxingEng(wx)}">${wx}</span>日主带来一定挑战。宜守不宜攻，注重人际关系和身体健康，稳中求进为上。</p>`;
 
                         daYunHtml += `
-                            <h4 style="margin-top:16px;">🎯 ${nowYear}年（${lnGz}年）流年点睛</h4>
-                            <p><strong>岁君：</strong>${lnGz} | <strong>五行：</strong>${lnWx} | <strong>与日主：</strong>${isGoodYear ? '相生为喜' : '须谨慎应对'}</p>
-                            ${yearAdvice}
-                        `;
+                            <div class="report-section">
+                                <h4>🎯 ${nowYear}年（${lnGz}年）流年点睛</h4>
+                                <p><strong>岁君：</strong>${lnGz} &nbsp;|&nbsp; <strong>五行：</strong><span class="pill-tag pill-${getWuxingEng(lnWx)}">${lnWx}</span> &nbsp;|&nbsp; <strong>与日主：</strong>${isGoodYear ? '相生为喜' : '须谨慎应对'}</p>
+                                ${yearAdvice}
+                            </div>`;
                     }
                 }
             }
         }
     } catch(e) {
-        daYunHtml = '<p style="color:var(--text-gray);font-size:0.8rem;">大运信息需结合具体时辰精确推算，暂未生成。</p>';
+        daYunHtml = '<div class="report-section"><p style="color:var(--text-gray);font-size:0.8rem;">大运信息需结合具体时辰精确推算，暂未生成。</p></div>';
     }
 
     /* --- Main Analysis --- */
+    const nayinItems = [
+        { pilar:'年柱', gz:`${yg}${yz}`, name:yearNayin, desc:getNayinSummary(yearNayin) },
+        { pilar:'月柱', gz:`${mg}${mz}`, name:monthNayin, desc:getNayinSummary(monthNayin) },
+        { pilar:'日柱', gz:`${dg}${dz}`, name:dayNayin, desc:getNayinSummary(dayNayin) },
+        { pilar:'时柱', gz:`${tg}${tz}`, name:timeNayin, desc:getNayinSummary(timeNayin) }
+    ];
+
+    const tenGodHtml = getTenGodAnalysis(yearSS, monthSS, timeSS, baZi);
+    const traitsHtml = getPersonalityTraits(dg, yg, yz, mg, mz, dz, tg, tz, yearSS, monthSS, timeSS);
+
     const htmlContent = `
         <div class="bazi-report">
-        <blockquote style="border-left:3px solid var(--text-gold);padding:8px 16px;margin:8px 0;font-style:italic;color:var(--text-gray);">
-        “易与天地准，故能弥纶天地之道。” —— 命理推演，旨在知命而修己。
-        </blockquote>
+            <div class="divider-quote">
+                “易与天地准，故能弥纶天地之道。” —— 命理推演，旨在知命而修己。
+            </div>
 
-        <h4>🧐 一、八字排盘与干支结构</h4>
-        <p>
-        <strong>年柱 ${yg}${yz}</strong>（${baZi.getYearNaYin()}）— 祖业根基，家世遗传<br>
-        <strong>月柱 ${mg}${mz}</strong>（${baZi.getMonthNaYin()}）— 父母环境，事业平台<br>
-        <strong>日柱 ${dg}${dz}</strong>（${baZi.getDayNaYin()}）— ${genderTitle}自身，婚姻宫位<br>
-        <strong>时柱 ${tg}${tz}</strong>（${baZi.getTimeNaYin()}）— 子女晚运，最终归宿
-        </p>
+            <div class="report-section">
+                <h4>🧐 一、八字排盘与干支结构</h4>
+                <p>
+                <strong>年柱 ${yg}${yz}</strong>（${baZi.getYearNaYin()}）— 祖业根基，家世遗传<br>
+                <strong>月柱 ${mg}${mz}</strong>（${baZi.getMonthNaYin()}）— 父母环境，事业平台<br>
+                <strong>日柱 ${dg}${dz}</strong>（${baZi.getDayNaYin()}）— ${genderTitle}自身，婚姻宫位<br>
+                <strong>时柱 ${tg}${tz}</strong>（${baZi.getTimeNaYin()}）— 子女晚运，最终归宿
+                </p>
+                <div class="section-subtitle">纳音释义</div>
+                <ul class="nayin-list">
+                    ${nayinItems.map(n => `<li><span class="nayin-pilar">${n.pilar} ${n.gz}</span>（${n.name}）<span class="nayin-desc">— ${n.desc}</span></li>`).join('')}
+                </ul>
+            </div>
 
-        <p><strong>纳音释义：</strong></p>
-        <ul style="margin:0 0 10px 20px;font-size:0.8rem;">
-            <li>年柱${yg}${yz}（${yearNayin}）：${getNayinSummary(yearNayin)}</li>
-            <li>月柱${mg}${mz}（${monthNayin}）：${getNayinSummary(monthNayin)}</li>
-            <li>日柱${dg}${dz}（${dayNayin}）：${getNayinSummary(dayNayin)}</li>
-            <li>时柱${tg}${tz}（${timeNayin}）：${getNayinSummary(timeNayin)}</li>
-        </ul>
+            <div class="report-section">
+                <h4>🔮 二、五行旺衰与格局分析</h4>
+                <p><strong>${dayMaster.name}</strong></p>
+                <p>${dayMaster.desc}</p>
+                <p><strong>季节格局：</strong>命主生于${season.name}，${season.desc} 月令为 <strong>${mz}（${season.wx}）</strong>，${season.power}。日主 ${dg}${wx} 立于${season.name}，${getSeasonInfluence(wx, season.wx)}。</p>
+                <p><strong>能量气场：</strong>命局中 <span class="pill-tag pill-${getWuxingEng(maxWx)}">${maxWx}</span> 能量最盛，<span class="pill-tag pill-${getWuxingEng(minWx)}">${minWx}</span> 偏弱需补。${getWuxingBalanceAdvice(maxWx, minWx)}</p>
+                <div class="ten-god-grid">${tenGodHtml}</div>
+            </div>
 
-        <h4>🔮 二、五行旺衰与格局分析</h4>
-        <p><strong>${dayMaster.name}</strong></p>
-        <p>${dayMaster.desc}</p>
+            <div class="report-section">
+                <h4>💎 三、命理特质与人生优势</h4>
+                ${traitsHtml}
+            </div>
 
-        <p><strong>季节格局：</strong>命主生于${season.name}，${season.desc} 月令为 <strong>${mz}（${season.wx}）</strong>，${season.power}。日主 ${dg}${wx} 立于${season.name}，${getSeasonInfluence(wx, season.wx)}。</p>
+            <div class="report-section">
+                <h4>🧧 四、趋吉避凶与调理建议</h4>
+                <div class="advice-block">
+                    <div class="advice-item">
+                        <span class="advice-label">五行喜用</span>
+                        <span class="advice-value">宜补 <span class="pill-tag pill-${getWuxingEng(minWx)}">${minWx}</span>，多亲近${minWx}属性</span>
+                    </div>
+                    <div class="advice-item">
+                        <span class="advice-label">色彩调和</span>
+                        <span class="advice-value">${getWuxingColor()}</span>
+                    </div>
+                    <div class="advice-item">
+                        <span class="advice-label">地理方位</span>
+                        <span class="advice-value">${getDirectionAdvice(minWx)}</span>
+                    </div>
+                    <div class="advice-item">
+                        <span class="advice-label">行业选择</span>
+                        <span class="advice-value">${getCareerAdvice(minWx, maxWx)}</span>
+                    </div>
+                </div>
+                <p style="margin-top:10px;font-size:0.78rem;color:var(--text-gray);font-style:italic;">“一命二运三风水，四积阴德五读书。” 知命不是认命，而是更好地把握自我，修身养性以待天时。</p>
+            </div>
 
-        <p><strong>能量气场：</strong>命局中 <strong class="text-${getWuxingEng(maxWx)}">${maxWx}</strong> 能量最盛，<strong class="text-${getWuxingEng(minWx)}">${minWx}</strong> 偏弱需补。${getWuxingBalanceAdvice(maxWx, minWx)}</p>
+            ${daYunHtml}
 
-        ${getTenGodAnalysis(yearSS, monthSS, timeSS, baZi)}
-
-        <h4>💎 三、命理特质与人生优势</h4>
-        ${getPersonalityTraits(dg, yg, yz, mg, mz, dz, tg, tz, yearSS, monthSS, timeSS)}
-
-        <h4>🧧 四、趋吉避凶与调理建议</h4>
-        <p>
-        <strong>五行喜用：</strong>命局最宜补 <strong class="text-${getWuxingEng(minWx)}">${minWx}</strong>，日常生活中多亲近${minWx}属性的行业、方位、色彩与人际。<br>
-        <strong>色彩调和：</strong>建议多采用 <strong>${getWuxingColor()}</strong> 色系的服饰与家居软装。<br>
-        <strong>地理方位：</strong>${getDirectionAdvice(minWx)}<br>
-        <strong>行业选择：</strong>${getCareerAdvice(minWx, maxWx)}<br>
-        <strong>修心箴言：</strong>“一命二运三风水，四积阴德五读书。” 知命不是认命，而是更好地把握自我，修身养性以待天时。
-        </p>
-
-        ${daYunHtml}
-
-        <p style="margin-top:16px;font-size:0.75rem;color:var(--text-gray);text-align:center;border-top:1px solid rgba(212,175,55,0.2);padding-top:12px;">
-        ✦ 天机难测，玄理无穷。以上推演仅供趋吉避凶之参考，人生之精彩在于自强不息。 ✦
-        </p>
+            <div class="footer-note">✦ 天机难测，玄理无穷。以上推演仅供趋吉避凶之参考，人生之精彩在于自强不息。 ✦</div>
         </div>
     `;
     analysisEl.innerHTML = htmlContent;
@@ -475,21 +497,22 @@ function getTenGodAnalysis(yearSS, monthSS, timeSS, baZi) {
     try { gods.push(baZi.getDayShiShenGan()); } catch(e) {}
     try { gods.push(baZi.getTimeShiShenGan()); } catch(e) {}
 
-    let html = '<p><strong>十神组合：</strong>';
-    if (yearSS) html += `年上${yearSS}`;
-    if (monthSS) html += ` · 月上${monthSS}`;
-    html += ' · 日主自坐 · ';
-    if (timeSS) html += `时上${timeSS}`;
-    html += '</p>';
+    const positionLabels = { yearSS:'年上', monthSS:'月上', timeSS:'时上' };
+    const allGods = [
+        { name: yearSS, pos: '年上' },
+        { name: monthSS, pos: '月上' },
+        { name: '日主', pos: '日元' },
+        { name: timeSS, pos: '时上' }
+    ];
 
+    let html = '';
     const uniqueGods = [...new Set(gods.filter(Boolean))];
-    let traits = '';
     uniqueGods.forEach(g => {
         const info = TEN_GODS_TRAITS[g];
-        if (info) traits += `<li><strong>${g}</strong>：${info.trait} ${info.career}</li>`;
+        if (info) {
+            html += `<div class="ten-god-card"><span class="god-name">${g}</span><span class="god-trait">${info.trait} ${info.career}</span></div>`;
+        }
     });
-    if (traits) html += `<ul style="margin:0 0 10px 20px;font-size:0.8rem;">${traits}</ul>`;
-
     return html;
 }
 
