@@ -50,11 +50,11 @@ async function main() {
     await page.waitForTimeout(3000);
     const navItems = await page.locator('.nav-item').count();
     console.log(`    导航项: ${navItems}`);
-    if (navItems !== 10) throw new Error(`预期10个导航项，实际${navItems}`);
+    if (navItems !== 11) throw new Error(`预期11个导航项，实际${navItems}`);
     console.log('    OK');
 
     // 2. 切换面板
-    const panels = ['bazi','liuyao','huangli','fengshui','chat','xingming','meihua','hehun','ziwei'];
+    const panels = ['bazi','liuyao','huangli','fengshui','chat','xingming','meihua','hehun','ziwei','hepan'];
     for (const target of panels) {
         console.log(`[2] 切换至 ${target}...`);
         await page.click(`.nav-item[data-target="${target}"]`);
@@ -195,6 +195,21 @@ async function main() {
     if (zwPalaces !== 12) throw new Error(`紫微宫位不足: ${zwPalaces}`);
     console.log('    OK');
 
+    // 11b. 合盘
+    console.log('[11b] 八字合盘...');
+    await page.click('.nav-item[data-target="hepan"]');
+    await page.waitForSelector('#panel-hepan.active');
+    // Fill two persons
+    await page.fill('#hpNameA', '张三');
+    await page.fill('#hpNameB', '李四');
+    await page.locator('#hpDateA').evaluate(el => el.value = '1990-06-15T10:00');
+    await page.locator('#hpDateB').evaluate(el => el.value = '1992-08-20T14:00');
+    await page.click('#btnCalculateHp');
+    await page.waitForTimeout(1500);
+    const hpResultVisible = await page.locator('#hpResultCard').isVisible();
+    if (!hpResultVisible) throw new Error('合盘结果未显示');
+    console.log('    OK');
+
     // 12. 复制按钮
     console.log('[12] 复制按钮...');
     await page.click('.nav-item[data-target="bazi"]');
@@ -208,7 +223,7 @@ async function main() {
 
     // 14. 模块加载检查
     console.log('[14] 模块加载检查...');
-    const moduleFiles = ['js/app.js','js/state.js','js/utils.js','js/calendar.js','js/bazi.js','js/liuyao.js','js/fengshui.js','js/chat.js','js/xingming.js','js/meihua.js','js/hehun.js','js/ziwei.js'];
+    const moduleFiles = ['js/app.js','js/state.js','js/utils.js','js/calendar.js','js/bazi.js','js/liuyao.js','js/fengshui.js','js/chat.js','js/xingming.js','js/meihua.js','js/hehun.js','js/ziwei.js','js/hepan.js'];
     for (const mf of moduleFiles) {
         const resp = await page.request.get(`${BASE}/${mf}`);
         if (resp.status() !== 200) throw new Error(`模块 ${mf} 加载失败 (${resp.status()})`);

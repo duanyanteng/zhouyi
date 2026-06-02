@@ -14,6 +14,7 @@ const PRECACHE = [
   'js/meihua.js',
   'js/hehun.js',
   'js/ziwei.js',
+  'js/hepan.js',
   'images/bg.png',
   'manifest.json'
 ];

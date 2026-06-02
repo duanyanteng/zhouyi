@@ -101,6 +101,11 @@
                         <span class="nav-label">紫微斗数</span>
                         <i class="fa-solid fa-star nav-icon"></i>
                     </li>
+                    <li class="nav-item" data-target="hepan">
+                        <span class="nav-num">拾壹</span>
+                        <span class="nav-label">八字合盘</span>
+                        <i class="fa-solid fa-people-arrows nav-icon"></i>
+                    </li>
                 </ul>
             </nav>
 
@@ -824,6 +829,65 @@
                                 <button class="btn-screenshot" data-copy-target="zwAnalysis"><i class="fa-solid fa-copy"></i> 复制命盘</button>
                                 <button class="btn-screenshot" data-target="zwResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11. 八字合盘对比 -->
+                <section class="view-panel" id="panel-hepan">
+                    <div class="hp-container">
+                        <div class="glass-card hp-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-people-arrows"></i> 八字合盘 · 双命对比</h2>
+                            <p style="color:var(--text-gray);font-size:0.82rem;margin:0 0 14px 0;">输入两人的出生信息，系统将排布双方八字，从五行互补、十神互参、纳音相济等维度进行综合对比分析。</p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                <div class="hp-person" style="border-right:1px solid var(--border-color);padding-right:16px;">
+                                    <h3 style="font-size:0.85rem;color:var(--text-gold);margin:0 0 10px 0;font-family:'ZCOOL XiaoWei',serif;">🧑 甲方</h3>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="hpNameA">姓名</label>
+                                            <input type="text" id="hpNameA" placeholder="甲方姓名">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>性别</label>
+                                            <div class="gender-radio-group">
+                                                <label class="radio-label"><input type="radio" name="hpGenderA" value="男" checked><span class="custom-radio">男</span></label>
+                                                <label class="radio-label"><input type="radio" name="hpGenderA" value="女"><span class="custom-radio">女</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="hpDateA">出生日期</label>
+                                            <input type="datetime-local" id="hpDateA">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hp-person">
+                                    <h3 style="font-size:0.85rem;color:var(--text-gold);margin:0 0 10px 0;font-family:'ZCOOL XiaoWei',serif;">👩 乙方</h3>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="hpNameB">姓名</label>
+                                            <input type="text" id="hpNameB" placeholder="乙方姓名">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>性别</label>
+                                            <div class="gender-radio-group">
+                                                <label class="radio-label"><input type="radio" name="hpGenderB" value="男" checked><span class="custom-radio">男</span></label>
+                                                <label class="radio-label"><input type="radio" name="hpGenderB" value="女"><span class="custom-radio">女</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="hpDateB">出生日期</label>
+                                            <input type="datetime-local" id="hpDateB">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group btn-group" style="margin-top:14px;text-align:center;">
+                                <button class="btn-primary" id="btnCalculateHp"><i class="fa-solid fa-scale-balanced"></i> 开始合盘</button>
+                            </div>
+                        </div>
+                        <div class="glass-card hp-result-card" id="hpResultCard" style="display:none;">
+                            <div class="card-badge" id="hpResultTitle">合盘分析报告</div>
+                            <div class="scroll-body" id="hpAnalysis"></div>
                         </div>
                     </div>
                 </section>

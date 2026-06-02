@@ -8,6 +8,7 @@ import { initXingmingModule } from './xingming.js';
 import { initMeihuaModule } from './meihua.js';
 import { initHehunModule } from './hehun.js';
 import { initZiweiModule } from './ziwei.js';
+import { initHepanModule } from './hepan.js';
 import { getGanWuxing, getWuxingEng } from './utils.js';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initMeihuaModule();
     initHehunModule();
     initZiweiModule();
+    initHepanModule();
 
     // Re-run dress guide after clock init
     setTimeout(renderDressGuide, 500);
