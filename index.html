@@ -644,15 +644,15 @@
                                 </div>
                                 <div class="config-row">
                                     <label for="proxyUrlInput">代理地址：</label>
-                                    <input type="text" id="proxyUrlInput" placeholder="留空直连 | 国内用户填反向代理地址" class="config-input">
+                                    <input type="text" id="proxyUrlInput" placeholder="留空直连 | 国内用户需填反向代理地址（如 Cloudflare Workers）" class="config-input">
                                 </div>
                                 <div class="config-row">
                                     <label for="modelSelect">模型：</label>
                                     <select id="modelSelect" class="mini-select config-select">
+                                        <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option>
+                                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
                                         <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
                                         <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
-                                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
                                     </select>
                                 </div>
                             </div>

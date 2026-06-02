@@ -91,9 +91,10 @@ function initChatModule() {
                 console.error("Gemini AI 接口调用失败，启动自动降级:", err);
                 loadingMsg.remove();
                 const isKeyMissing = err.message && err.message.includes("API Key");
+                const errHint = err.message ? err.message.replace(/\b(https?:\/\/[^\s]+)\b/g, '') : '未知错误';
                 const fallbackNotice = isKeyMissing
-                    ? `<p style="color:var(--cinnabar-red);font-style:italic;font-size:0.8rem;margin-bottom:8px;"><i class="fa-solid fa-circle-exclamation"></i> 请输入有效的 Gemini API Key 后重试（当前使用传统易理模式）</p>`
-                    : `<p style="color:var(--text-gray);font-style:italic;font-size:0.8rem;margin-bottom:8px;"><i class="fa-solid fa-circle-nodes"></i> （乾坤AI金占气场偶有阻滞，老夫已自动接驳传统易理心法为您解答）</p>`;
+                    ? `<p style="color:var(--cinnabar-red);font-style:italic;font-size:0.8rem;margin-bottom:8px;"><i class="fa-solid fa-circle-exclamation"></i> 请输入有效的 Gemini API Key 后重试</p>`
+                    : `<p style="color:var(--cinnabar-red);font-style:italic;font-size:0.7rem;margin-bottom:4px;">⚠ Gemini 返回异常：${escapeHTML(errHint.slice(0, 80))}</p><p style="color:var(--text-gray);font-style:italic;font-size:0.8rem;margin-bottom:8px;"><i class="fa-solid fa-circle-nodes"></i> 老夫已自动接驳传统易理心法为您解答</p>`;
                 appendMessage("assistant", fallbackNotice + generateMasterReply(text));
             }
         } else {
@@ -178,7 +179,10 @@ async function generateMasterReplyFromGemini(userQuestion) {
         body: JSON.stringify(requestBody)
     });
 
-    if (!response.ok) throw new Error(`Gemini API 响应异常: ${response.status}`);
+    if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        throw new Error(`Gemini API ${response.status} ${response.statusText}: ${body.slice(0, 120)}`);
+    }
 
     const resData = await response.json();
     if (resData.candidates && resData.candidates[0] && resData.candidates[0].content && resData.candidates[0].content.parts[0]) {
