@@ -2585,7 +2585,7 @@ body {
     
     /* 输入表单占满 */
     .form-grid { grid-template-columns: 1fr !important; }
-}
+
 
 /* ===== Bazi Report Card System ===== */
 .bazi-report {
