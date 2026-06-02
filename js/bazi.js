@@ -411,6 +411,9 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
         daYunHtml = '<div class="report-section"><p style="color:var(--text-gray);font-size:0.8rem;">大运信息需结合具体时辰精确推算，暂未生成。</p></div>';
     }
 
+    /* --- LiuYue (12-month) --- */
+    const liuyueHtml = generateLiuyueAnalysis(dg, wx, baZi);
+
     /* --- Main Analysis --- */
     const nayinItems = [
         { pilar:'年柱', gz:`${yg}${yz}`, name:yearNayin, desc:getNayinSummary(yearNayin) },
@@ -480,6 +483,8 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
             </div>
 
             ${daYunHtml}
+
+            ${liuyueHtml}
 
             <div class="footer-note">✦ 天机难测，玄理无穷。以上推演仅供趋吉避凶之参考，人生之精彩在于自强不息。 ✦</div>
         </div>
@@ -613,6 +618,101 @@ function getCareerAdvice(min, max) {
         '土': '地产、建筑、农业、管理、中介等与土相关的行业'
     };
     return `建议向${min}属性行业发展（${map[min] || '适合自身五行之领域'}），可有效补益命局能量。`;
+}
+
+function generateLiuyueAnalysis(dayGan, dayWx, baZi) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    const shengMap = { '金':'水','水':'木','木':'火','火':'土','土':'金' };
+    const keMap = { '金':'木','木':'土','土':'水','水':'火','火':'金' };
+    const xieMap = { '金':'土','土':'火','火':'木','木':'水','水':'金' };
+
+    const monthNames = ['正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','冬月','腊月'];
+    const monthZhi = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
+
+    let html = '';
+    let months = [];
+
+    // Generate 12 months starting from current month
+    for (let i = 0; i < 12; i++) {
+        let m = currentMonth + i;
+        let y = currentYear;
+        if (m > 12) { m -= 12; y += Math.floor((currentMonth + i - 1) / 12); }
+
+        const zhi = monthZhi[m - 1];
+        const monthName = monthNames[m - 1];
+
+        // Get month heavenly stem using the lunar-javascript library
+        let monthGan = '';
+        try {
+            const solar = Solar.fromYmd(y, m, 1);
+            const lunar = solar.getLunar();
+            const monthGz = lunar.getMonthGanZhi();
+            monthGan = monthGz[0];
+        } catch(e) {
+            // Fallback: approximate from year
+            const yearGanIdx = '甲乙丙丁戊己庚辛壬癸'.indexOf(dayGan);
+            const ganCycle = ['丙','丁','戊','己','庚','辛','壬','癸','甲','乙'];
+            monthGan = ganCycle[(m + 1) % 10] || '甲';
+        }
+
+        const monthWx = getGanWuxing(monthGan);
+        const dayKe = keMap[dayWx] === monthWx;       // day controls month
+        const monthSheng = shengMap[monthWx] === dayWx; // month generates day
+        const daySheng = shengMap[dayWx] === monthWx;   // day generates month
+        const monthKe = keMap[monthWx] === dayWx;       // month controls day
+        const same = dayWx === monthWx;
+
+        let rating, ratingLabel, ratingColor;
+        if (monthSheng) { rating = '吉'; ratingLabel = '月生日主，运势亨通'; ratingColor = 'var(--jade-green)'; }
+        else if (same) { rating = '吉'; ratingLabel = '同气相求，顺势而为'; ratingColor = 'var(--jade-green)'; }
+        else if (daySheng) { rating = '平'; ratingLabel = '日主生月，稍耗精力'; ratingColor = 'var(--text-gold)'; }
+        else if (monthKe) { rating = '慎'; ratingLabel = '月克日主，谨言慎行'; ratingColor = 'var(--cinnabar-red)'; }
+        else if (dayKe) { rating = '平'; ratingLabel = '日主制月，主动破局'; ratingColor = '#D4A03C'; }
+        else { rating = '平'; ratingLabel = '平'; ratingColor = 'var(--text-gray)'; }
+
+        // Month pillar (approximate)
+        const yearGan = baZi.getYearGan();
+        const yearGanIdx = '甲乙丙丁戊己庚辛壬癸'.indexOf(yearGan);
+        let monthStem = '';
+        // 甲己 → 丙寅, 乙庚 → 戊寅, 丙辛 → 庚寅, 丁壬 → 壬寅, 戊癸 → 甲寅
+        const stemRules = '丙戊庚壬甲';
+        const ruleIdx = yearGanIdx % 5;
+        const baseStem = stemRules[ruleIdx];
+        const ganCycle = '甲乙丙丁戊己庚辛壬癸';
+        const baseIdx = ganCycle.indexOf(baseStem);
+        const monthStemIdx = (baseIdx + (m - 1)) % 10;
+        monthStem = ganCycle[monthStemIdx];
+
+        months.push({ y, m, monthName, zhi, gan: monthStem, wx: monthWx, rating, ratingLabel, ratingColor });
+    }
+
+    // Build grid
+    months.forEach(m => {
+        const isNow = (m.m === currentMonth && m.y === currentYear);
+        html += `
+            <div style="background:rgba(212,175,55,0.04);border:1px solid ${isNow ? 'var(--text-gold)' : 'var(--border-color)'};border-radius:6px;padding:10px;text-align:center;${isNow ? 'box-shadow:0 0 8px rgba(212,175,55,0.15);' : ''}">
+                <div style="font-size:0.72rem;color:var(--text-gray);">${m.y}年</div>
+                <div style="font-size:0.9rem;font-weight:700;color:var(--text-white);margin:2px 0;">${m.monthName}</div>
+                <div style="font-size:0.78rem;color:var(--text-gold);font-family:'ZCOOL XiaoWei',serif;margin-bottom:4px;">${m.gan}${m.zhi}</div>
+                <div style="display:inline-block;padding:2px 12px;border-radius:10px;font-size:0.72rem;font-weight:600;background:${m.ratingColor}22;color:${m.ratingColor};border:1px solid ${m.ratingColor}44;">${m.rating}</div>
+                ${isNow ? '<div style="font-size:0.65rem;color:var(--text-gold);margin-top:4px;">⬅ 本月</div>' : ''}
+            </div>`;
+    });
+
+    return `
+        <div class="report-section">
+            <h4>📅 流月运势 · 未来十二个月</h4>
+            <p style="font-size:0.78rem;color:var(--text-gray);margin:0 0 10px 0;">以下运势基于日主${dayGan}${dayWx}与各月天干五行的生克关系推演，供参考。</p>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">${html}</div>
+            <div style="display:flex;gap:14px;margin-top:10px;font-size:0.72rem;color:var(--text-gray);flex-wrap:wrap;">
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--jade-green);vertical-align:middle;margin-right:3px;"></span>吉（月生日主）</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--text-gold);vertical-align:middle;margin-right:3px;"></span>平（同气/日生月）</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--cinnabar-red);vertical-align:middle;margin-right:3px;"></span>慎（月克日主）</span>
+            </div>
+        </div>`;
 }
 
 export { initBaziModule, drawWuxingRadar, calculateWuxing, generateBaziAnalysis, renderBaziCol };
