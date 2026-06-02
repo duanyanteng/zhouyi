@@ -61,13 +61,36 @@ async function main() {
     });
     console.log('Page state:', JSON.stringify(pageState));
     
-    // Try clicking nav items
+    // Go to bazi panel and fill form (V3 form: datetime-local)
     await page.click('.nav-item[data-target="bazi"]');
-    await page.waitForTimeout(300);
-    const baziActive = await page.evaluate(() => {
-        return document.getElementById('panel-bazi')?.classList.contains('active');
+    await page.waitForTimeout(500);
+    
+    // Fill the bazi form
+    await page.fill('#baziName', '测试');
+    
+    // Select gender radio (already defaulted to 男)
+    // Fill datetime-local
+    const dateInput = await page.$('#baziDate');
+    if (dateInput) {
+        await dateInput.click();
+        await dateInput.fill('1990-08-15T12:00');
+    }
+    
+    await page.click('#btnCalculateBazi');
+    await page.waitForTimeout(2000);
+    
+    // Check result - baziDetailAnalysis has the rich text analysis
+    const resultContent = await page.evaluate(() => {
+        const el = document.getElementById('baziDetailAnalysis');
+        if (el) return el.innerHTML.substring(0, 3000);
+        return 'NO_baziDetailAnalysis_ELEMENT';
     });
-    console.log('Bazi panel active:', baziActive);
+    console.log('Analysis output (first 3000 chars):');
+    console.log(resultContent);
+    
+    // Console logs
+    console.log(`Console messages (${logs.length}):`);
+    logs.forEach(msg => console.log(`  [${msg.type()}] ${msg.text().substring(0, 300)}`));
     
     // Read all console logs
     console.log(`Console messages (${logs.length}):`);
