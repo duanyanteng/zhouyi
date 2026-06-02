@@ -335,8 +335,12 @@ document.addEventListener("click", (e) => {
     const btn = e.target.closest(".btn-screenshot");
     if (!btn) return;
     const targetId = btn.getAttribute("data-target");
+    if (!targetId) return;
     const el = document.getElementById(targetId);
     if (!el || typeof html2canvas === 'undefined') { alert("截图功能需要 html2canvas 库支持"); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 生成中...';
 
     const wrapper = generateShareCardHtml(el);
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
@@ -353,7 +357,6 @@ document.addEventListener("click", (e) => {
                     toast.classList.add("show");
                     setTimeout(() => toast.classList.remove("show"), 2000);
                 }).catch(() => {
-                    // Fallback: download
                     const link = document.createElement("a");
                     link.download = `${targetId}-${Date.now()}.png`;
                     link.href = canvas.toDataURL("image/png");
@@ -366,6 +369,13 @@ document.addEventListener("click", (e) => {
             link.href = canvas.toDataURL("image/png");
             link.click();
         }
+    }).catch(err => {
+        if (wrapper.parentNode) document.body.removeChild(wrapper);
+        console.error("html2canvas error:", err);
+        alert("图片生成失败: " + (err.message || "未知错误"));
+    }).finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = btn.getAttribute("data-action") === 'clipboard' ? '<i class="fa-solid fa-share-nodes"></i> 分享卡片' : '<i class="fa-solid fa-download"></i> 保存图片';
     });
 });
 
