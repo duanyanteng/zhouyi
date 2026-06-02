@@ -1,23 +1,36 @@
-const CACHE = 'qkyc-v1';
+const CACHE = 'qkyd-v5';
 const PRECACHE = [
   'index.html',
-  'script.js',
-  'style.css',
+  'style.css?v=20260527-3',
+  'js/app.js?v=20260527-3',
+  'js/state.js',
+  'js/utils.js',
+  'js/calendar.js',
+  'js/bazi.js',
+  'js/liuyao.js',
+  'js/fengshui.js',
+  'js/chat.js',
+  'js/xingming.js',
+  'js/meihua.js',
+  'js/hehun.js',
+  'js/ziwei.js',
   'images/bg.png',
-  'manifest.json',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-  'https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700;900&family=ZCOOL+XiaoWei&family=Inter:wght@300;400;600;700&display=swap'
+  'manifest.json'
 ];
 
 self.addEventListener('install', e => {
+  self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(c => c.addAll(PRECACHE).catch(() => {}))
   );
 });
 
 self.addEventListener('activate', e => {
-  e.waitUntil(clients.claim());
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+    )).then(() => clients.claim())
+  );
 });
 
 self.addEventListener('fetch', e => {

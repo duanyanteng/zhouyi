@@ -13,7 +13,7 @@
     <!-- FontAwesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- 核心 CSS 样式 -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20260527-3">
     <!-- 引入高精度农历历法与命理计算库 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js" onerror="this.remove(); window.lunarFallback=true; console.warn('lunar-javascript CDN 加载失败，部分历法功能将不可用')"></script>
     <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\\/script>');</script>
@@ -285,6 +285,7 @@
                                     <div class="scroll-seal">乾坤易道之印</div>
                                 </div>
                                 <div class="scroll-handle handle-bottom"></div>
+                                <button class="btn-screenshot" data-copy-target="baziDetailAnalysis" style="margin-top:10px;"><i class="fa-solid fa-copy"></i> 复制命批</button>
                             </div>
                         </div>
                     </div>
@@ -321,6 +322,7 @@
                                     <div class="scroll-seal">六爻神断</div>
                                 </div>
                                 <div class="scroll-handle handle-bottom"></div>
+                                <button class="btn-screenshot" data-copy-target="liuyaoResultBody" style="margin-top:10px;"><i class="fa-solid fa-copy"></i> 复制解卦</button>
                             </div>
                         </div>
 
@@ -338,6 +340,12 @@
                                         <option value="general">诸事问吉 / 出行谋划</option>
                                     </select>
                                     <button class="btn-primary" id="btnStartLiuyao">虔诚起卦</button>
+                                    <button class="btn-secondary" id="btnManualLiuyao" style="margin-top:8px;"><i class="fa-solid fa-pen-fancy"></i> 手动录入六爻</button>
+                                </div>
+                                <div class="liuyao-manual-panel" id="liuyaoManualPanel" style="display:none;margin-top:10px;padding:12px;background:rgba(10,10,12,0.6);border-radius:8px;">
+                                    <p style="font-size:0.8rem;color:var(--text-gold);margin-bottom:8px;">从初爻到上爻，依次选择每一爻的类型：</p>
+                                    <div id="manualYaoInputs"></div>
+                                    <button class="btn-primary" id="btnSubmitManualGua" style="margin-top:10px;width:100%;"><i class="fa-solid fa-check"></i> 提交排卦</button>
                                 </div>
 
                                 <div class="liuyao-interactive-stage" id="liuyaoStage" style="display: none;">
@@ -447,6 +455,12 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <!-- 本月吉凶速览 -->
+                            <div class="glass-card monthly-calendar-card">
+                                <div class="card-badge">本月吉凶速览</div>
+                                <div class="monthly-calendar-grid" id="monthlyCalendarGrid"></div>
                             </div>
 
                             <!-- 智能吉日筛选 -->
@@ -575,15 +589,21 @@
                             <div class="card-badge chat-mode-badge">
                                 <span class="mode-label">问卜：</span>
                                 <select id="chatModeSelect" class="mini-select">
+                                    <option value="local" selected>传统易理</option>
                                     <option value="api">乾坤AI (Gemini)</option>
-                                    <option value="local">传统易理</option>
                                 </select>
                             </div>
                             <div class="chat-api-config" id="chatApiConfig">
                                 <div class="config-row">
                                     <label for="apiKeyInput">API Key：</label>
                                     <input type="password" id="apiKeyInput" placeholder="输入你的 Gemini API Key" class="config-input">
-                                    <span class="config-hint">本地存储，仅你可见</span>
+                                    <label class="toggle-label" style="font-size:0.7rem;white-space:nowrap;">
+                                        <input type="checkbox" id="apiKeySaveToggle"> 保存
+                                    </label>
+                                </div>
+                                <div class="config-row" style="justify-content:flex-end;">
+                                    <span class="config-hint" style="color:var(--cinnabar-red);">⚠ 不建议在公共设备保存 Key</span>
+                                    <button class="btn-secondary" id="btnClearApiKey" style="padding:2px 8px;font-size:0.65rem;">清除</button>
                                 </div>
                                 <div class="config-row">
                                     <label for="proxyUrlInput">代理地址：</label>
@@ -744,7 +764,10 @@
                                 <div class="scroll-seal">天作之合</div>
                             </div>
                             <div class="scroll-handle handle-bottom"></div>
-                            <button class="btn-screenshot" data-target="hhResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                            <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+                                <button class="btn-screenshot" data-copy-target="hhResultBody"><i class="fa-solid fa-copy"></i> 复制结果</button>
+                                <button class="btn-screenshot" data-target="hhResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -779,7 +802,10 @@
                             <div class="card-badge" id="zwBoardTitle">紫微斗数命盘</div>
                             <div class="zw-chart" id="zwChart"></div>
                             <div class="scroll-body" id="zwAnalysis"></div>
-                            <button class="btn-screenshot" data-target="zwResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                            <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+                                <button class="btn-screenshot" data-copy-target="zwAnalysis"><i class="fa-solid fa-copy"></i> 复制命盘</button>
+                                <button class="btn-screenshot" data-target="zwResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -790,7 +816,7 @@
 
     <!-- html2canvas 截图库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- 核心 JS 逻辑 -->
-    <script src="script.js"></script>
+    <!-- 核心 JS 逻辑 (ES Modules) -->
+    <script type="module" src="js/app.js?v=20260527-3"></script>
 </body>
 </html>

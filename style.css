@@ -2129,6 +2129,153 @@ body {
 }
 
 /* ==========================================================================
+   Toast 通知
+   ========================================================================== */
+.toast-notification {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(20, 20, 25, 0.95);
+    border: 1px solid var(--gold-primary);
+    color: var(--text-gold);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.85rem;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+/* 复制按钮扩展 */
+.btn-screenshot[data-copy-target] {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    color: var(--text-gold);
+    font-size: 0.7rem;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Noto Serif SC', serif;
+    transition: all 0.3s ease;
+}
+
+.btn-screenshot[data-copy-target]:hover {
+    background: rgba(212, 175, 55, 0.18);
+    border-color: var(--gold-primary);
+}
+
+/* 月历视图 */
+.monthly-calendar-card {
+    margin-top: 12px;
+}
+
+.monthly-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin-top: 10px;
+}
+
+.cal-week-header {
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--text-gray);
+    padding: 4px 0;
+    font-family: 'Noto Serif SC', serif;
+    border-bottom: 1px solid rgba(212,175,55,0.08);
+}
+
+.cal-day-cell {
+    text-align: center;
+    padding: 4px 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border: 1px solid transparent;
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+}
+
+.cal-day-cell:hover {
+    background: rgba(212, 175, 55, 0.08);
+    border-color: rgba(212, 175, 55, 0.2);
+}
+
+.cal-day-cell.today {
+    border-color: var(--gold-primary);
+    background: rgba(212, 175, 55, 0.06);
+}
+
+.cal-day-cell.active {
+    background: rgba(212, 175, 55, 0.12);
+    border-color: var(--gold-primary);
+}
+
+.cal-day-cell.blank {
+    cursor: default;
+}
+
+.cal-day-num {
+    font-size: 0.82rem;
+    color: var(--text-white);
+    font-weight: 600;
+}
+
+.cal-day-lunar {
+    font-size: 0.55rem;
+    color: var(--text-gray);
+}
+
+.cal-day-score {
+    font-size: 0.55rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.cal-day-score.high { color: var(--jade-green); }
+.cal-day-score.mid { color: var(--text-gold); }
+.cal-day-score.low { color: var(--cinnabar-red); }
+
+/* 吉日评分 */
+.jiri-score {
+    font-size: 0.7rem;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.jiri-score.high { color: var(--jade-green); border: 1px solid var(--jade-green); }
+.jiri-score.mid { color: var(--text-gold); border: 1px solid var(--text-gold); }
+.jiri-score.low { color: var(--cinnabar-red); border: 1px solid var(--cinnabar-red); }
+
+/* 八字摘要 */
+.bazi-summary-text {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-white);
+    border-top: 1px dashed rgba(212,175,55,0.15);
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+/* ==========================================================================
    移动端响应式
    ========================================================================== */
 @media (max-width: 900px) {
