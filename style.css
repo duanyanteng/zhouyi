@@ -209,6 +209,18 @@ body {
     transition: transform 0.3s ease;
 }
 
+.nav-item .nav-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: var(--text-gray);
+    font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+    font-size: 1rem;
+    line-height: 1;
+}
+
 .nav-item .nav-label {
     font-family: 'Noto Serif SC', serif;
     font-weight: 600;
@@ -2547,6 +2559,7 @@ body {
     .nav-item .nav-num { display: none; }
     .nav-item .nav-label { font-size: 0.62rem; white-space: nowrap; }
     .nav-item .nav-icon { font-size: 1rem; width: auto; }
+    .nav-item .nav-symbol { width: 20px; height: 20px; }
     
     .nav-item.active .nav-icon {
         color: var(--cinnabar-red);

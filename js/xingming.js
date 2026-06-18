@@ -1,4 +1,4 @@
-import { getStroke, SHU_LI } from './utils.js';
+import { getStroke, SHU_LI } from './utils.js?v=20260618-3';
 
 function initXingmingModule() {
     const btn = document.getElementById("btnCalcXingming");

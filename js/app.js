@@ -1,15 +1,24 @@
-import { AppState, restoreBaziInput, saveBaziInput } from './state.js';
-import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js';
-import { initBaziModule, drawWuxingRadar } from './bazi.js';
-import { initLiuyaoModule } from './liuyao.js';
-import { initFengshuiModule } from './fengshui.js';
-import { initChatModule } from './chat.js';
-import { initXingmingModule } from './xingming.js';
-import { initMeihuaModule } from './meihua.js';
-import { initHehunModule } from './hehun.js';
-import { initZiweiModule } from './ziwei.js';
-import { initHepanModule } from './hepan.js';
-import { getGanWuxing, getWuxingEng, showToast } from './utils.js';
+import {
+    AppState,
+    HISTORY_MODULE_META,
+    restoreBaziInput,
+    saveBaziInput,
+    getHistoryRecords,
+    addHistoryRecord,
+    deleteHistoryRecord,
+    toggleHistoryFavorite
+} from './state.js?v=20260618-3';
+import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?v=20260618-3';
+import { initBaziModule, drawWuxingRadar } from './bazi.js?v=20260618-3';
+import { initLiuyaoModule } from './liuyao.js?v=20260618-3';
+import { initFengshuiModule } from './fengshui.js?v=20260618-3';
+import { initChatModule } from './chat.js?v=20260618-3';
+import { initXingmingModule } from './xingming.js?v=20260618-3';
+import { initMeihuaModule } from './meihua.js?v=20260618-3';
+import { initHehunModule } from './hehun.js?v=20260618-3';
+import { initZiweiModule } from './ziwei.js?v=20260618-3';
+import { initHepanModule } from './hepan.js?v=20260618-3';
+import { getGanWuxing, getWuxingEng, showToast } from './utils.js?v=20260618-3';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -43,10 +52,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 5000);
 
     loadBaziHistory();
+    initGlobalHistoryPanel();
 
     document.addEventListener('bazi-analysis-complete', e => {
         saveBaziHistory(e.detail.name, e.detail.gender, e.detail.date);
+        addHistoryRecord({
+            module: 'bazi',
+            title: `${e.detail.name || '无名善信'} · ${e.detail.gender || ''}八字`,
+            summary: e.detail.date || '',
+            dedupeKey: `bazi:${e.detail.name || ''}:${e.detail.gender || ''}:${e.detail.date || ''}`,
+            detail: e.detail
+        });
     });
+
+    document.addEventListener('liuyao-analysis-complete', e => {
+        addHistoryRecord({
+            module: 'liuyao',
+            title: e.detail?.title || '六爻卦例',
+            summary: e.detail?.summary || '',
+            dedupeKey: `liuyao:${e.detail?.category || ''}:${(e.detail?.lines || []).join('')}`,
+            detail: e.detail
+        });
+    });
+
+    document.addEventListener('global-history-updated', renderGlobalHistory);
 
     const savedBirthInfo = restoreBaziInput();
     if (savedBirthInfo) {
@@ -75,6 +104,69 @@ function initTheme() {
         localStorage.setItem('theme', next);
         btn.innerHTML = next === 'dark' ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
     });
+}
+
+function initGlobalHistoryPanel() {
+    const search = document.getElementById('globalHistorySearch');
+    const filter = document.getElementById('globalHistoryFilter');
+    if (search) search.addEventListener('input', renderGlobalHistory);
+    if (filter) filter.addEventListener('change', renderGlobalHistory);
+    renderGlobalHistory();
+}
+
+function renderGlobalHistory() {
+    const list = document.getElementById('globalHistoryList');
+    if (!list) return;
+    const query = document.getElementById('globalHistorySearch')?.value || '';
+    const module = document.getElementById('globalHistoryFilter')?.value || '';
+    const records = getHistoryRecords({ query, module }).slice(0, 20);
+
+    if (!records.length) {
+        list.innerHTML = '<div class="global-history-empty">暂无历史记录。完成排盘或起卦后会自动出现在这里。</div>';
+        return;
+    }
+
+    list.innerHTML = records.map(item => {
+        const meta = HISTORY_MODULE_META[item.module] || { label: '记录', icon: 'fa-book', target: '' };
+        const time = item.time ? new Date(item.time).toLocaleString('zh-CN', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
+        return `
+            <div class="global-history-item" data-id="${item.id}" data-target="${meta.target}">
+                <span class="history-icon"><i class="fa-solid ${meta.icon}"></i></span>
+                <div>
+                    <div class="history-title">${escapeAttr(item.title)}</div>
+                    <div class="history-meta">${meta.label} · ${time}${item.summary ? ' · ' + escapeAttr(item.summary) : ''}</div>
+                </div>
+                <div class="global-history-actions">
+                    <button class="btn-fav-history ${item.favorite ? 'active' : ''}" data-id="${item.id}" title="收藏"><i class="fa-solid fa-star"></i></button>
+                    <button class="btn-del-history" data-id="${item.id}" title="删除"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    list.querySelectorAll('.global-history-item').forEach(item => {
+        item.addEventListener('click', e => {
+            if (e.target.closest('button')) return;
+            const target = item.dataset.target;
+            if (target) document.querySelector(`.nav-item[data-target="${target}"]`)?.click();
+        });
+    });
+    list.querySelectorAll('.btn-fav-history').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            toggleHistoryFavorite(btn.dataset.id);
+        });
+    });
+    list.querySelectorAll('.btn-del-history').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            deleteHistoryRecord(btn.dataset.id);
+        });
+    });
+}
+
+function escapeAttr(value) {
+    return String(value || '').replace(/[&<>'"]/g, tag => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[tag] || tag));
 }
 
 /* ---------- 涟漪点击效果 ---------- */
@@ -226,23 +318,70 @@ function initAppNavigation() {
     const navItems = document.querySelectorAll(".nav-item");
     const viewPanels = document.querySelectorAll(".view-panel");
     const featureCards = document.querySelectorAll(".feature-link-card");
+    const sideNav = document.getElementById("sideNav");
+    const toggleBtn = document.getElementById("navToggleBtn");
+    const mobileBottomNav = document.getElementById("mobileBottomNav");
+    const mobileMoreMenu = document.getElementById("mobileMoreMenu");
+    const mobileMoreBackdrop = document.getElementById("mobileMoreBackdrop");
 
     function switchView(targetId) {
+        if (targetId === "more") {
+            if (mobileMoreMenu) mobileMoreMenu.classList.add("open");
+            return;
+        }
         navItems.forEach(item => {
             item.classList.toggle("active", item.getAttribute("data-target") === targetId);
         });
         viewPanels.forEach(panel => {
             panel.classList.toggle("active", panel.id === `panel-${targetId}`);
         });
+        // 同步移动端底部Tab
+        if (mobileBottomNav) {
+            mobileBottomNav.querySelectorAll(".mobile-nav-item").forEach(btn => {
+                btn.classList.toggle("active", btn.getAttribute("data-target") === targetId);
+            });
+        }
+        // 关闭更多菜单
+        if (mobileMoreMenu) mobileMoreMenu.classList.remove("open");
         if (targetId === "bazi") setTimeout(drawWuxingRadar, 200);
+        // 滚动到顶部
+        const activePanel = document.querySelector(".view-panel.active");
+        if (activePanel) activePanel.scrollTop = 0;
     }
 
+    // 桌面侧栏导航
     navItems.forEach(item => {
         item.addEventListener("click", () => switchView(item.getAttribute("data-target")));
     });
+    // Dashboard功能卡片
     featureCards.forEach(card => {
         card.addEventListener("click", () => switchView(card.getAttribute("data-goto")));
     });
+    // 移动端底部Tab
+    if (mobileBottomNav) {
+        mobileBottomNav.querySelectorAll(".mobile-nav-item").forEach(btn => {
+            btn.addEventListener("click", () => switchView(btn.getAttribute("data-target")));
+        });
+    }
+    // 更多菜单项
+    if (mobileMoreMenu) {
+        mobileMoreMenu.querySelectorAll(".mobile-more-item").forEach(btn => {
+            btn.addEventListener("click", () => switchView(btn.getAttribute("data-target")));
+        });
+        if (mobileMoreBackdrop) {
+            mobileMoreBackdrop.addEventListener("click", () => mobileMoreMenu.classList.remove("open"));
+        }
+    }
+
+    // 桌面侧栏折叠/展开
+    if (toggleBtn && sideNav) {
+        const collapsed = localStorage.getItem("nav_collapsed") === "true";
+        if (collapsed) sideNav.classList.add("collapsed");
+        toggleBtn.addEventListener("click", () => {
+            sideNav.classList.toggle("collapsed");
+            localStorage.setItem("nav_collapsed", sideNav.classList.contains("collapsed"));
+        });
+    }
 
     const parallaxCompass = document.getElementById("parallaxCompass");
     if (parallaxCompass) {
@@ -388,5 +527,3 @@ document.addEventListener("click", (e) => {
         showToast("已复制到剪贴板");
     }).catch(() => alert("复制失败，请手动选择文本复制"));
 });
-
-

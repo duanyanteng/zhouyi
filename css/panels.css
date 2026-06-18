@@ -1,5 +1,6 @@
 /* ======================================================================
-   乾坤易道 - 面板层：所有功能面板独占样式 + 响应式
+   乾坤易道 - 面板层：所有功能面板独占样式 + 响应式 + 移动端导航
+   版本: 20260618-3
    ====================================================================== */
 
 /* ==== 1. DASHBOARD ==== */
@@ -48,6 +49,99 @@
 .bazi-history-item:hover { border-color: var(--border-hover); }
 .bazi-history-item .del-btn { background: none; border: none; color: var(--text-gray); cursor: pointer; font-size: 0.75rem; padding: 2px 6px; }
 .bazi-history-item .del-btn:hover { color: var(--cinnabar-red); }
+
+.global-history-card {
+    margin-top: 14px;
+}
+
+.global-history-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.global-history-toolbar input,
+.global-history-toolbar select {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: rgba(10, 10, 12, 0.62);
+    color: var(--text-white);
+    font-size: 0.76rem;
+    padding: 7px 9px;
+    outline: none;
+}
+
+.global-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.global-history-item {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: rgba(10, 10, 12, 0.28);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.global-history-item:hover {
+    border-color: var(--border-hover);
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.global-history-item .history-icon {
+    color: var(--gold-primary);
+    text-align: center;
+}
+
+.global-history-item .history-title {
+    color: var(--text-white);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.global-history-item .history-meta {
+    color: var(--text-gray);
+    font-size: 0.68rem;
+    margin-top: 2px;
+}
+
+.global-history-actions {
+    display: flex;
+    gap: 3px;
+}
+
+.global-history-actions button {
+    border: none;
+    background: transparent;
+    color: var(--text-gray);
+    cursor: pointer;
+    padding: 3px 5px;
+}
+
+.global-history-actions button:hover,
+.global-history-actions button.active {
+    color: var(--gold-primary);
+}
+
+.global-history-empty {
+    color: var(--text-gray);
+    font-size: 0.78rem;
+    padding: 14px 0;
+    text-align: center;
+}
 
 /* ==== 2. 八字排盘 ==== */
 .bazi-container { display: flex; flex-direction: column; gap: 20px; }
@@ -137,6 +231,46 @@
 .liuyao-instruction .step-title { font-family: 'Noto Serif SC', serif; font-size: 1.2rem; color: var(--text-gold); border-left: 3px solid var(--gold-primary); padding-left: 8px; }
 .liuyao-instruction .step-desc { font-size: 0.85rem; color: var(--text-gray); line-height: 1.6; }
 .liuyao-interactive-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 30px; }
+
+.gua-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.gua-summary-card {
+    min-height: 86px;
+    padding: 10px 8px;
+    border: 1px solid rgba(212, 175, 55, 0.16);
+    border-radius: 8px;
+    background: rgba(10, 10, 12, 0.36);
+}
+
+.gua-summary-card .summary-role,
+.gua-summary-card small {
+    display: block;
+    color: var(--text-gray);
+    font-size: 0.68rem;
+    line-height: 1.45;
+}
+
+.gua-summary-card strong {
+    display: block;
+    margin: 5px 0;
+    color: var(--text-gold);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.88rem;
+    line-height: 1.35;
+}
+
+.moving-line-panel {
+    margin: 12px 0;
+    padding: 12px;
+    border-left: 3px solid var(--cinnabar-red);
+    border-radius: 8px;
+    background: rgba(201, 60, 60, 0.06);
+}
 .coin-tray { display: flex; justify-content: center; gap: 25px; width: 100%; height: 120px; align-items: center; }
 .coin-container { perspective: 400px; width: 70px; height: 70px; }
 .coin { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transform: rotateX(0deg) rotateY(0deg); }
@@ -327,6 +461,7 @@
     .liuyao-container { flex-direction: column; }
     .liuyao-layout-left, .liuyao-layout-right { width: 100% !important; }
     .liuyao-layout-right { margin-top: 12px; }
+    .gua-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .fengshui-container .fengshui-layout-left, .fengshui-container .fengshui-layout-right { width: 100% !important; }
     .nine-grid-layout { grid-template-columns: repeat(3, 1fr); }
     .huangli-container { flex-direction: column; }
@@ -334,7 +469,70 @@
     .huangli-right-side { margin-top: 12px; }
     .hehun-form-grid { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr !important; }
+    /* 移动端隐藏桌面侧栏，显示底部Tab */
+    .side-nav { display: none !important; }
+    .mobile-bottom-nav { display: flex !important; }
+    .app-body { padding-bottom: 64px; }
+    .nav-toggle-btn { display: none; }
 }
+
+/* --- 移动端底部导航栏 --- */
+.mobile-bottom-nav {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    height: 56px;
+    background: rgba(10, 10, 12, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-color);
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 4px;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.3);
+}
+.mobile-nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; padding: 4px 8px; border: none; background: none; cursor: pointer;
+    color: var(--text-gray); border-radius: 6px; transition: all 0.2s ease;
+    min-width: 48px;
+}
+.mobile-nav-item:active { transform: scale(0.92); }
+.mobile-nav-item.active { color: var(--text-gold); }
+.mobile-nav-item.active .mobile-nav-icon { color: var(--cinnabar-red); text-shadow: 0 0 6px rgba(201,60,60,0.5); }
+.mobile-nav-icon { font-size: 1.2rem; line-height: 1; }
+.mobile-nav-text { font-size: 0.6rem; font-family: 'Noto Serif SC', serif; white-space: nowrap; }
+
+/* --- 更多菜单弹层 --- */
+.mobile-more-menu { display: none; position: fixed; inset: 0; z-index: 200; }
+.mobile-more-menu.open { display: block; }
+.mobile-more-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+.mobile-more-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(20, 20, 25, 0.98);
+    border-top: 1px solid var(--border-color);
+    border-radius: 16px 16px 0 0;
+    padding: 20px 16px 28px;
+    backdrop-filter: blur(16px);
+    animation: slideUpSheet 0.3s ease;
+}
+@keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.mobile-more-header {
+    text-align: center; font-family: 'ZCOOL XiaoWei', serif;
+    color: var(--text-gold); font-size: 1rem; margin-bottom: 16px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
+}
+.mobile-more-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+}
+.mobile-more-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; padding: 12px 4px; border: 1px solid var(--border-color);
+    border-radius: 10px; background: rgba(10,10,12,0.4); cursor: pointer;
+    color: var(--text-gray); font-size: 0.7rem; font-family: 'Noto Serif SC', serif;
+    transition: all 0.2s ease;
+}
+.mobile-more-item:active { background: rgba(212,175,55,0.1); border-color: var(--gold-primary); color: var(--text-gold); }
+.mobile-more-item .nav-symbol { font-size: 1.3rem; }
 
 @media (max-width: 480px) {
     .app-container { padding: 6px; }

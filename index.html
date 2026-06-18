@@ -10,13 +10,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700;900&family=ZCOOL+XiaoWei&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome 图标库 -->
+    <!-- FontAwesome 图标库（CDN 降级） -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>!function(){setTimeout(function(){var e=document.createElement('i');e.className='fa-solid fa-moon';e.style.cssText='position:fixed;left:-9999px;top:-9999px;font-size:30px;font-family:inherit';document.body.appendChild(e);var t=e.offsetWidth;document.body.removeChild(e);if(t<10){var l=document.createElement('link');l.rel='stylesheet';l.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';document.head.appendChild(l);console.warn('FontAwesome cdnjs 加载失败，切换 jsdelivr 备用 CDN')}},2500)}()</script>
     <!-- 核心 CSS 样式（模块化并行加载） -->
     <link rel="stylesheet" href="css/base.css?v=20260602-1">
     <link rel="stylesheet" href="css/components.css?v=20260602-1">
-    <link rel="stylesheet" href="css/panels.css?v=20260602-1">
-    <link rel="stylesheet" href="style.css?v=20260527-3">
+    <link rel="stylesheet" href="css/panels.css?v=20260618-3">
+    <link rel="stylesheet" href="style.css?v=20260618-3">
     <!-- 引入高精度农历历法与命理计算库 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js" onerror="this.remove(); window.lunarFallback=true; console.warn('lunar-javascript CDN 加载失败，部分历法功能将不可用')"></script>
     <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\/script>');</script>
@@ -55,62 +56,65 @@
         <!-- 核心工作区：左侧古典侧边导航，右侧动态视窗 -->
         <div class="app-body">
             <!-- 古典竖排导航 -->
-            <nav class="side-nav">
+            <nav class="side-nav" id="sideNav">
+                <button class="nav-toggle-btn" id="navToggleBtn" title="收起/展开导航" aria-label="收起展开导航">
+                    <span class="toggle-icon">◀</span>
+                </button>
                 <ul class="nav-list">
                     <li class="nav-item active" data-target="dashboard">
                         <span class="nav-num">壹</span>
                         <span class="nav-label">太极乾坤</span>
-                        <i class="fa-solid fa-compass nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">☯</span>
                     </li>
                     <li class="nav-item" data-target="bazi">
                         <span class="nav-num">贰</span>
                         <span class="nav-label">天星排盘</span>
-                        <i class="fa-solid fa-chart-pie nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">✦</span>
                     </li>
                     <li class="nav-item" data-target="liuyao">
                         <span class="nav-num">叁</span>
                         <span class="nav-label">六爻金占</span>
-                        <i class="fa-solid fa-coins nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">☰</span>
                     </li>
                     <li class="nav-item" data-target="huangli">
                         <span class="nav-num">肆</span>
                         <span class="nav-label">万年择吉</span>
-                        <i class="fa-solid fa-calendar-days nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">◷</span>
                     </li>
                     <li class="nav-item" data-target="fengshui">
                         <span class="nav-num">伍</span>
                         <span class="nav-label">理气布局</span>
-                        <i class="fa-solid fa-house-chimney nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">⌂</span>
                     </li>
                     <li class="nav-item" data-target="chat">
                         <span class="nav-num">陆</span>
                         <span class="nav-label">乾坤问卜</span>
-                        <i class="fa-solid fa-comment-dots nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">❖</span>
                     </li>
                     <li class="nav-item" data-target="xingming">
                         <span class="nav-num">柒</span>
                         <span class="nav-label">姓名五格</span>
-                        <i class="fa-solid fa-signature nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">✍</span>
                     </li>
                     <li class="nav-item" data-target="meihua">
                         <span class="nav-num">捌</span>
                         <span class="nav-label">梅花易数</span>
-                        <i class="fa-solid fa-hand-sparkles nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">✺</span>
                     </li>
                     <li class="nav-item" data-target="hehun">
                         <span class="nav-num">玖</span>
                         <span class="nav-label">合婚匹配</span>
-                        <i class="fa-solid fa-heart nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">♥</span>
                     </li>
                     <li class="nav-item" data-target="ziwei">
                         <span class="nav-num">拾</span>
                         <span class="nav-label">紫微斗数</span>
-                        <i class="fa-solid fa-star nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">★</span>
                     </li>
                     <li class="nav-item" data-target="hepan">
                         <span class="nav-num">拾壹</span>
                         <span class="nav-label">八字合盘</span>
-                        <i class="fa-solid fa-people-arrows nav-icon"></i>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">⚖</span>
                     </li>
                 </ul>
             </nav>
@@ -185,6 +189,24 @@
                                 <div class="bazi-history-list" id="baziHistoryList"></div>
                                 <div class="dash-sub" style="margin-top:4px;text-align:right;"><a href="#" onclick="document.querySelector('[data-target=bazi]').click();return false;" style="color:var(--text-gold);font-size:0.75rem;">新建排盘 →</a></div>
                             </div>
+                        </div>
+                        <div class="dashboard-card global-history-card">
+                            <h3><i class="fa-solid fa-book-bookmark"></i> 全局历史总览</h3>
+                            <div class="global-history-toolbar">
+                                <input type="search" id="globalHistorySearch" placeholder="搜索历史记录">
+                                <select id="globalHistoryFilter">
+                                    <option value="">全部模块</option>
+                                    <option value="bazi">八字</option>
+                                    <option value="liuyao">六爻</option>
+                                    <option value="huangli">黄历</option>
+                                    <option value="fengshui">风水</option>
+                                    <option value="meihua">梅花</option>
+                                    <option value="hehun">合婚</option>
+                                    <option value="hepan">合盘</option>
+                                    <option value="ziwei">紫微</option>
+                                </select>
+                            </div>
+                            <div class="global-history-list" id="globalHistoryList"></div>
                         </div>
                         </div>
                     </div>
@@ -914,9 +936,50 @@
         </div>
     </div>
 
+    <!-- 移动端底部导航栏 -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <button class="mobile-nav-item active" data-target="dashboard">
+            <span class="mobile-nav-icon">☯</span>
+            <span class="mobile-nav-text">乾坤</span>
+        </button>
+        <button class="mobile-nav-item" data-target="bazi">
+            <span class="mobile-nav-icon">✦</span>
+            <span class="mobile-nav-text">排盘</span>
+        </button>
+        <button class="mobile-nav-item" data-target="liuyao">
+            <span class="mobile-nav-icon">☰</span>
+            <span class="mobile-nav-text">六爻</span>
+        </button>
+        <button class="mobile-nav-item" data-target="huangli">
+            <span class="mobile-nav-icon">◷</span>
+            <span class="mobile-nav-text">择吉</span>
+        </button>
+        <button class="mobile-nav-item mobile-nav-more" data-target="more">
+            <span class="mobile-nav-icon">⋯</span>
+            <span class="mobile-nav-text">更多</span>
+        </button>
+    </nav>
+
+    <!-- 移动端更多菜单弹层 -->
+    <div class="mobile-more-menu" id="mobileMoreMenu">
+        <div class="mobile-more-backdrop" id="mobileMoreBackdrop"></div>
+        <div class="mobile-more-sheet">
+            <div class="mobile-more-header">全部功能</div>
+            <div class="mobile-more-grid">
+                <button class="mobile-more-item" data-target="fengshui"><span class="nav-icon nav-symbol">⌂</span><span>理气布局</span></button>
+                <button class="mobile-more-item" data-target="chat"><span class="nav-icon nav-symbol">❖</span><span>乾坤问卜</span></button>
+                <button class="mobile-more-item" data-target="xingming"><span class="nav-icon nav-symbol">✍</span><span>姓名五格</span></button>
+                <button class="mobile-more-item" data-target="meihua"><span class="nav-icon nav-symbol">✺</span><span>梅花易数</span></button>
+                <button class="mobile-more-item" data-target="hehun"><span class="nav-icon nav-symbol">♥</span><span>合婚匹配</span></button>
+                <button class="mobile-more-item" data-target="ziwei"><span class="nav-icon nav-symbol">★</span><span>紫微斗数</span></button>
+                <button class="mobile-more-item" data-target="hepan"><span class="nav-icon nav-symbol">⚖</span><span>八字合盘</span></button>
+            </div>
+        </div>
+    </div>
+
     <!-- html2canvas 截图库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- 核心 JS 逻辑 (ES Modules) -->
-    <script type="module" src="js/app.js?v=20260527-3"></script>
+    <script type="module" src="js/app.js?v=20260618-3"></script>
 </body>
 </html>

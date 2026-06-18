@@ -1,5 +1,5 @@
-import { AppState } from './state.js';
-import { getGuaInfo, getGanWuxing, getWuxingEng } from './utils.js';
+import { AppState } from './state.js?v=20260618-3';
+import { getGuaInfo, getGuaRelations } from './gua-data.js?v=20260618-3';
 
 function initLiuyaoModule() {
     const btnStart = document.getElementById("btnStartLiuyao");
@@ -170,6 +170,10 @@ function revealGuaResult() {
 
     const baseGua = getGuaInfo(baseCode);
     const changeGua = getGuaInfo(changeCode);
+    const relations = getGuaRelations(baseCode);
+    const movingLines = AppState.liuyao.lines
+        .map((line, idx) => ({ line, idx }))
+        .filter(item => item.line === 3 || item.line === 0);
 
     const titleEl = document.getElementById("liuyaoResultTitle");
     const bodyEl = document.getElementById("liuyaoResultBody");
@@ -184,6 +188,13 @@ function revealGuaResult() {
     else categoryTitle = "🔮 诸事测吉与日常生活";
 
     let analysisHtml = `
+        <div class="gua-summary-grid">
+            ${renderGuaSummaryCard("本卦", baseGua, "当下局势")}
+            ${renderGuaSummaryCard(hasMove ? "变卦" : "守卦", changeGua, hasMove ? "趋势去向" : "静守之象")}
+            ${renderGuaSummaryCard(relations.mutual.label, relations.mutual.gua, "内在动因")}
+            ${renderGuaSummaryCard(relations.opposite.label, relations.opposite.gua, "反面风险")}
+            ${renderGuaSummaryCard(relations.reversed.label, relations.reversed.gua, "换位观察")}
+        </div>
         <p>善信今日诚心求测，得本卦 <strong>【${baseGua.name}】</strong>。此卦卦辞曰：<em>${baseGua.dec}</em></p>
         <h4>${categoryTitle} 特别断语</h4>
         <p>结合您所问的占卜方向，大师为您点拨：</p>
@@ -195,6 +206,7 @@ function revealGuaResult() {
             <h4>🔄 动爻显化与变卦启示</h4>
             <p>卦中爻动，代表事态正在悄然发生质变。动爻翻转后，化为变卦 <strong>【${changeGua.name}】</strong>。变卦预示着事态最终的走向与化解契机：</p>
             <p><strong>最终启示：</strong>${changeGua.advice} 动爻虽带来短期波折，但只要秉承中正之德，终能趋吉避凶。</p>
+            ${renderMovingLineAdvice(movingLines, baseGua)}
         `;
     } else {
         analysisHtml += `
@@ -203,10 +215,55 @@ function revealGuaResult() {
         `;
     }
 
+    analysisHtml += `
+        <h4>🧭 互错综参断</h4>
+        <p><strong>互卦【${relations.mutual.gua.name}】</strong>：${relations.mutual.hint}${relations.mutual.gua.advice}</p>
+        <p><strong>错卦【${relations.opposite.gua.name}】</strong>：${relations.opposite.hint}${relations.opposite.gua.advice}</p>
+        <p><strong>综卦【${relations.reversed.gua.name}】</strong>：${relations.reversed.hint}${relations.reversed.gua.advice}</p>
+    `;
+
     bodyEl.innerHTML = analysisHtml;
     document.getElementById("liuyaoResultScroll").style.display = "block";
     document.getElementById("btnShakeCoins").innerHTML = `<i class="fa-solid fa-check"></i> 解卦完成`;
+    document.dispatchEvent(new CustomEvent('liuyao-analysis-complete', {
+        detail: {
+            title: `${baseGua.name}${hasMove ? ' 变 ' + changeGua.name : ' 静卦'}`,
+            summary: `${baseGua.name} · ${hasMove ? changeGua.name : '无动爻'} · ${AppState.liuyao.category}`,
+            baseCode,
+            changeCode,
+            lines: [...AppState.liuyao.lines],
+            category: AppState.liuyao.category,
+            relations: {
+                mutual: relations.mutual.gua.name,
+                opposite: relations.opposite.gua.name,
+                reversed: relations.reversed.gua.name
+            }
+        }
+    }));
     document.getElementById("liuyaoResultScroll").scrollIntoView({ behavior:'smooth' });
+}
+
+function renderGuaSummaryCard(label, gua, hint) {
+    return `
+        <div class="gua-summary-card">
+            <span class="summary-role">${label}</span>
+            <strong>${gua.symbol || ""} ${gua.name}</strong>
+            <small>第${gua.order || "-"}卦 · ${hint}</small>
+        </div>
+    `;
+}
+
+function renderMovingLineAdvice(movingLines, baseGua) {
+    if (!movingLines.length) return "";
+    const lineNames = ["初爻", "二爻", "三爻", "四爻", "五爻", "上爻"];
+    return `
+        <div class="moving-line-panel">
+            <h4>📌 动爻爻辞</h4>
+            ${movingLines.map(({ idx }) => `
+                <p><strong>${lineNames[idx]}</strong>：${baseGua.yao?.[idx] || "此爻发动，宜结合本卦之义审慎应事。"}</p>
+            `).join("")}
+        </div>
+    `;
 }
 
 export { initLiuyaoModule };

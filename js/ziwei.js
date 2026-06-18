@@ -1,4 +1,4 @@
-import { ZI_WEI_STARS } from './utils.js';
+import { ZI_WEI_STARS } from './utils.js?v=20260618-3';
 
 function ziweiPaiPan(year, month, day, hour, gender) {
     const ziWeiPos = ((day - 1) % 12) + 1;

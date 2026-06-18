@@ -1,6 +1,6 @@
-import { AppState, saveBaziInput } from './state.js';
-import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js';
+import { AppState, saveBaziInput } from './state.js?v=20260618-3';
 
+import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js?v=20260618-3';
 function initBaziModule() {
     const btnCalculate = document.getElementById("btnCalculateBazi");
     if (!btnCalculate) return;
