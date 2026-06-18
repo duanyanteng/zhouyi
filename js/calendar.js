@@ -1,5 +1,5 @@
-import { AppState } from './state.js?v=20260618-3';
-import { getGuaFromDirection } from './utils.js?v=20260618-3';
+import { AppState } from './state.js?v=20260618-4';
+import { getGuaFromDirection } from './utils.js?v=20260618-4';
 
 function initClock() {
     const clockEl = document.getElementById("headerClock");

@@ -1,4 +1,4 @@
-const CACHE = 'qkyd-v8';
+const CACHE = 'qkyd-v9';
 const ASSET_VERSION = '20260618-3';
 const PRECACHE = [
   'index.html',

@@ -1,5 +1,5 @@
-import { AppState } from './state.js?v=20260618-3';
-import { SIXTY_FOUR_GUA, getGuaInfo } from './gua-data.js?v=20260618-3';
+import { AppState } from './state.js?v=20260618-4';
+import { SIXTY_FOUR_GUA, getGuaInfo } from './gua-data.js?v=20260618-4';
 
 /* ---------- 五行相关 ---------- */
 function getGanWuxing(gan) {

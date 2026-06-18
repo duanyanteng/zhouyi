@@ -7,18 +7,18 @@ import {
     addHistoryRecord,
     deleteHistoryRecord,
     toggleHistoryFavorite
-} from './state.js?v=20260618-3';
-import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?v=20260618-3';
-import { initBaziModule, drawWuxingRadar } from './bazi.js?v=20260618-3';
-import { initLiuyaoModule } from './liuyao.js?v=20260618-3';
-import { initFengshuiModule } from './fengshui.js?v=20260618-3';
-import { initChatModule } from './chat.js?v=20260618-3';
-import { initXingmingModule } from './xingming.js?v=20260618-3';
-import { initMeihuaModule } from './meihua.js?v=20260618-3';
-import { initHehunModule } from './hehun.js?v=20260618-3';
-import { initZiweiModule } from './ziwei.js?v=20260618-3';
-import { initHepanModule } from './hepan.js?v=20260618-3';
-import { getGanWuxing, getWuxingEng, showToast } from './utils.js?v=20260618-3';
+} from './state.js?v=20260618-4';
+import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?v=20260618-4';
+import { initBaziModule, drawWuxingRadar } from './bazi.js?v=20260618-4';
+import { initLiuyaoModule } from './liuyao.js?v=20260618-4';
+import { initFengshuiModule } from './fengshui.js?v=20260618-4';
+import { initChatModule } from './chat.js?v=20260618-4';
+import { initXingmingModule } from './xingming.js?v=20260618-4';
+import { initMeihuaModule } from './meihua.js?v=20260618-4';
+import { initHehunModule } from './hehun.js?v=20260618-4';
+import { initZiweiModule } from './ziwei.js?v=20260618-4';
+import { initHepanModule } from './hepan.js?v=20260618-4';
+import { getGanWuxing, getWuxingEng, showToast } from './utils.js?v=20260618-4';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -43,12 +43,13 @@ document.addEventListener("DOMContentLoaded", () => {
     initHepanModule();
 
     // Re-run dress guide after clock init
-    setTimeout(renderDressGuide, 500);
+    setTimeout(() => { renderDressGuide(); renderFortuneMonth(); }, 500);
     // Re-run dress guide on every clock tick (every 1s in calendar.js)
     const origRender = renderDressGuide;
+    const origFortune = renderFortuneMonth;
     setInterval(() => {
         const gzEl = document.querySelector('.ganzhi-time');
-        if (gzEl && gzEl.textContent !== '') origRender();
+        if (gzEl && gzEl.textContent !== '') { origRender(); origFortune(); }
     }, 5000);
 
     loadBaziHistory();
@@ -56,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener('bazi-analysis-complete', e => {
         saveBaziHistory(e.detail.name, e.detail.gender, e.detail.date);
+        renderFortuneMonth();
         addHistoryRecord({
             module: 'bazi',
             title: `${e.detail.name || '无名善信'} · ${e.detail.gender || ''}八字`,
@@ -239,6 +241,58 @@ function renderDressGuide() {
     if (sub) sub.textContent = `日柱 ${dayGZ} · ${wx}日 · 逢${zhiMap[dayZhi] || dayZhi}`;
 }
 
+/* ---------- 本月运势卡片 ---------- */
+function renderFortuneMonth() {
+    const card = document.getElementById('fortuneMonthCard');
+    const body = document.getElementById('fortuneMonthBody');
+    if (!card || !body) return;
+    const saved = restoreBaziInput();
+    if (!saved || !saved.date) { card.style.display = 'none'; return; }
+    const d = new Date(saved.date);
+    if (isNaN(d.getTime())) { card.style.display = 'none'; return; }
+    const now = new Date();
+    const monthIdx = now.getMonth();
+    const wxCycle = ['金','水','木','火','土'];
+    const monthGanZhi = ['丙寅','丁卯','戊辰','己巳','庚午','辛未','壬申','癸酉','甲戌','乙亥','丙子','丁丑'];
+    const monthWx = monthGanZhi.map(gz => getGanWuxing(gz[0]));
+    const cmWx = monthWx[monthIdx];
+    const cmGz = monthGanZhi[monthIdx];
+    const lunar = window.Lunar ? Lunar.fromDate(now) : null;
+    const monthName = lunar ? lunar.getMonthInChinese() + '月' : (monthIdx + 1) + '月';
+    const gzText = document.querySelector('.ganzhi-time')?.textContent || '';
+    const dayMatch = gzText.match(/[日]\s*([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])/);
+    const dayG = dayMatch ? dayMatch[1][0] : '';
+    const dayWx = dayG ? getGanWuxing(dayG) : '';
+    const wxIdx = wxCycle.indexOf(cmWx);
+    const dayWxIdx = wxCycle.indexOf(dayWx);
+    const sheng = (wxIdx >= 0 && dayWxIdx >= 0 && wxCycle[(wxIdx + 1) % 5] === dayWx) || (wxCycle[(wxIdx + 2) % 5] === dayWx);
+    const ke = (wxIdx >= 0 && dayWxIdx >= 0 && wxCycle[(wxIdx + 3) % 5] === dayWx) || (wxCycle[(wxIdx + 4) % 5] === dayWx);
+    const rating = sheng ? '吉' : ke ? '慎' : '平';
+    const badgeCls = sheng ? 'badge-ji' : ke ? 'badge-shen' : 'badge-ping';
+    const ratingLabel = sheng ? '运势顺遂，宜积极行动' : ke ? '谨言慎行，稳中求进' : '平稳过渡，顺势而为';
+    body.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span class="fortune-month-badge ${badgeCls}">${monthName} ${rating}</span>
+            <span style="font-size:0.78rem;color:var(--text-gray);">${cmGz} · 五行${cmWx}</span>
+        </div>
+        <div class="fortune-month-row">
+            <div class="fortune-month-item">
+                <strong>本月评级</strong>
+                <span>${ratingLabel}</span>
+            </div>
+            <div class="fortune-month-item">
+                <strong>日主五行</strong>
+                <span>${dayWx || '未知'}日</span>
+            </div>
+            <div class="fortune-month-item">
+                <strong>月令五行</strong>
+                <span>${cmWx}</span>
+            </div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--text-gray);margin-top:6px;font-style:italic;">基于命主八字与当前月令生克关系推演</p>
+    `;
+    card.style.display = '';
+}
 /* ---------- 命盘历史 ---------- */
 function saveBaziHistory(name, gender, date) {
     let history = JSON.parse(localStorage.getItem('baziHistory') || '[]');

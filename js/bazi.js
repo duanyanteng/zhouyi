@@ -1,6 +1,6 @@
-import { AppState, saveBaziInput } from './state.js?v=20260618-3';
+import { AppState, saveBaziInput } from './state.js?v=20260618-4';
 
-import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js?v=20260618-3';
+import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js?v=20260618-4';
 function initBaziModule() {
     const btnCalculate = document.getElementById("btnCalculateBazi");
     if (!btnCalculate) return;
@@ -388,20 +388,44 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
                         const lnG = lnGz[0];
                         const lnZ = lnGz[1];
                         const lnWx = getGanWuxing(lnG);
-                        const isGoodYear = (() => {
-                            if (wx === '水' && ['木','火'].includes(lnWx)) return true;
-                            if (wx === '金' && ['水','木'].includes(lnWx)) return true;
-                            return false;
-                        })();
+                        const wuxingCycle = ['金','水','木','火','土'];
+                        const wxIndex = wuxingCycle.indexOf(wx);
+                        const lnWxIndex = wuxingCycle.indexOf(lnWx);
+                        const isGoodYear = (wxIndex >= 0 && lnWxIndex >= 0 && wuxingCycle[(wxIndex + 1) % 5] === lnWx) || (wxIndex >= 0 && lnWxIndex >= 0 && wuxingCycle[(wxIndex + 2) % 5] === lnWx);
                         const yearAdvice = isGoodYear
                             ? `<p>今年${lnGz}年，流年五行<span class="pill-tag pill-${getWuxingEng(lnWx)}">${lnWx}</span>对命主<span class="pill-tag pill-${getWuxingEng(wx)}">${wx}</span>日主有助益，是积极进取的一年，宜把握时机，在事业和财务上大胆布局。</p>`
                             : `<p>今年${lnGz}年，流年五行<span class="pill-tag pill-${getWuxingEng(lnWx)}">${lnWx}</span>对命主<span class="pill-tag pill-${getWuxingEng(wx)}">${wx}</span>日主带来一定挑战。宜守不宜攻，注重人际关系和身体健康，稳中求进为上。</p>`;
 
+                        // Generate monthly breakdown for current year
+                        const monthNames = ['正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','冬月','腊月'];
+                        const monthGanZhi = ['丙寅','丁卯','戊辰','己巳','庚午','辛未','壬申','癸酉','甲戌','乙亥','丙子','丁丑'];
+                        const monthWuxing = monthGanZhi.map(gz => getGanWuxing(gz[0]));
+                        const monthDetail = monthNames.map((mn, mi) => {
+                            const mw = monthWuxing[mi];
+                            const sheng = wuxingCycle[(wxIndex + 1) % 5] === mw;
+                            const ke = wuxingCycle[(wxIndex + 3) % 5] === mw;
+                            const rating = sheng ? '吉' : ke ? '慎' : '平';
+                            const cls = sheng ? 'liuyue-ji' : ke ? 'liuyue-shen' : 'liuyue-ping';
+                            return `<span class="month-tag ${cls}" title="${mn}（${monthGanZhi[mi]}）五行${mw}，与日主${wx}${sheng ? '相生' : ke ? '相克' : '持平'}">${mn.slice(0,1)}月:${rating}</span>`;
+                        }).join('');
+
+                        const focusAreas = isGoodYear
+                            ? `<strong>事业：</strong>宜主动拓展，贵人运佳<br><strong>财运：</strong>正财稳定，偏财有机遇<br><strong>健康：</strong>注意${lnWx === '火' ? '心脑血管' : lnWx === '金' ? '呼吸道' : lnWx === '水' ? '肾脏泌尿' : lnWx === '木' ? '肝胆' : '脾胃'}保养`
+                            : `<strong>事业：</strong>宜稳中求进，谨防小人<br><strong>财运：</strong>保守理财，避免高风险投资<br><strong>健康：</strong>重点关注${lnWx === '火' ? '心脑血管' : lnWx === '金' ? '呼吸道' : lnWx === '水' ? '肾脏泌尿' : lnWx === '木' ? '肝胆' : '脾胃'}系统`;
+
                         daYunHtml += `
                             <div class="report-section">
-                                <h4>🎯 ${nowYear}年（${lnGz}年）流年点睛</h4>
-                                <p><strong>岁君：</strong>${lnGz} &nbsp;|&nbsp; <strong>五行：</strong><span class="pill-tag pill-${getWuxingEng(lnWx)}">${lnWx}</span> &nbsp;|&nbsp; <strong>与日主：</strong>${isGoodYear ? '相生为喜' : '须谨慎应对'}</p>
+                                <h4>🎯 ${nowYear}年（${lnGz}年）流年详批</h4>
+                                <p><strong>岁君：</strong>${lnGz} <span class="pill-tag pill-${getWuxingEng(lnWx)}">${lnWx}</span> &nbsp;|&nbsp; <strong>与日主：</strong>${isGoodYear ? '相生为喜' : '须谨慎应对'} &nbsp;|&nbsp; <strong>太岁：</strong>${lnZ}（${getZhiWuxing(lnZ)}）</p>
                                 ${yearAdvice}
+                                <div style="margin-top:10px;">
+                                    <p><strong>📅 流月吉凶概览：</strong></p>
+                                    <div class="liuyue-monthly-breakdown">${monthDetail}</div>
+                                </div>
+                                <div style="margin-top:10px;padding:10px;background:rgba(212,175,55,0.06);border-radius:8px;">
+                                    <p><strong>📋 ${nowYear}年关注重点：</strong></p>
+                                    <p style="font-size:0.8rem;line-height:1.7;">${focusAreas}</p>
+                                </div>
                             </div>`;
                     }
                 }

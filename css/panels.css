@@ -548,3 +548,22 @@
     .chat-history { max-height: 300px; }
     .huangli-board-card .calendar-sheet .cal-sheet-body { padding: 10px; }
 }
+
+/* --- 流年月度概览标签 --- */
+.liuyue-monthly-breakdown { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.month-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-family: 'Noto Serif SC', serif; font-weight: 600; }
+.liuyue-ji { background: rgba(46, 204, 113, 0.15); color: var(--jade-green, #2ecc71); border: 1px solid rgba(46, 204, 113, 0.25); }
+.liuyue-ping { background: rgba(212, 175, 55, 0.1); color: #D4A03C; border: 1px solid rgba(212, 175, 55, 0.2); }
+.liuyue-shen { background: rgba(201, 60, 60, 0.12); color: var(--cinnabar-red); border: 1px solid rgba(201, 60, 60, 0.2); }
+
+/* --- 本月运势 Dashboard 卡片 --- */
+.fortune-month-card { margin-top: 14px; }
+.fortune-month-badge { display: inline-block; padding: 2px 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; font-family: 'Noto Serif SC', serif; }
+.fortune-month-badge.badge-ji { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+.fortune-month-badge.badge-ping { background: rgba(212, 175, 55, 0.15); color: #D4A03C; }
+.fortune-month-badge.badge-shen { background: rgba(201, 60, 60, 0.15); color: var(--cinnabar-red); }
+.fortune-month-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
+.fortune-month-item { flex: 1; min-width: 100px; padding: 8px 10px; border-radius: 6px; background: rgba(10,10,12,0.3); border: 1px solid var(--border-color); }
+.fortune-month-item strong { display: block; font-size: 0.75rem; color: var(--text-gold); margin-bottom: 4px; }
+.fortune-month-item span { font-size: 0.8rem; }
+@media (max-width: 480px) { .fortune-month-row { flex-direction: column; gap: 8px; } }

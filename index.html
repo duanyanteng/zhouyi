@@ -16,8 +16,8 @@
     <!-- 核心 CSS 样式（模块化并行加载） -->
     <link rel="stylesheet" href="css/base.css?v=20260602-1">
     <link rel="stylesheet" href="css/components.css?v=20260602-1">
-    <link rel="stylesheet" href="css/panels.css?v=20260618-3">
-    <link rel="stylesheet" href="style.css?v=20260618-3">
+    <link rel="stylesheet" href="css/panels.css?v=20260618-4">
+    <link rel="stylesheet" href="style.css?v=20260618-4">
     <!-- 引入高精度农历历法与命理计算库 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js" onerror="this.remove(); window.lunarFallback=true; console.warn('lunar-javascript CDN 加载失败，部分历法功能将不可用')"></script>
     <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\/script>');</script>
@@ -183,6 +183,12 @@
                                     <div class="skeleton-pulse skeleton-block w80" style="height:20px;"></div>
                                 </div>
                                 <div class="dash-sub" id="dressGuideSub" style="margin-top:6px;"></div>
+                            </div>
+                            <div class="dashboard-card fortune-month-card" id="fortuneMonthCard" style="display:none;">
+                                <h3><i class="fa-solid fa-calendar-check"></i> 本月运势</h3>
+                                <div id="fortuneMonthBody">
+                                    <div class="skeleton-pulse skeleton-block w80" style="height:18px;"></div>
+                                </div>
                             </div>
                             <div class="dashboard-card">
                                 <h3><i class="fa-solid fa-clock-rotate-left"></i> 命盘记录</h3>
@@ -980,6 +986,6 @@
     <!-- html2canvas 截图库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- 核心 JS 逻辑 (ES Modules) -->
-    <script type="module" src="js/app.js?v=20260618-3"></script>
+    <script type="module" src="js/app.js?v=20260618-4"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
-import { AppState } from './state.js?v=20260618-3';
-import { getGuaInfo, getGuaRelations } from './gua-data.js?v=20260618-3';
+import { AppState } from './state.js?v=20260618-4';
+import { getGuaInfo, getGuaRelations } from './gua-data.js?v=20260618-4';
 
 function initLiuyaoModule() {
     const btnStart = document.getElementById("btnStartLiuyao");
