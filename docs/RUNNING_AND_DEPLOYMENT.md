@@ -142,7 +142,8 @@ const ASSET_VERSION = '20260618-3';
 并同步更新 `index.html` 里的：
 
 ```html
-<script type="module" src="js/app.js?v=20260618-3"></script>
+
+<script type="module" src="../js/app.js?v=20260618-3"></script>
 ```
 
 如果只改了 HTML 文案，通常不需要改所有 JS import。  

@@ -121,6 +121,71 @@ function initChatModule() {
     input.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
     });
+
+    // 语音输入功能
+    const btnVoice = document.getElementById("btnVoiceInput");
+    if (btnVoice) {
+        let recognition = null;
+        let isRecording = false;
+
+        // 检查浏览器是否支持语音识别
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'zh-CN'; // 设置为中文
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                input.value = transcript;
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                btnVoice.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+                btnVoice.style.background = '';
+                btnVoice.style.color = '';
+            };
+
+            recognition.onerror = (event) => {
+                console.error('语音识别错误:', event.error);
+                isRecording = false;
+                btnVoice.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+                btnVoice.style.background = '';
+                btnVoice.style.color = '';
+                if (event.error === 'not-allowed') {
+                    alert('请允许麦克风权限以使用语音输入功能');
+                }
+            };
+
+            btnVoice.addEventListener("click", () => {
+                if (isRecording) {
+                    recognition.stop();
+                } else {
+                    // 请求麦克风权限
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(() => {
+                            recognition.start();
+                            isRecording = true;
+                            btnVoice.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+                            btnVoice.style.background = 'var(--cinnabar-red)';
+                            btnVoice.style.color = 'white';
+                        })
+                        .catch((err) => {
+                            console.error('麦克风权限被拒绝:', err);
+                            alert('请允许麦克风权限以使用语音输入功能');
+                        });
+                }
+            });
+        } else {
+            // 浏览器不支持语音识别
+            btnVoice.style.display = 'none';
+        }
+    }
 }
 
 async function generateMasterReplyFromGemini(userQuestion) {

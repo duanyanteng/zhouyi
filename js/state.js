@@ -13,6 +13,8 @@ const HISTORY_MODULE_META = {
     liuyao: { label: "六爻", icon: "fa-coins", target: "liuyao" },
     huangli: { label: "黄历", icon: "fa-calendar-days", target: "huangli" },
     fengshui: { label: "风水", icon: "fa-house-chimney", target: "fengshui" },
+    chat: { label: "问卜", icon: "fa-comments", target: "chat" },
+    xingming: { label: "姓名", icon: "fa-signature", target: "xingming" },
     meihua: { label: "梅花", icon: "fa-hand-sparkles", target: "meihua" },
     hehun: { label: "合婚", icon: "fa-heart", target: "hehun" },
     hepan: { label: "合盘", icon: "fa-people-arrows", target: "hepan" },

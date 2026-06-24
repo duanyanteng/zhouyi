@@ -277,6 +277,198 @@ const TEN_GODS_TRAITS = {
     '伤官': { trait:'伤官傲物，才华出众，不喜被约束。', career:'适合创作、艺术、技术研发、自主创业等。' }
 };
 
+/* ========== 神煞系统 ========== */
+const SHENSHA_DATA = {
+    '天乙贵人': {
+        icon: '⭐',
+        desc: '命中最大贵人，逢凶化吉，遇难呈祥。主聪明智慧，易得贵人相助。',
+        level: '上吉',
+        calc: (dg, allZhi) => {
+            // 天乙贵人查法：以日干查四柱地支
+            const map = {
+                '甲': ['丑', '未'], '戊': ['丑', '未'],
+                '乙': ['子', '申'], '己': ['子', '申'],
+                '丙': ['亥', '酉'], '庚': ['亥', '酉'],
+                '丁': ['亥', '酉'], '辛': ['亥', '酉'],
+                '壬': ['卯', '巳'], '癸': ['卯', '巳']
+            };
+            const targets = map[dg] || [];
+            const found = allZhi.filter(z => targets.includes(z));
+            return found.length > 0 ? found : null;
+        }
+    },
+    '文昌贵人': {
+        icon: '📚',
+        desc: '主聪明好学，学业有成，考试运佳。利读书、考试、升职。',
+        level: '上吉',
+        calc: (dg, allZhi) => {
+            // 文昌贵人查法：以日干查地支
+            const map = {
+                '甲': '巳', '乙': '午', '丙': '申', '丁': '酉',
+                '戊': '申', '己': '酉', '庚': '亥', '辛': '子',
+                '壬': '寅', '癸': '卯'
+            };
+            const target = map[dg];
+            const found = allZhi.filter(z => z === target);
+            return found.length > 0 ? found : null;
+        }
+    },
+    '驿马星': {
+        icon: '🐎',
+        desc: '主出行、变动、迁移。命带驿马者一生多动，适合流动性工作。',
+        level: '中平',
+        calc: (dg, allZhi) => {
+            // 驿马查法：以年支查日支
+            const yearZhi = allZhi[0];
+            const map = {
+                '寅': '申', '午': '寅', '戌': '寅',
+                '亥': '巳', '卯': '亥', '未': '亥',
+                '巳': '亥', '酉': '巳', '丑': '巳',
+                '申': '寅', '子': '申', '辰': '申'
+            };
+            const target = map[yearZhi];
+            const found = allZhi.filter(z => z === target);
+            return found.length > 0 ? found : null;
+        }
+    },
+    '华盖星': {
+        icon: '🎭',
+        desc: '主艺术、宗教、哲学。命带华盖者聪明好学，有艺术天赋，适合从事文艺、科研、宗教。',
+        level: '中吉',
+        calc: (dg, allZhi) => {
+            // 华盖查法：以年支查四柱地支
+            const yearZhi = allZhi[0];
+            const map = {
+                '寅': '戌', '午': '戌', '戌': '戌',
+                '亥': '未', '卯': '未', '未': '未',
+                '巳': '丑', '酉': '丑', '丑': '丑',
+                '申': '辰', '子': '辰', '辰': '辰'
+            };
+            const target = map[yearZhi];
+            const found = allZhi.filter(z => z === target);
+            return found.length > 0 ? found : null;
+        }
+    },
+    '桃花星': {
+        icon: '🌸',
+        desc: '主异性缘、人缘、魅力。命带桃花者长相端正，异性缘佳。',
+        level: '中平',
+        calc: (dg, allZhi) => {
+            // 桃花查法：以年支查日支
+            const yearZhi = allZhi[0];
+            const map = {
+                '寅': '午', '午': '午', '戌': '午',
+                '亥': '子', '卯': '子', '未': '子',
+                '巳': '酉', '酉': '酉', '丑': '酉',
+                '申': '卯', '子': '卯', '辰': '卯'
+            };
+            const target = map[yearZhi];
+            const found = allZhi.filter(z => z === target);
+            return found.length > 0 ? found : null;
+        }
+    },
+    '天德贵人': {
+        icon: '☀️',
+        desc: '主逢凶化吉，化险为夷。命带天德者一生少灾，有贵人暗助。',
+        level: '上吉',
+        calc: (dg, allZhi) => {
+            // 天德贵人查法：以月支查年日时干
+            const monthZhi = allZhi[1];
+            const map = {
+                '寅': '丁', '卯': '申', '辰': '壬',
+                '巳': '辛', '午': '亥', '未': '甲',
+                '申': '癸', '酉': '寅', '戌': '丙',
+                '亥': '乙', '子': '巳', '丑': '庚'
+            };
+            const target = map[monthZhi];
+            const found = [dg]; // 日干
+            return target && dg === target ? found : null;
+        }
+    },
+    '将星': {
+        icon: '👑',
+        desc: '主领导才能，有统御之能。命带将星者适合从事管理、领导岗位。',
+        level: '上吉',
+        calc: (dg, allZhi) => {
+            // 将星查法：以年支查日支
+            const yearZhi = allZhi[0];
+            const map = {
+                '寅': '午', '午': '午', '戌': '午',
+                '亥': '卯', '卯': '卯', '未': '卯',
+                '巳': '酉', '酉': '酉', '丑': '酉',
+                '申': '子', '子': '子', '辰': '子'
+            };
+            const target = map[yearZhi];
+            const found = allZhi.filter(z => z === target);
+            return found.length > 0 ? found : null;
+        }
+    },
+    '金舆星': {
+        icon: '🚗',
+        desc: '主富贵、车马。命带金舆者生活富足，有车有房。',
+        level: '中吉',
+        calc: (dg, allZhi) => {
+            // 金舆查法：以日干查地支
+            const map = {
+                '甲': '辰', '乙': '巳', '丙': '未', '丁': '申',
+                '戊': '未', '己': '申', '庚': '戌', '辛': '亥',
+                '壬': '丑', '癸': '寅'
+            };
+            const target = map[dg];
+            const found = allZhi.filter(z => z === target);
+            return found.length > 0 ? found : null;
+        }
+    }
+};
+
+function calculateShensha(dg, yearZhi, monthZhi, dayZhi, timeZhi) {
+    const allZhi = [yearZhi, monthZhi, dayZhi, timeZhi];
+    const result = [];
+
+    for (const [name, data] of Object.entries(SHENSHA_DATA)) {
+        const found = data.calc(dg, allZhi);
+        if (found && found.length > 0) {
+            result.push({
+                name,
+                icon: data.icon,
+                desc: data.desc,
+                level: data.level,
+                positions: found
+            });
+        }
+    }
+
+    return result;
+}
+
+function getShenshaHtml(shenshaList) {
+    if (!shenshaList || shenshaList.length === 0) {
+        return '<p style="font-size:0.78rem;color:var(--text-gray);">暂未发现明显神煞</p>';
+    }
+
+    let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">';
+    shenshaList.forEach(ss => {
+        const levelColor = ss.level === '上吉' ? 'var(--jade-green)' :
+                          ss.level === '中吉' ? 'var(--text-gold)' :
+                          ss.level === '中平' ? 'var(--text-gray)' : 'var(--cinnabar-red)';
+        html += `
+            <div style="background:rgba(10,10,12,0.4);border:1px solid var(--border-color);border-radius:8px;padding:12px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <span style="font-size:1.2rem;">${ss.icon}</span>
+                    <span style="font-weight:700;color:var(--text-white);font-size:0.85rem;">${ss.name}</span>
+                    <span style="margin-left:auto;padding:2px 8px;border-radius:10px;font-size:0.68rem;background:${levelColor}22;color:${levelColor};border:1px solid ${levelColor}44;">${ss.level}</span>
+                </div>
+                <p style="font-size:0.75rem;color:var(--text-gray);margin:0 0 6px 0;line-height:1.5;">${ss.desc}</p>
+                <div style="font-size:0.72rem;color:var(--text-gold);">
+                    落宫：${ss.positions.map(p => `<span style="display:inline-block;padding:1px 6px;margin:2px;background:var(--text-gold)11;border:1px solid var(--text-gold)33;border-radius:4px;">${p}</span>`).join(' ')}
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    return html;
+}
+
 function getDayMasterDesc(dg, dz, monZhi) {
     const base = GAN_DESC[dg] || { name:dg, desc:'' };
     const mon = MONTH_ANALYSIS[monZhi] || { power:'', wx:'' };
@@ -435,9 +627,6 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
         daYunHtml = '<div class="report-section"><p style="color:var(--text-gray);font-size:0.8rem;">大运信息需结合具体时辰精确推算，暂未生成。</p></div>';
     }
 
-    /* --- LiuYue (12-month) --- */
-    const liuyueHtml = generateLiuyueAnalysis(dg, wx, baZi);
-
     /* --- Main Analysis --- */
     const nayinItems = [
         { pilar:'年柱', gz:`${yg}${yz}`, name:yearNayin, desc:getNayinSummary(yearNayin) },
@@ -448,6 +637,11 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
 
     const tenGodHtml = getTenGodAnalysis(yearSS, monthSS, timeSS, baZi);
     const traitsHtml = getPersonalityTraits(dg, yg, yz, mg, mz, dz, tg, tz, yearSS, monthSS, timeSS);
+    const dayWx = wx; // wx 在第 318 行定义
+    const liunianHtml = generateLiunianAnalysis(dg, dayWx, baZi, name);
+    const liuyueHtml = generateLiuyueAnalysis(dg, dayWx, baZi);
+    const shenshaList = calculateShensha(dg, yz, mz, dz, tz);
+    const shenshaHtml = getShenshaHtml(shenshaList);
 
     const htmlContent = `
         <div class="bazi-report">
@@ -503,10 +697,18 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
                         <span class="advice-value">${getCareerAdvice(minWx, maxWx)}</span>
                     </div>
                 </div>
-                <p style="margin-top:10px;font-size:0.78rem;color:var(--text-gray);font-style:italic;">“一命二运三风水，四积阴德五读书。” 知命不是认命，而是更好地把握自我，修身养性以待天时。</p>
+                <p style=”margin-top:10px;font-size:0.78rem;color:var(--text-gray);font-style:italic;”>”一命二运三风水，四积阴德五读书。” 知命不是认命，而是更好地把握自我，修身养性以待天时。</p>
+            </div>
+
+            <div class=”report-section”>
+                <h4>✨ 五、命带神煞</h4>
+                <p style=”font-size:0.78rem;color:var(--text-gray);margin-bottom:12px;”>神煞是命理中的特殊星曜，反映命主的特殊禀赋和际遇。命带吉神者多有福缘，命带凶煞者需谨慎化解。</p>
+                ${shenshaHtml}
             </div>
 
             ${daYunHtml}
+
+            ${liunianHtml}
 
             ${liuyueHtml}
 
@@ -735,6 +937,159 @@ function generateLiuyueAnalysis(dayGan, dayWx, baZi) {
                 <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--jade-green);vertical-align:middle;margin-right:3px;"></span>吉（月生日主）</span>
                 <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--text-gold);vertical-align:middle;margin-right:3px;"></span>平（同气/日生月）</span>
                 <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--cinnabar-red);vertical-align:middle;margin-right:3px;"></span>慎（月克日主）</span>
+            </div>
+        </div>`;
+}
+
+/* ========== 流年运势详批 ========== */
+function generateLiunianAnalysis(dayGan, dayWx, baZi, name) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    // 获取当年流年干支
+    const yearSolar = Solar.fromYmd(currentYear, 1, 1);
+    const yearLunar = yearSolar.getLunar();
+    const yearGanZhi = yearLunar.getYearInGanZhi();
+    const yearGan = yearGanZhi[0];
+    const yearZhi = yearGanZhi[1];
+    const yearWx = getGanWuxing(yearGan);
+
+    // 生克关系
+    const shengMap = { '金':'水','水':'木','木':'火','火':'土','土':'金' };
+    const keMap = { '金':'木','木':'土','土':'水','水':'火','火':'金' };
+    const shengByMap = { '水':'金','木':'水','火':'木','土':'火','金':'土' };
+
+    // 流年与日主关系
+    const yearShengDay = shengMap[yearWx] === dayWx; // 太岁生日主
+    const dayShengYear = shengMap[dayWx] === yearWx; // 日主生太岁
+    const yearKeDay = keMap[yearWx] === dayWx;       // 太岁克日主
+    const dayKeYear = keMap[dayWx] === yearWx;       // 日主克太岁
+    const sameWx = yearWx === dayWx;                  // 同五行
+
+    // 流年评级
+    let yearRating, yearRatingDesc, yearAdvice;
+    if (yearShengDay) {
+        yearRating = '上吉';
+        yearRatingDesc = `${yearGan}${yearWx}生助日主${dayGan}${dayWx}，运势亨通，贵人相助`;
+        yearAdvice = '今年运势大好，适合积极进取，把握机遇。贵人运旺盛，可得长辈或上司提携。事业、财运、感情皆有进展。';
+    } else if (sameWx) {
+        yearRating = '中吉';
+        yearRatingDesc = `太岁${yearWx}与日主同气，顺应时势，平稳发展`;
+        yearAdvice = '今年运势平稳，适合稳扎稳打，不宜冒进。同气相求，朋友助力较多，可借助团队力量成事。';
+    } else if (dayShengYear) {
+        yearRating = '中平';
+        yearRatingDesc = `日主${dayWx}生助太岁${yearWx}，付出较多，收获需努力`;
+        yearAdvice = '今年需要多付出努力，才能有所收获。日主生泄，精力消耗较大，注意劳逸结合。适合投资自己，提升能力。';
+    } else if (dayKeYear) {
+        yearRating = '中平';
+        yearRatingDesc = `日主${dayWx}克制太岁${yearWx}，主动出击，财源可求`;
+        yearAdvice = '今年利于主动出击，争取机会。日主克财，财运有所提升，但需谨慎投资，避免冲动消费。事业上可有所突破。';
+    } else if (yearKeDay) {
+        yearRating = '谨慎';
+        yearRatingDesc = `太岁${yearWx}克制日主${dayWx}，压力较大，需谨慎应对`;
+        yearAdvice = '今年运势较为波折，太岁克身，压力较大。宜守不宜攻，避免大的变动和投资。注意身体健康和人际关系，遇事多忍让。';
+    } else {
+        yearRating = '中平';
+        yearRatingDesc = `流年五行${yearWx}与日主${dayWx}关系中性`;
+        yearAdvice = '今年运势平稳，无大起大落。保持平常心，按部就班即可。';
+    }
+
+    // 流月详细运势（本月）
+    const currentMonthSolar = Solar.fromYmd(currentYear, currentMonth, 1);
+    const currentMonthLunar = currentMonthSolar.getLunar();
+    const monthGanZhi = currentMonthLunar.getMonthGanZhi();
+    const monthGan = monthGanZhi[0];
+    const monthWx = getGanWuxing(monthGan);
+
+    const monthShengDay = shengMap[monthWx] === dayWx;
+    const sameMonthWx = monthWx === dayWx;
+    const monthKeDay = keMap[monthWx] === dayWx;
+
+    let monthRating, monthAdvice;
+    if (monthShengDay) {
+        monthRating = '上吉';
+        monthAdvice = '本月运势极佳，诸事顺遂。';
+    } else if (sameMonthWx) {
+        monthRating = '中吉';
+        monthAdvice = '本月运势平稳，顺势而为。';
+    } else if (monthKeDay) {
+        monthRating = '慎';
+        monthAdvice = '本月需谨慎，避免冲突。';
+    } else {
+        monthRating = '中平';
+        monthAdvice = '本月运势平平，保持稳健。';
+    }
+
+    // 年龄和本命年判断
+    const birthYear = baZi.getYear();
+    const age = currentYear - birthYear;
+    const isBenMingNian = yearZhi === baZi.getYearZhi();
+    const isFanTaiSui = Math.abs('子丑寅卯辰巳午未申酉戌亥'.indexOf(yearZhi) - '子丑寅卯辰巳午未申酉戌亥'.indexOf(baZi.getYearZhi())) === 6;
+
+    // 太岁相关建议
+    let taiSuiAdvice = '';
+    if (isBenMingNian) {
+        taiSuiAdvice = `<div style="background:var(--cinnabar-red)15;border:1px solid var(--cinnabar-red)33;border-radius:8px;padding:12px;margin-top:10px;">
+            <p style="color:var(--cinnabar-red);font-weight:700;margin:0 0 6px 0;">⚠️ 本命年提醒</p>
+            <p style="font-size:0.8rem;color:var(--text-white);margin:0;">今年是您的本命年（${yearZhi}年），太岁当头，运势起伏较大。建议佩戴红色饰品或本命佛，年初拜太岁，凡事谨慎为上。</p>
+        </div>`;
+    } else if (isFanTaiSui) {
+        taiSuiAdvice = `<div style="background:var(--cinnabar-red)10;border:1px solid var(--cinnabar-red)22;border-radius:8px;padding:12px;margin-top:10px;">
+            <p style="color:var(--cinnabar-red);font-weight:700;margin:0 0 6px 0;">⚡ 冲太岁提醒</p>
+            <p style="font-size:0.8rem;color:var(--text-white);margin:0;">今年与太岁相冲，运势波动明显。宜主动化解，可献血、洗牙或做善事。避免大的变动，外出注意安全。</p>
+        </div>`;
+    }
+
+    return `
+        <div class="report-section">
+            <h4>📅 三、${currentYear}年流年运势详批</h4>
+            <div style="background:linear-gradient(135deg,rgba(212,175,55,0.1),rgba(212,175,55,0.05));border:1px solid var(--border-color);border-radius:10px;padding:16px;margin-bottom:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                    <div>
+                        <div style="font-size:0.72rem;color:var(--text-gray);">流年太岁</div>
+                        <div style="font-size:1.3rem;font-weight:700;color:var(--text-gold);font-family:'ZCOOL XiaoWei',serif;">${yearGanZhi}年</div>
+                        <div style="font-size:0.78rem;color:var(--text-gray);">${yearWx}年 · ${currentYear}年</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="display:inline-block;padding:6px 20px;border-radius:20px;font-size:1rem;font-weight:700;background:${yearRating.includes('上') ? 'var(--jade-green)' : yearRating.includes('慎') ? 'var(--cinnabar-red)' : 'var(--text-gold)'}22;color:${yearRating.includes('上') ? 'var(--jade-green)' : yearRating.includes('慎') ? 'var(--cinnabar-red)' : 'var(--text-gold)'};border:1px solid ${yearRating.includes('上') ? 'var(--jade-green)' : yearRating.includes('慎') ? 'var(--cinnabar-red)' : 'var(--text-gold)'}44;">${yearRating}</div>
+                        <div style="font-size:0.65rem;color:var(--text-gray);margin-top:4px;">流年评级</div>
+                    </div>
+                </div>
+                <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color);">
+                    <p style="font-size:0.8rem;color:var(--text-white);margin:0 0 8px 0;"><strong>${yearRatingDesc}</strong></p>
+                    <p style="font-size:0.78rem;color:var(--text-gray);margin:0;line-height:1.6;">${yearAdvice}</p>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px;">
+                <div style="background:rgba(10,10,12,0.4);border:1px solid var(--border-color);border-radius:8px;padding:12px;">
+                    <div style="font-size:0.72rem;color:var(--text-gray);margin-bottom:6px;">本月运势</div>
+                    <div style="font-size:1rem;font-weight:700;color:${monthRating.includes('上') ? 'var(--jade-green)' : monthRating.includes('慎') ? 'var(--cinnabar-red)' : 'var(--text-gold)'};">${monthRating}</div>
+                    <div style="font-size:0.75rem;color:var(--text-gray);margin-top:4px;">${monthGanZhi}月 · ${monthAdvice}</div>
+                </div>
+                <div style="background:rgba(10,10,12,0.4);border:1px solid var(--border-color);border-radius:8px;padding:12px;">
+                    <div style="font-size:0.72rem;color:var(--text-gray);margin-bottom:6px;">年龄运势</div>
+                    <div style="font-size:1rem;font-weight:700;color:var(--text-white);">${age}岁</div>
+                    <div style="font-size:0.75rem;color:var(--text-gray);margin-top:4px;">虚龄${age + 1}岁 · ${age >= 50 ? '知天命之年，宜稳中求进' : age >= 40 ? '不惑之年，事业当有成' : age >= 30 ? '而立之年，宜积极进取' : '风华正茂，大有可为'}</div>
+                </div>
+                <div style="background:rgba(10,10,12,0.4);border:1px solid var(--border-color);border-radius:8px;padding:12px;">
+                    <div style="font-size:0.72rem;color:var(--text-gray);margin-bottom:6px;">太岁关系</div>
+                    <div style="font-size:1rem;font-weight:700;color:${isBenMingNian || isFanTaiSui ? 'var(--cinnabar-red)' : 'var(--jade-green)'};">${isBenMingNian ? '本命年' : isFanTaiSui ? '冲太岁' : '平稳'}</div>
+                    <div style="font-size:0.75rem;color:var(--text-gray);margin-top:4px;">${isBenMingNian ? '太岁当头，需化解' : isFanTaiSui ? '年岁相冲，宜化解' : '与太岁无冲克'}</div>
+                </div>
+            </div>
+
+            ${taiSuiAdvice}
+
+            <div style="background:rgba(10,10,12,0.3);border-radius:8px;padding:14px;margin-top:12px;">
+                <p style="font-size:0.78rem;color:var(--text-gold);margin:0 0 8px 0;"><strong>🧧 流年调理建议</strong></p>
+                <ul style="font-size:0.75rem;color:var(--text-white);margin:0;padding-left:20px;line-height:1.8;">
+                    <li>流年五行 <span class="pill-tag pill-${getWuxingEng(yearWx)}">${yearWx}</span>，${yearShengDay ? '与日主相生，运势顺畅' : yearKeDay ? '克制日主，需多防范' : '与日主关系中性'}</li>
+                    <li>${currentMonth}月（${monthGanZhi}）${monthRating.includes('上') ? '运势上佳，可把握机遇' : monthRating.includes('慎') ? '需谨慎行事，避免冲动' : '运势平稳，按部就班'}</li>
+                    <li>建议多亲近${yearShengDay ? yearWx : dayWx}属性事物，佩戴相应饰品</li>
+                    <li>${isBenMingNian ? '本命年宜低调，年初拜太岁，穿戴红色' : '保持积极心态，顺势而为'}</li>
+                </ul>
             </div>
         </div>`;
 }

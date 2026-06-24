@@ -1,5 +1,69 @@
 import { AppState } from './state.js?v=20260618-4';
 import { getGuaInfo, getGuaRelations } from './gua-data.js?v=20260618-4';
+import { showLoading, hideLoading } from './utils.js?v=20260618-4';
+
+/* ---------- 音效与震动反馈 ---------- */
+let audioContext = null;
+
+function initAudioContext() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioContext;
+}
+
+function playCoinSound() {
+    try {
+        const ctx = initAudioContext();
+        if (!ctx) return;
+
+        // 创建金属碰撞音效
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.1);
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.15);
+
+        // 添加第二个音调模拟金属回响
+        const oscillator2 = ctx.createOscillator();
+        const gainNode2 = ctx.createGain();
+
+        oscillator2.connect(gainNode2);
+        gainNode2.connect(ctx.destination);
+
+        oscillator2.frequency.setValueAtTime(1200, ctx.currentTime);
+        oscillator2.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.08);
+        oscillator2.type = 'triangle';
+
+        gainNode2.gain.setValueAtTime(0.2, ctx.currentTime);
+        gainNode2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+
+        oscillator2.start(ctx.currentTime + 0.02);
+        oscillator2.stop(ctx.currentTime + 0.12);
+    } catch(e) {
+        console.log('音效播放失败:', e);
+    }
+}
+
+function triggerVibration(duration = 50) {
+    try {
+        if (navigator.vibrate) {
+            navigator.vibrate(duration);
+        }
+    } catch(e) {
+        console.log('震动反馈失败:', e);
+    }
+}
 
 function initLiuyaoModule() {
     const btnStart = document.getElementById("btnStartLiuyao");
@@ -48,6 +112,10 @@ function initLiuyaoModule() {
                 const rotateX = Math.floor(Math.random() * 20) - 10;
                 coin.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
+
+            // 播放铜钱落地音效和震动反馈
+            playCoinSound();
+            triggerVibration(80);
 
             const headCount = coinResults.filter(r => r === 0).length;
             let lineType = 1, lineName = "";

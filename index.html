@@ -401,7 +401,10 @@
                                         <option value="general">诸事问吉 / 出行谋划</option>
                                     </select>
                                     <button class="btn-primary" id="btnStartLiuyao">虔诚起卦</button>
-                                    <button class="btn-secondary" id="btnManualLiuyao" style="margin-top:8px;"><i class="fa-solid fa-pen-fancy"></i> 手动录入六爻</button>
+                                    <div style="text-align:center;margin-top:12px;padding-top:12px;border-top:1px solid rgba(212,175,55,0.2);">
+                                        <span style="font-size:0.72rem;color:var(--text-gray);display:block;margin-bottom:6px;">或</span>
+                                        <button class="btn-secondary" id="btnManualLiuyao"><i class="fa-solid fa-pen-fancy"></i> 手动录入六爻</button>
+                                    </div>
                                 </div>
                                 <div class="liuyao-manual-panel" id="liuyaoManualPanel" style="display:none;margin-top:10px;padding:12px;background:rgba(10,10,12,0.6);border-radius:8px;">
                                     <p style="font-size:0.8rem;color:var(--text-gold);margin-bottom:8px;">从初爻到上爻，依次选择每一爻的类型：</p>
@@ -537,6 +540,13 @@
                                         <option value="动土">建房动土 (奠基破土)</option>
                                     </select>
                                     <button class="btn-primary" id="btnFilterJiri">筛选吉日</button>
+                                </div>
+                                <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-color);">
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.78rem;color:var(--text-gray);">
+                                        <input type="checkbox" id="jiriCombineBazi" style="accent-color:var(--text-gold);">
+                                        <span>结合个人八字 (根据喜用神优选吉日)</span>
+                                    </label>
+                                    <p style="font-size:0.68rem;color:var(--text-gray);margin:4px 0 0 24px;">需先在八字模块排盘，系统将自动获取您的喜用神信息</p>
                                 </div>
                                 <div class="filter-results-list" id="jiriResultsList">
                                     <!-- 筛选结果列表 -->
@@ -702,6 +712,7 @@
                             <div class="chat-input-area">
                                 <div class="input-wrapper">
                                     <textarea id="chatInput" placeholder="输入您当下的困惑（如：我今年的事业运势如何？我的八字喜忌是什么？卧室应该怎么摆设？）..." rows="1"></textarea>
+                                    <button class="btn-secondary" id="btnVoiceInput" title="语音输入" style="padding:8px 12px;flex-shrink:0;"><i class="fa-solid fa-microphone"></i></button>
                                     <button class="btn-primary" id="btnSendMessage"><i class="fa-solid fa-feather-pointed"></i> 问卜</button>
                                 </div>
                             </div>
@@ -934,6 +945,36 @@
                                 <button class="btn-screenshot" data-target="hpAnalysis" data-action="download"><i class="fa-solid fa-download"></i> 保存图片</button>
                                 <button class="btn-screenshot" data-target="hpAnalysis" data-action="clipboard"><i class="fa-solid fa-share-nodes"></i> 分享卡片</button>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 12. 数字能量学 -->
+                <section class="view-panel" id="panel-shuzi">
+                    <div class="shuzi-container">
+                        <div class="glass-card shuzi-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-hashtag"></i> 数字能量学</h2>
+                            <p style="color:var(--text-gray);font-size:0.82rem;margin:0 0 14px 0;">输入手机号、车牌号等数字组合，分析其能量磁场与吉凶含义。数字蕴含天地之理，可窥运势一二。</p>
+                            <div class="form-grid">
+                                <div class="form-group" style="grid-column:1/-1;">
+                                    <label for="shuziInput">数字组合</label>
+                                    <input type="text" id="shuziInput" placeholder="输入数字组合（如：13812345678、京A88888）" maxlength="20">
+                                    <p style="font-size:0.68rem;color:var(--text-gray);margin-top:4px;">支持手机号、车牌号、门牌号等任意数字组合</p>
+                                </div>
+                            </div>
+                            <button class="btn-primary" id="btnCalcShuzi" style="margin-top:12px;"><i class="fa-solid fa-calculator"></i> 分析数字能量</button>
+                        </div>
+                        <div class="glass-card scroll-card" id="shuziResultCard" style="display:none;">
+                            <div class="scroll-handle handle-top"></div>
+                            <div class="scroll-content">
+                                <h3 class="scroll-title font-shufa" id="shuziResultTitle">数字能量分析</h3>
+                                <div class="scroll-body" id="shuziAnalysis"></div>
+                                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+                                    <button class="btn-copy-result" data-copy-target="shuziAnalysis"><i class="fa-solid fa-copy"></i> 复制分析</button>
+                                    <button class="btn-screenshot" data-target="shuziResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                                </div>
+                            </div>
+                            <div class="scroll-handle handle-bottom"></div>
                         </div>
                     </div>
                 </section>

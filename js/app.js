@@ -18,7 +18,8 @@ import { initMeihuaModule } from './meihua.js?v=20260618-4';
 import { initHehunModule } from './hehun.js?v=20260618-4';
 import { initZiweiModule } from './ziwei.js?v=20260618-4';
 import { initHepanModule } from './hepan.js?v=20260618-4';
-import { getGanWuxing, getWuxingEng, showToast } from './utils.js?v=20260618-4';
+import { initShuziModule } from './shuzi.js?v=20260618-4';
+import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?v=20260618-4';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -41,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initHehunModule();
     initZiweiModule();
     initHepanModule();
+    initShuziModule();
 
     // Re-run dress guide after clock init
     setTimeout(() => { renderDressGuide(); renderFortuneMonth(); }, 500);
@@ -54,6 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadBaziHistory();
     initGlobalHistoryPanel();
+
+    // 初始化手势操作
+    initGestureNavigation();
 
     document.addEventListener('bazi-analysis-complete', e => {
         saveBaziHistory(e.detail.name, e.detail.gender, e.detail.date);
@@ -383,6 +388,14 @@ function initAppNavigation() {
             if (mobileMoreMenu) mobileMoreMenu.classList.add("open");
             return;
         }
+
+        // 导航切换触感反馈
+        try {
+            if (navigator.vibrate) {
+                navigator.vibrate(20);
+            }
+        } catch(e) {}
+
         navItems.forEach(item => {
             item.classList.toggle("active", item.getAttribute("data-target") === targetId);
         });
@@ -447,6 +460,36 @@ function initAppNavigation() {
         });
         parallaxCompass.addEventListener("mouseleave", () => {
             parallaxCompass.style.transform = "rotateX(0deg) rotateY(0deg)";
+        });
+    }
+
+    // 初始化手势导航
+    function initGestureNavigation() {
+        // 获取当前活动的模块
+        function getCurrentModule() {
+            const activeNav = document.querySelector(".mobile-nav-item.active, .nav-item.active");
+            return activeNav ? activeNav.getAttribute("data-target") : "dashboard";
+        }
+
+        // 切换模块
+        function navigateToModule(moduleId) {
+            switchView(moduleId);
+            showToast(`切换到：${moduleId}`, 1000);
+        }
+
+        // 设置手势处理
+        initGestureHandler({
+            onSwipeLeft: () => {
+                // 左滑切换到下一个模块
+                const current = getCurrentModule();
+                switchToNextModule(current, navigateToModule);
+            },
+            onSwipeRight: () => {
+                // 右滑切换到上一个模块
+                const current = getCurrentModule();
+                switchToPrevModule(current, navigateToModule);
+            },
+            threshold: 80 // 滑动阈值，避免误触
         });
     }
 }

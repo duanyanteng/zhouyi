@@ -1,15 +1,42 @@
 import { AppState } from './state.js?v=20260618-4';
 import { SIXTY_FOUR_GUA, getGuaInfo } from './gua-data.js?v=20260618-4';
 
+/**
+ * 周易命理系统 - 工具函数库
+ * @module utils
+ * @description 提供五行计算、数据转换、UI组件、手势处理等通用功能
+ */
+
 /* ---------- 五行相关 ---------- */
+
+/**
+ * 获取天干的五行属性
+ * @param {string} gan - 天干（甲乙丙丁戊己庚辛壬癸）
+ * @returns {string} 五行属性（金木水火土）
+ * @example getGanWuxing('甲') // 返回 '木'
+ */
 function getGanWuxing(gan) {
     const dict = { '甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水' };
     return dict[gan] || '';
 }
+
+/**
+ * 获取地支的五行属性
+ * @param {string} zhi - 地支（子丑寅卯辰巳午未申酉戌亥）
+ * @returns {string} 五行属性（金木水火土）
+ * @example getZhiWuxing('寅') // 返回 '木'
+ */
 function getZhiWuxing(zhi) {
     const dict = { '寅':'木','卯':'木','巳':'火','午':'火','辰':'土','戌':'土','丑':'土','未':'土','申':'金','酉':'金','亥':'水','子':'水' };
     return dict[zhi] || '';
 }
+
+/**
+ * 将五行转换为英文名称
+ * @param {string} wx - 五行（金木水火土）
+ * @returns {string} 英文名称（metal/wood/water/fire/earth）
+ * @example getWuxingEng('金') // 返回 'metal'
+ */
 function getWuxingEng(wx) {
     const dict = { '金':'metal','木':'wood','水':'water','火':'fire','土':'earth' };
     return dict[wx] || '';
@@ -97,7 +124,199 @@ const ZI_WEI_STARS = {
     ci: ["左辅","右弼","文昌","文曲","地空","地劫","天魁","天钺","禄存","擎羊","陀罗","火星","铃星","天马"]
 };
 
+/* ---------- Loading 骨架屏组件 ---------- */
+
+/**
+ * 显示骨架屏加载动画
+ * @param {string} containerId - 容器元素的 ID
+ * @param {Object} [options={}] - 配置选项
+ * @param {number} [options.lines=3] - 骨架屏行数
+ * @param {boolean} [options.showTitle=true] - 是否显示标题占位
+ * @param {string} [options.titleWidth='40%'] - 标题占位宽度
+ * @param {string} [options.customClass=''] - 自定义 CSS 类名
+ * @example showLoading('baziAnalysis', { lines: 5, showTitle: true })
+ */
+function showLoading(containerId, options = {}) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const {
+        lines = 3,
+        showTitle = true,
+        titleWidth = '40%',
+        customClass = ''
+    } = options;
+    let skeletonHtml = '<div class="bazi-report-loading">';
+    for (let i = 0; i < lines; i++) {
+        skeletonHtml += `
+            <div class="skeleton-card ${customClass}">
+                ${showTitle ? `<div class="skeleton-pulse skeleton-block" style="width:${titleWidth}"></div>` : ''}
+                <div class="skeleton-pulse skeleton-block"></div>
+                <div class="skeleton-pulse skeleton-block w80"></div>
+                ${i < lines - 1 ? '<div class="skeleton-pulse skeleton-block w60"></div>' : ''}
+            </div>
+        `;
+    }
+    skeletonHtml += '</div>';
+    container.innerHTML = skeletonHtml;
+}
+
+/**
+ * 隐藏骨架屏加载动画
+ * @param {string} containerId - 容器元素的 ID
+ * @example hideLoading('baziAnalysis')
+ */
+function hideLoading(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const loading = container.querySelector('.bazi-report-loading');
+    if (loading) loading.remove();
+}
+
+/* ---------- 手势处理 ---------- */
+
+/**
+ * 初始化手势处理器
+ * @param {Object} [options={}] - 配置选项
+ * @param {Function} [options.onSwipeLeft] - 左滑回调函数
+ * @param {Function} [options.onSwipeRight] - 右滑回调函数
+ * @param {Function} [options.onSwipeUp] - 上滑回调函数
+ * @param {Function} [options.onSwipeDown] - 下滑回调函数
+ * @param {number} [options.threshold=50] - 滑动距离阈值（像素）
+ * @param {boolean} [options.preventScroll=false] - 是否阻止默认滚动
+ * @example
+ * initGestureHandler({
+ *   onSwipeLeft: () => console.log('左滑'),
+ *   onSwipeRight: () => console.log('右滑'),
+ *   threshold: 80
+ * })
+ */
+function initGestureHandler(options = {}) {
+    const {
+        onSwipeLeft = null,
+        onSwipeRight = null,
+        onSwipeUp = null,
+        onSwipeDown = null,
+        threshold = 50,
+        preventScroll = false
+    } = options;
+
+    let startX = 0;
+    let startY = 0;
+    let endX = 0;
+    let endY = 0;
+    let isSwiping = false;
+
+    const container = document.body;
+
+    container.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isSwiping = true;
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        endX = e.touches[0].clientX;
+        endY = e.touches[0].clientY;
+
+        // 如果需要阻止默认滚动
+        if (preventScroll) {
+            const diffX = Math.abs(endX - startX);
+            const diffY = Math.abs(endY - startY);
+            if (diffX > diffY) {
+                e.preventDefault();
+            }
+        }
+    }, { passive: !preventScroll });
+
+    container.addEventListener('touchend', () => {
+        if (!isSwiping) return;
+        isSwiping = false;
+
+        const diffX = endX - startX;
+        const diffY = endY - startY;
+        const absDiffX = Math.abs(diffX);
+        const absDiffY = Math.abs(diffY);
+
+        // 判断是否是有效的滑动
+        if (Math.max(absDiffX, absDiffY) < threshold) return;
+
+        // 水平滑动
+        if (absDiffX > absDiffY) {
+            if (diffX > 0 && onSwipeRight) {
+                onSwipeRight();
+            } else if (diffX < 0 && onSwipeLeft) {
+                onSwipeLeft();
+            }
+        }
+        // 垂直滑动
+        else {
+            if (diffY > 0 && onSwipeDown) {
+                onSwipeDown();
+            } else if (diffY < 0 && onSwipeUp) {
+                onSwipeUp();
+            }
+        }
+
+        // 重置
+        startX = 0;
+        startY = 0;
+        endX = 0;
+        endY = 0;
+    }, { passive: true });
+}
+
+/**
+ * 获取模块导航顺序
+ * @returns {string[]} 模块 ID 数组
+ * @example getModuleNavOrder() // 返回 ['dashboard', 'bazi', 'liuyao', ...]
+ */
+function getModuleNavOrder() {
+    return ['dashboard', 'bazi', 'liuyao', 'huangli', 'fengshui', 'chat', 'xingming', 'meihua', 'hehun', 'ziwei', 'hepan', 'shuzi'];
+}
+
+/**
+ * 切换到下一个模块
+ * @param {string} currentModule - 当前模块 ID
+ * @param {Function} switchCallback - 切换回调函数
+ * @returns {string} 下一个模块 ID
+ * @example switchToNextModule('bazi', (id) => switchView(id))
+ */
+function switchToNextModule(currentModule, switchCallback) {
+    const order = getModuleNavOrder();
+    const currentIndex = order.indexOf(currentModule);
+    if (currentIndex === -1) return;
+    const nextIndex = (currentIndex + 1) % order.length;
+    const nextModule = order[nextIndex];
+    if (switchCallback) switchCallback(nextModule);
+    return nextModule;
+}
+
+/**
+ * 切换到上一个模块
+ * @param {string} currentModule - 当前模块 ID
+ * @param {Function} switchCallback - 切换回调函数
+ * @returns {string} 上一个模块 ID
+ * @example switchToPrevModule('bazi', (id) => switchView(id))
+ */
+function switchToPrevModule(currentModule, switchCallback) {
+    const order = getModuleNavOrder();
+    const currentIndex = order.indexOf(currentModule);
+    if (currentIndex === -1) return;
+    const prevIndex = (currentIndex - 1 + order.length) % order.length;
+    const prevModule = order[prevIndex];
+    if (switchCallback) switchCallback(prevModule);
+    return prevModule;
+}
+
 /* ---------- Toast 通知 ---------- */
+
+/**
+ * 显示 Toast 通知消息
+ * @param {string} msg - 通知消息内容
+ * @param {number} [duration=2000] - 显示时长（毫秒）
+ * @example showToast('操作成功', 1500)
+ */
 function showToast(msg, duration) {
     const toast = document.getElementById("copyToast") || (() => { const t = document.createElement("div"); t.id = "copyToast"; t.className = "toast-notification"; document.body.appendChild(t); return t; })();
     toast.textContent = msg;
@@ -109,5 +328,6 @@ export {
     getGanWuxing, getZhiWuxing, getWuxingEng, getMaxWuxing, getMinWuxing,
     getDiShi, getGuaFromDirection, escapeHTML, sanitizeHTML,
     SIXTY_FOUR_GUA, getGuaInfo, KANGXI_STROKES, SHU_LI, getStroke, ZI_WEI_STARS,
-    showToast
+    showLoading, hideLoading, showToast,
+    initGestureHandler, getModuleNavOrder, switchToNextModule, switchToPrevModule
 };

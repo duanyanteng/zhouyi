@@ -1,5 +1,5 @@
-import { AppState } from './state.js?v=20260618-4';
-import { getGuaFromDirection } from './utils.js?v=20260618-4';
+import { AppState, restoreBaziInput } from './state.js?v=20260618-4';
+import { getGuaFromDirection, getGanWuxing, getZhiWuxing } from './utils.js?v=20260618-4';
 
 function initClock() {
     const clockEl = document.getElementById("headerClock");
@@ -141,6 +141,49 @@ function filterJiriList(event) {
     container.innerHTML = '';
     const results = [];
     const scanDate = new Date(AppState.huangliDate);
+    const combineBazi = document.getElementById("jiriCombineBazi")?.checked || false;
+
+    // 获取八字喜用神（如果启用）
+    let xiYongWx = null;
+    if (combineBazi) {
+        const savedBazi = restoreBaziInput();
+        if (savedBazi && savedBazi.date) {
+            try {
+                const birthDate = new Date(savedBazi.date);
+                const solar = Solar.fromDate(birthDate);
+                const lunar = solar.getLunar();
+                const baZi = lunar.getEightChar();
+                const dayGan = baZi.getDayGan();
+                const dayWx = getGanWuxing(dayGan);
+
+                // 简化的喜用神计算：日主弱则喜生扶，日主强则喜克泄
+                const wxCount = { 金:0, 木:0, 水:0, 火:0, 土:0 };
+                [baZi.getYearGan(), baZi.getMonthGan(), baZi.getDayGan(), baZi.getTimeGan()].forEach(g => {
+                    wxCount[getGanWuxing(g)] += 2;
+                });
+                [baZi.getYearZhi(), baZi.getMonthZhi(), baZi.getDayZhi(), baZi.getTimeZhi()].forEach(z => {
+                    wxCount[getZhiWuxing(z)] += 2.5;
+                });
+
+                const total = Object.values(wxCount).reduce((a, b) => a + b, 0);
+                const dayMasterStrength = (wxCount[dayWx] / total) * 100;
+
+                const shengMap = { '金':'水','水':'木','木':'火','火':'土','土':'金' };
+                const keMap = { '金':'木','木':'土','土':'水','水':'火','火':'金' };
+
+                // 日主弱（<30%）喜生扶，日主强（>40%）喜克泄
+                if (dayMasterStrength < 30) {
+                    xiYongWx = [dayWx, shengMap[dayWx]]; // 喜日主本身和生日主的五行
+                } else if (dayMasterStrength > 40) {
+                    xiYongWx = [keMap[dayWx], shengMap[dayWx]]; // 喜克日主和日主生的五行
+                } else {
+                    xiYongWx = [shengMap[dayWx], keMap[dayWx]]; // 平衡状态，喜生和克
+                }
+            } catch(e) {
+                console.error("获取八字信息失败:", e);
+            }
+        }
+    }
 
     for (let i = 0; i < 30; i++) {
         const solar = Solar.fromDate(scanDate);
@@ -149,13 +192,26 @@ function filterJiriList(event) {
         const jiList = lunar.getDayJi();
 
         if (yiList.includes(event) && !jiList.includes(event)) {
-            const score = Math.min(yiList.length * 8 + 20, 100);
+            let score = Math.min(yiList.length * 8 + 20, 100);
+
+            // 如果结合八字，根据日干支五行调整评分
+            if (combineBazi && xiYongWx) {
+                const dayGanZhi = lunar.getDayGanZhi();
+                const dayGan = dayGanZhi[0];
+                const dayWx = getGanWuxing(dayGan);
+
+                if (xiYongWx.includes(dayWx)) {
+                    score = Math.min(score + 15, 100); // 喜用神五行加分
+                }
+            }
+
             results.push({
                 dateStr: `${scanDate.getFullYear()}-${String(scanDate.getMonth() + 1).padStart(2,'0')}-${String(scanDate.getDate()).padStart(2,'0')}`,
                 lunarStr: `${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
                 ganzhiStr: `${lunar.getDayInGanZhi()}日`,
                 score: score,
-                rawDate: new Date(scanDate)
+                rawDate: new Date(scanDate),
+                combineBazi: combineBazi
             });
         }
         scanDate.setDate(scanDate.getDate() + 1);
@@ -170,9 +226,10 @@ function filterJiriList(event) {
         const item = document.createElement("div");
         item.className = "jiri-list-item";
         const scoreCls = res.score >= 70 ? "high" : res.score >= 50 ? "mid" : "low";
+        const baziBadge = res.combineBazi ? '<span style="display:inline-block;padding:1px 6px;margin-left:6px;font-size:0.65rem;background:var(--text-gold)22;color:var(--text-gold);border-radius:4px;border:1px solid var(--text-gold)44;">八字</span>' : '';
         item.innerHTML = `
             <span class="date-info">${res.dateStr}</span>
-            <span class="lunar-info">${res.lunarStr} (${res.ganzhiStr})</span>
+            <span class="lunar-info">${res.lunarStr} (${res.ganzhiStr})${baziBadge}</span>
             <span class="jiri-score ${scoreCls}">${res.score}分</span>
         `;
         item.addEventListener("click", () => {
@@ -184,6 +241,14 @@ function filterJiriList(event) {
         });
         container.appendChild(item);
     });
+
+    // 如果结合了八字，显示提示信息
+    if (combineBazi && xiYongWx) {
+        const tip = document.createElement("div");
+        tip.style.cssText = "margin-top:10px;padding:8px 12px;background:var(--text-gold)11;border:1px solid var(--text-gold)33;border-radius:6px;font-size:0.72rem;color:var(--text-gold);";
+        tip.innerHTML = `<i class="fa-solid fa-circle-info"></i> 已结合您的八字喜用神（${xiYongWx.join('、')}）优选吉日`;
+        container.appendChild(tip);
+    }
 }
 
 function renderMonthlyCalendar(date) {
