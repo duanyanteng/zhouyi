@@ -1,5 +1,5 @@
-import { restoreChatHistory, saveChatHistory } from './state.js?v=20260618-4';
-import { escapeHTML, sanitizeHTML } from './utils.js?v=20260618-4';
+import { restoreChatHistory, saveChatHistory } from './state.js?v=20260624-1';
+import { escapeHTML, sanitizeHTML } from './utils.js?v=20260624-1';
 
 function initChatModule() {
     const btnSend = document.getElementById("btnSendMessage");

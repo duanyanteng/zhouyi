@@ -1,4 +1,4 @@
-import { escapeHTML } from './utils.js?v=20260618-4';
+import { escapeHTML } from './utils.js?v=20260624-1';
 
 /* ========== 数字能量学核心 ========== */
 

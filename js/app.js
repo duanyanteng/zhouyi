@@ -7,19 +7,19 @@ import {
     addHistoryRecord,
     deleteHistoryRecord,
     toggleHistoryFavorite
-} from './state.js?v=20260618-4';
-import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?v=20260618-4';
-import { initBaziModule, drawWuxingRadar } from './bazi.js?v=20260618-4';
-import { initLiuyaoModule } from './liuyao.js?v=20260618-4';
-import { initFengshuiModule } from './fengshui.js?v=20260618-4';
-import { initChatModule } from './chat.js?v=20260618-4';
-import { initXingmingModule } from './xingming.js?v=20260618-4';
-import { initMeihuaModule } from './meihua.js?v=20260618-4';
-import { initHehunModule } from './hehun.js?v=20260618-4';
-import { initZiweiModule } from './ziwei.js?v=20260618-4';
-import { initHepanModule } from './hepan.js?v=20260618-4';
-import { initShuziModule } from './shuzi.js?v=20260618-4';
-import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?v=20260618-4';
+} from './state.js?v=20260624-1';
+import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?v=20260624-1';
+import { initBaziModule, drawWuxingRadar } from './bazi.js?v=20260624-1';
+import { initLiuyaoModule } from './liuyao.js?v=20260624-1';
+import { initFengshuiModule } from './fengshui.js?v=20260624-1';
+import { initChatModule } from './chat.js?v=20260624-1';
+import { initXingmingModule } from './xingming.js?v=20260624-1';
+import { initMeihuaModule } from './meihua.js?v=20260624-1';
+import { initHehunModule } from './hehun.js?v=20260624-1';
+import { initZiweiModule } from './ziwei.js?v=20260624-1';
+import { initHepanModule } from './hepan.js?v=20260624-1';
+import { initShuziModule } from './shuzi.js?v=20260624-1';
+import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?v=20260624-1';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -378,7 +378,6 @@ function initAppNavigation() {
     const viewPanels = document.querySelectorAll(".view-panel");
     const featureCards = document.querySelectorAll(".feature-link-card");
     const sideNav = document.getElementById("sideNav");
-    const toggleBtn = document.getElementById("navToggleBtn");
     const mobileBottomNav = document.getElementById("mobileBottomNav");
     const mobileMoreMenu = document.getElementById("mobileMoreMenu");
     const mobileMoreBackdrop = document.getElementById("mobileMoreBackdrop");
@@ -440,16 +439,6 @@ function initAppNavigation() {
         }
     }
 
-    // 桌面侧栏折叠/展开
-    if (toggleBtn && sideNav) {
-        const collapsed = localStorage.getItem("nav_collapsed") === "true";
-        if (collapsed) sideNav.classList.add("collapsed");
-        toggleBtn.addEventListener("click", () => {
-            sideNav.classList.toggle("collapsed");
-            localStorage.setItem("nav_collapsed", sideNav.classList.contains("collapsed"));
-        });
-    }
-
     const parallaxCompass = document.getElementById("parallaxCompass");
     if (parallaxCompass) {
         document.addEventListener("mousemove", (e) => {
@@ -462,36 +451,45 @@ function initAppNavigation() {
             parallaxCompass.style.transform = "rotateX(0deg) rotateY(0deg)";
         });
     }
+}
 
-    // 初始化手势导航
-    function initGestureNavigation() {
-        // 获取当前活动的模块
-        function getCurrentModule() {
-            const activeNav = document.querySelector(".mobile-nav-item.active, .nav-item.active");
-            return activeNav ? activeNav.getAttribute("data-target") : "dashboard";
-        }
+/* ---------- 手势导航 ---------- */
+function initGestureNavigation() {
+    const navItems = document.querySelectorAll(".nav-item");
+    const viewPanels = document.querySelectorAll(".view-panel");
+    const featureCards = document.querySelectorAll(".feature-link-card");
+    const sideNav = document.getElementById("sideNav");
+    const toggleBtn = document.getElementById("navToggleBtn");
+    const mobileBottomNav = document.getElementById("mobileBottomNav");
+    const mobileMoreMenu = document.getElementById("mobileMoreMenu");
+    const mobileMoreBackdrop = document.getElementById("mobileMoreBackdrop");
 
-        // 切换模块
-        function navigateToModule(moduleId) {
-            switchView(moduleId);
-            showToast(`切换到：${moduleId}`, 1000);
-        }
-
-        // 设置手势处理
-        initGestureHandler({
-            onSwipeLeft: () => {
-                // 左滑切换到下一个模块
-                const current = getCurrentModule();
-                switchToNextModule(current, navigateToModule);
-            },
-            onSwipeRight: () => {
-                // 右滑切换到上一个模块
-                const current = getCurrentModule();
-                switchToPrevModule(current, navigateToModule);
-            },
-            threshold: 80 // 滑动阈值，避免误触
-        });
+    // 获取当前活动的模块
+    function getCurrentModule() {
+        const activeNav = document.querySelector(".mobile-nav-item.active, .nav-item.active");
+        return activeNav ? activeNav.getAttribute("data-target") : "dashboard";
     }
+
+    // 切换模块
+    function navigateToModule(moduleId) {
+        switchView(moduleId);
+        showToast(`切换到：${moduleId}`, 1000);
+    }
+
+    // 设置手势处理
+    initGestureHandler({
+        onSwipeLeft: () => {
+            // 左滑切换到下一个模块
+            const current = getCurrentModule();
+            switchToNextModule(current, navigateToModule);
+        },
+        onSwipeRight: () => {
+            // 右滑切换到上一个模块
+            const current = getCurrentModule();
+            switchToPrevModule(current, navigateToModule);
+        },
+        threshold: 80 // 滑动阈值，避免误触
+    });
 }
 
 /* ---------- 金沙粒子 ---------- */

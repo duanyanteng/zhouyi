@@ -1,6 +1,6 @@
-import { AppState } from './state.js?v=20260618-4';
-import { getGuaInfo, getGuaRelations } from './gua-data.js?v=20260618-4';
-import { showLoading, hideLoading } from './utils.js?v=20260618-4';
+import { AppState } from './state.js?v=20260624-1';
+import { getGuaInfo, getGuaRelations } from './gua-data.js?v=20260624-1';
+import { showLoading, hideLoading } from './utils.js?v=20260624-1';
 
 /* ---------- 音效与震动反馈 ---------- */
 let audioContext = null;

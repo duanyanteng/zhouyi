@@ -1,4 +1,4 @@
-import { ZI_WEI_STARS } from './utils.js?v=20260618-4';
+import { ZI_WEI_STARS } from './utils.js?v=20260624-1';
 
 /* ========== 紫微斗数排盘核心 ========== */
 

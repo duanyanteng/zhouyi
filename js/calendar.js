@@ -1,5 +1,5 @@
-import { AppState, restoreBaziInput } from './state.js?v=20260618-4';
-import { getGuaFromDirection, getGanWuxing, getZhiWuxing } from './utils.js?v=20260618-4';
+import { AppState, restoreBaziInput } from './state.js?v=20260624-1';
+import { getGuaFromDirection, getGanWuxing, getZhiWuxing } from './utils.js?v=20260624-1';
 
 function initClock() {
     const clockEl = document.getElementById("headerClock");
@@ -196,7 +196,7 @@ function filterJiriList(event) {
 
             // 如果结合八字，根据日干支五行调整评分
             if (combineBazi && xiYongWx) {
-                const dayGanZhi = lunar.getDayGanZhi();
+                const dayGanZhi = lunar.getDayInGanZhi();
                 const dayGan = dayGanZhi[0];
                 const dayWx = getGanWuxing(dayGan);
 

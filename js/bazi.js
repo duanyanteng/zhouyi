@@ -1,6 +1,6 @@
-import { AppState, saveBaziInput } from './state.js?v=20260618-4';
+import { AppState, saveBaziInput } from './state.js?v=20260624-1';
 
-import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js?v=20260618-4';
+import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js?v=20260624-1';
 function initBaziModule() {
     const btnCalculate = document.getElementById("btnCalculateBazi");
     if (!btnCalculate) return;
@@ -712,7 +712,7 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
 
             ${liuyueHtml}
 
-            <div class="footer-note">✦ 天机难测，玄理无穷。以上推演仅供趋吉避凶之参考，人生之精彩在于自强不息。 ✦</div>
+            <div class=”footer-note”>✦ 天机难测，玄理无穷。以上推演仅供趋吉避凶之参考，人生之精彩在于自强不息。 ✦</div>
         </div>
     `;
     analysisEl.innerHTML = htmlContent;
@@ -998,7 +998,7 @@ function generateLiunianAnalysis(dayGan, dayWx, baZi, name) {
     // 流月详细运势（本月）
     const currentMonthSolar = Solar.fromYmd(currentYear, currentMonth, 1);
     const currentMonthLunar = currentMonthSolar.getLunar();
-    const monthGanZhi = currentMonthLunar.getMonthGanZhi();
+    const monthGanZhi = currentMonthLunar.getMonthInGanZhi();
     const monthGan = monthGanZhi[0];
     const monthWx = getGanWuxing(monthGan);
 
