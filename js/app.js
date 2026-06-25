@@ -12,6 +12,7 @@ import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?v
 import { initBaziModule, drawWuxingRadar } from './bazi.js?v=20260624-1';
 import { initLiuyaoModule } from './liuyao.js?v=20260624-1';
 import { initFengshuiModule } from './fengshui.js?v=20260624-1';
+import { initFengshuiAdvancedModule } from './fengshui-advanced.js?v=20260624-1';
 import { initChatModule } from './chat.js?v=20260624-1';
 import { initXingmingModule } from './xingming.js?v=20260624-1';
 import { initMeihuaModule } from './meihua.js?v=20260624-1';
@@ -19,13 +20,18 @@ import { initHehunModule } from './hehun.js?v=20260624-1';
 import { initZiweiModule } from './ziwei.js?v=20260624-1';
 import { initHepanModule } from './hepan.js?v=20260624-1';
 import { initShuziModule } from './shuzi.js?v=20260624-1';
+import { initQimenModule } from './qimen.js?v=20260624-1';
+import { initSettings, openSettings } from './settings.js?v=20260624-1';
+import { initGuide, startGuide, resetGuide } from './guide.js?v=20260624-1';
 import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?v=20260624-1';
+import { initPDFExport, exportToJSON, importFromJSON } from './export.js?v=20260624-1';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
     initRipple();
     initAppNavigation();
     initParticleBackground();
+    initPDFExport(); // 初始化 PDF 导出功能
 
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -36,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initLiuyaoModule();
     initHuangliModule();
     initFengshuiModule();
+    initFengshuiAdvancedModule();
     initChatModule();
     initXingmingModule();
     initMeihuaModule();
@@ -43,6 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
     initZiweiModule();
     initHepanModule();
     initShuziModule();
+    initQimenModule();
+    initSettings();
+    initSettingsButton();
+    initGuide();
 
     // Re-run dress guide after clock init
     setTimeout(() => { renderDressGuide(); renderFortuneMonth(); }, 500);
@@ -56,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadBaziHistory();
     initGlobalHistoryPanel();
+    initDataManagement(); // 初始化数据管理功能
 
     // 初始化手势操作
     initGestureNavigation();
@@ -490,6 +502,86 @@ function initGestureNavigation() {
         },
         threshold: 80 // 滑动阈值，避免误触
     });
+}
+
+/* ---------- 数据管理 ---------- */
+function initDataManagement() {
+    // 备份按钮
+    const btnExport = document.getElementById('btnExportJSON');
+    if (btnExport) {
+        btnExport.addEventListener('click', () => {
+            exportToJSON({
+                includeHistory: true,
+                includeSettings: true,
+                includeApiKey: false, // 出于安全考虑，默认不包含 API Key
+            });
+        });
+    }
+
+    // 恢复按钮
+    const btnImport = document.getElementById('btnImportJSON');
+    const importInput = document.getElementById('importFileInput');
+    if (btnImport && importInput) {
+        btnImport.addEventListener('click', () => {
+            importInput.click();
+        });
+
+        importInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const confirmed = confirm('恢复数据将覆盖当前的所有数据，确定要继续吗？');
+            if (!confirmed) {
+                importInput.value = '';
+                return;
+            }
+
+            try {
+                const result = await importFromJSON(file);
+                if (result.success) {
+                    showToast(result.message, 3000);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showToast(result.message, 3000);
+                }
+            } catch (err) {
+                showToast(err.message || '数据恢复失败', 3000);
+            }
+
+            importInput.value = '';
+        });
+    }
+
+    // 清除数据按钮
+    const btnClear = document.getElementById('btnClearAllData');
+    if (btnClear) {
+        btnClear.addEventListener('click', () => {
+            const confirmed = confirm('确定要清除所有数据吗？此操作不可恢复！\n\n建议先点击"备份全部数据"保存一份备份。');
+            if (!confirmed) return;
+
+            const doubleConfirm = confirm('再次确认：清除后所有历史记录、设置、缓存数据都将丢失！');
+            if (!doubleConfirm) return;
+
+            // 清除所有 localStorage 数据
+            localStorage.clear();
+            showToast('数据已清除，页面将自动刷新', 2000);
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        });
+    }
+}
+
+/* ---------- 设置面板 ---------- */
+function initSettingsButton() {
+    const btnSettings = document.getElementById('btnOpenSettings');
+    if (btnSettings) {
+        btnSettings.addEventListener('click', () => {
+            openSettings();
+        });
+    }
 }
 
 /* ---------- 金沙粒子 ---------- */

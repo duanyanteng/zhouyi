@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乾坤易道 · 命理分享</title>
+    <meta name="theme-color" content="#D4AF37">
+    <!-- FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 核心 CSS 样式 -->
+    <link rel="stylesheet" href="css/base.css?v=20260624-2">
+    <link rel="stylesheet" href="css/components.css?v=20260624-2">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0A0A0C 0%, #1A1510 50%, #0A0A0C 100%);
+            color: #F5F0E8;
+            font-family: 'Noto Serif SC', 'ZCOOL XiaoWei', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .share-container {
+            max-width: 800px;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .share-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .share-header h1 {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 2rem;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+
+        .share-header p {
+            font-size: 0.9rem;
+            color: #A2A2AC;
+        }
+
+        .share-card {
+            background: rgba(20, 18, 14, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .share-card h2 {
+            font-size: 1.2rem;
+            color: #D4AF37;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .share-card h2 i {
+            font-size: 1.3rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: rgba(10, 10, 12, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .info-item label {
+            font-size: 0.75rem;
+            color: #A2A2AC;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .info-item .value {
+            font-size: 1rem;
+            color: #F5F0E8;
+            font-weight: 600;
+        }
+
+        .pillars-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .pillar {
+            text-align: center;
+            background: rgba(10, 10, 12, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 8px;
+            padding: 12px 8px;
+        }
+
+        .pillar-label {
+            font-size: 0.7rem;
+            color: #A2A2AC;
+            margin-bottom: 8px;
+        }
+
+        .pillar-ganzhi {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 1.5rem;
+            color: #D4AF37;
+            font-weight: 700;
+        }
+
+        .share-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn-share {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 8px;
+            color: #D4AF37;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-share:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.2));
+            border-color: rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #D4AF37, #B8941F);
+            border-color: #D4AF37;
+            color: #0A0A0C;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #E6C280, #D4AF37);
+            border-color: #E6C280;
+        }
+
+        .share-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .share-footer p {
+            font-size: 0.75rem;
+            color: #A2A2AC;
+            margin-bottom: 8px;
+        }
+
+        .share-footer a {
+            color: #D4AF37;
+            text-decoration: none;
+        }
+
+        .share-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .error-message i {
+            font-size: 4rem;
+            color: #C73E3A;
+            margin-bottom: 20px;
+        }
+
+        .error-message h2 {
+            font-size: 1.5rem;
+            color: #F5F0E8;
+            margin-bottom: 12px;
+        }
+
+        .error-message p {
+            color: #A2A2AC;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 640px) {
+            .share-container {
+                margin-top: 20px;
+            }
+
+            .share-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pillars-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .share-actions {
+                flex-direction: column;
+            }
+
+            .btn-share {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="share-container" id="shareContainer">
+        <!-- 内容将由 JavaScript 动态渲染 -->
+        <div class="error-message" id="loadingMessage">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <h2>正在加载分享内容...</h2>
+            <p>请稍候</p>
+        </div>
+    </div>
+
+    <div class="share-footer">
+        <p>由 <a href="index.html">乾坤易道</a> 生成</p>
+        <p>周易数理命理智能分析系统</p>
+    </div>
+
+    <script>
+        // 解析分享链接
+        function parseShareLink() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const encoded = urlParams.get('share');
+
+                if (!encoded) {
+                    return null;
+                }
+
+                const jsonStr = decodeURIComponent(atob(encoded));
+                const shareData = JSON.parse(jsonStr);
+
+                // 检查是否过期
+                if (shareData.expires && shareData.expires < Date.now()) {
+                    return { expired: true };
+                }
+
+                return shareData;
+
+            } catch (err) {
+                console.error('解析分享链接失败:', err);
+                return null;
+            }
+        }
+
+        // 渲染八字分享内容
+        function renderBaziShare(data) {
+            const container = document.getElementById('shareContainer');
+
+            const pillars = data.pillars || {};
+
+            container.innerHTML = `
+                <div class="share-header">
+                    <h1>☯ 乾坤易道</h1>
+                    <p>周易数理命理智能分析系统 · 命盘分享</p>
+                </div>
+
+                <div class="share-card">
+                    <h2><i class="fa-solid fa-user"></i> 基本信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>姓名</label>
+                            <div class="value">${data.name || '善信'}</div>
+                        </div>
+                        <div class="info-item">
+                            <label>性别</label>
+                            <div class="value">${data.gender || '未填写'}</div>
+                        </div>
+                        <div class="info-item">
+                            <label>出生日期</label>
+                            <div class="value">${data.date ? new Date(data.date).toLocaleString('zh-CN') : '未填写'}</div>
+                        </div>
+                        <div class="info-item">
+                            <label>分享时间</label>
+                            <div class="value">${new Date().toLocaleString('zh-CN')}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="share-card">
+                    <h2><i class="fa-solid fa-chart-pie"></i> 四柱八字</h2>
+                    <div class="pillars-container">
+                        <div class="pillar">
+                            <div class="pillar-label">年柱</div>
+                            <div class="pillar-ganzhi">${pillars.year || '--'}</div>
+                        </div>
+                        <div class="pillar">
+                            <div class="pillar-label">月柱</div>
+                            <div class="pillar-ganzhi">${pillars.month || '--'}</div>
+                        </div>
+                        <div class="pillar">
+                            <div class="pillar-label">日柱</div>
+                            <div class="pillar-ganzhi">${pillars.day || '--'}</div>
+                        </div>
+                        <div class="pillar">
+                            <div class="pillar-label">时柱</div>
+                            <div class="pillar-ganzhi">${pillars.time || '--'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="share-actions">
+                    <a href="index.html" class="btn-share btn-primary">
+                        <i class="fa-solid fa-arrow-right"></i> 打开完整应用
+                    </a>
+                    <button class="btn-share" onclick="copyCurrentUrl()">
+                        <i class="fa-solid fa-copy"></i> 复制链接
+                    </button>
+                </div>
+            `;
+        }
+
+        // 渲染错误信息
+        function renderError(message, icon = 'fa-exclamation-triangle') {
+            const container = document.getElementById('shareContainer');
+            container.innerHTML = `
+                <div class="error-message">
+                    <i class="fa-solid ${icon}"></i>
+                    <h2>${message}</h2>
+                    <p>请检查分享链接是否完整，或联系分享者重新生成。</p>
+                    <a href="index.html" class="btn-share btn-primary" style="margin-top: 20px;">
+                        <i class="fa-solid fa-home"></i> 返回首页
+                    </a>
+                </div>
+            `;
+        }
+
+        // 复制当前 URL
+        function copyCurrentUrl() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('链接已复制到剪贴板！');
+            }).catch(() => {
+                prompt('请手动复制链接：', window.location.href);
+            });
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', () => {
+            const shareData = parseShareLink();
+
+            if (!shareData) {
+                renderError('无效的分享链接', 'fa-link-slash');
+                return;
+            }
+
+            if (shareData.expired) {
+                renderError('分享链接已过期', 'fa-clock');
+                return;
+            }
+
+            // 根据类型渲染内容
+            switch (shareData.type) {
+                case 'bazi':
+                    renderBaziShare(shareData.data);
+                    break;
+                // 可以扩展其他类型
+                default:
+                    renderError('不支持的分享类型', 'fa-file');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -9,7 +9,7 @@
     --border-color: rgba(212, 175, 55, 0.15);
     --border-hover: rgba(212, 175, 55, 0.35);
     --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
-    
+
     --gold-primary: #D4AF37;
     --gold-glow: rgba(212, 175, 55, 0.6);
     --cinnabar-red: #C93C3C;
@@ -17,7 +17,7 @@
     --text-gold: #E6C280;
     --text-white: #E5E5EA;
     --text-gray: #A2A2AC;
-    
+
     --color-metal: #E6C280;
     --color-wood: #3B9C7A;
     --color-water: #4A90E2;
@@ -26,27 +26,27 @@
 }
 
 [data-theme="light"] {
-    --bg-dark: #F0EBE0;
-    --bg-card: rgba(255, 252, 245, 0.85);
-    --bg-surface: rgba(255, 252, 245, 0.6);
-    --border-color: rgba(180, 150, 100, 0.25);
-    --border-hover: rgba(180, 150, 100, 0.45);
+    --bg-dark: #FAF7F0;
+    --bg-card: rgba(255, 252, 245, 0.9);
+    --bg-surface: rgba(255, 252, 245, 0.7);
+    --border-color: rgba(160, 130, 80, 0.3);
+    --border-hover: rgba(160, 130, 80, 0.5);
     --shadow-card: 0 4px 24px rgba(0,0,0,0.08);
-    
-    --gold-primary: #B8942E;
-    --gold-glow: rgba(184, 148, 46, 0.4);
-    --cinnabar-red: #B83030;
-    --jade-green: #2E8A6A;
-    
-    --text-gold: #8B6F2E;
-    --text-white: #2C2C2C;
-    --text-gray: #6B6B7A;
-    
-    --color-metal: #A08440;
-    --color-wood: #2E8A6A;
-    --color-water: #3A7BC8;
-    --color-fire: #B83030;
-    --color-earth: #9A7A20;
+
+    --gold-primary: #9A7B2A;
+    --gold-glow: rgba(154, 123, 42, 0.4);
+    --cinnabar-red: #A82828;
+    --jade-green: #257A5A;
+
+    --text-gold: #7A5D1E;
+    --text-white: #1A1A1A;
+    --text-gray: #4A4A5A;
+
+    --color-metal: #8A6E30;
+    --color-wood: #257A5A;
+    --color-water: #2A6BB8;
+    --color-fire: #A82828;
+    --color-earth: #806A18;
 }
 [data-theme="light"] .bg-vignette { display: none; }
 [data-theme="light"] #particleCanvas { opacity: 0.15; }

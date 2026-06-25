@@ -1,9 +1,25 @@
 import { AppState, saveBaziInput } from './state.js?v=20260624-1';
 
 import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js?v=20260624-1';
+import { exportToPDF, formatDate, generateShareLink } from './export.js?v=20260624-1';
+
 function initBaziModule() {
     const btnCalculate = document.getElementById("btnCalculateBazi");
     if (!btnCalculate) return;
+
+    // PDF 导出按钮事件
+    const btnExportPDF = document.getElementById("btnExportBaziPDF");
+    if (btnExportPDF) {
+        btnExportPDF.addEventListener("click", () => {
+            const name = document.getElementById("baziName")?.value || "善信";
+            exportToPDF('baziDetailAnalysis', {
+                filename: `八字命盘分析_${name}_${formatDate(new Date())}.pdf`,
+                title: `乾坤易道 · 八字命盘分析`,
+                subtitle: name,
+                watermark: '乾坤易道',
+            });
+        });
+    }
 
     btnCalculate.addEventListener("click", () => {
         const name = document.getElementById("baziName").value.trim() || "无名善信";
@@ -716,6 +732,57 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
         </div>
     `;
     analysisEl.innerHTML = htmlContent;
+
+    // 绑定导出按钮事件
+    const btnExportPDF = document.getElementById('btnExportBaziPDF');
+    if (btnExportPDF) {
+        btnExportPDF.onclick = () => {
+            const name = document.getElementById('baziName')?.value || '善信';
+            exportToPDF('baziDetailAnalysis', {
+                filename: `八字命盘_${name}_${formatDate(new Date())}.pdf`,
+                title: '乾坤易道 · 八字命盘分析',
+                subtitle: `${name} 的命理详批`,
+            });
+        };
+    }
+
+    // 绑定分享按钮事件（生成分享链接）
+    const btnShare = document.querySelector('[data-target="baziDetailAnalysis"][data-action="clipboard"]');
+    if (btnShare) {
+        btnShare.onclick = () => {
+            // 获取八字数据
+            const baziData = {
+                name: document.getElementById('baziName')?.value || '善信',
+                gender: document.querySelector('input[name="baziGender"]:checked')?.value || '男',
+                date: document.getElementById('baziDate')?.value || '',
+                // 获取四柱信息
+                pillars: {
+                    year: document.getElementById('colYear')?.querySelector('.gan')?.textContent +
+                           document.getElementById('colYear')?.querySelector('.zhi')?.textContent,
+                    month: document.getElementById('colMonth')?.querySelector('.gan')?.textContent +
+                            document.getElementById('colMonth')?.querySelector('.zhi')?.textContent,
+                    day: document.getElementById('colDay')?.querySelector('.gan')?.textContent +
+                          document.getElementById('colDay')?.querySelector('.zhi')?.textContent,
+                    time: document.getElementById('colTime')?.querySelector('.gan')?.textContent +
+                           document.getElementById('colTime')?.querySelector('.zhi')?.textContent,
+                },
+            };
+
+            // 生成分享链接
+            const shareUrl = generateShareLink(baziData, 'bazi');
+            if (shareUrl) {
+                // 复制到剪贴板
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    showToast('分享链接已复制到剪贴板！', 2000);
+                }).catch(() => {
+                    // 备用方案：显示链接让用户手动复制
+                    prompt('请复制以下分享链接：', shareUrl);
+                });
+            } else {
+                showToast('生成分享链接失败', 2000);
+            }
+        };
+    }
 }
 
 function getSeasonInfluence(dw, sw) {

@@ -14,10 +14,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>!function(){setTimeout(function(){var e=document.createElement('i');e.className='fa-solid fa-moon';e.style.cssText='position:fixed;left:-9999px;top:-9999px;font-size:30px;font-family:inherit';document.body.appendChild(e);var t=e.offsetWidth;document.body.removeChild(e);if(t<10){var l=document.createElement('link');l.rel='stylesheet';l.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';document.head.appendChild(l);console.warn('FontAwesome cdnjs 加载失败，切换 jsdelivr 备用 CDN')}},2500)}()</script>
     <!-- 核心 CSS 样式（模块化并行加载） -->
-    <link rel="stylesheet" href="css/base.css?v=20260602-1">
-    <link rel="stylesheet" href="css/components.css?v=20260602-1">
-    <link rel="stylesheet" href="css/panels.css?v=20260618-4">
-    <link rel="stylesheet" href="style.css?v=20260618-4">
+    <link rel="stylesheet" href="css/base.css?v=20260624-2">
+    <link rel="stylesheet" href="css/components.css?v=20260624-2">
+    <link rel="stylesheet" href="css/panels.css?v=20260624-2">
+    <link rel="stylesheet" href="style.css?v=20260624-2">
     <!-- 引入高精度农历历法与命理计算库 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js" onerror="this.remove(); window.lunarFallback=true; console.warn('lunar-javascript CDN 加载失败，部分历法功能将不可用')"></script>
     <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\/script>');</script>
@@ -112,6 +112,17 @@
                         <span class="nav-num">拾壹</span>
                         <span class="nav-label">八字合盘</span>
                         <span class="nav-icon nav-symbol" aria-hidden="true">⚖</span>
+                    </li>
+                    <li class="nav-item" data-target="qimen">
+                        <span class="nav-num">拾贰</span>
+                        <span class="nav-label">奇门遁甲</span>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">☷</span>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li class="nav-item nav-settings" id="btnOpenSettings">
+                        <span class="nav-num">⚙</span>
+                        <span class="nav-label">偏好设置</span>
+                        <span class="nav-icon nav-symbol" aria-hidden="true"><i class="fa-solid fa-gear"></i></span>
                     </li>
                 </ul>
             </nav>
@@ -210,6 +221,12 @@
                                 </select>
                             </div>
                             <div class="global-history-list" id="globalHistoryList"></div>
+                            <div class="data-management-bar" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(212,175,55,0.1);display:flex;gap:8px;justify-content:flex-start;flex-wrap:wrap;">
+                                <button class="btn-secondary btn-data-export" id="btnExportJSON"><i class="fa-solid fa-download"></i> 备份全部数据</button>
+                                <button class="btn-secondary btn-data-import" id="btnImportJSON"><i class="fa-solid fa-upload"></i> 恢复数据</button>
+                                <button class="btn-secondary btn-data-clear" id="btnClearAllData"><i class="fa-solid fa-trash"></i> 清除数据</button>
+                                <input type="file" id="importFileInput" accept=".json" style="display:none;">
+                            </div>
                         </div>
                         </div>
                     </div>
@@ -339,9 +356,12 @@
                                     <div class="scroll-seal">乾坤易道之印</div>
                                 </div>
                                 <div class="scroll-handle handle-bottom"></div>
-                                <button class="btn-copy-result" data-copy-target="baziDetailAnalysis" style="margin-top:10px;"><i class="fa-solid fa-copy"></i> 复制命批</button>
-                                <button class="btn-screenshot" data-target="baziDetailAnalysis" data-action="download" style="margin-top:10px;"><i class="fa-solid fa-download"></i> 保存图片</button>
-                                <button class="btn-screenshot" data-target="baziDetailAnalysis" data-action="clipboard" style="margin-top:10px;"><i class="fa-solid fa-share-nodes"></i> 分享卡片</button>
+                                <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-start;align-items:center;flex-wrap:wrap;">
+                                    <button class="btn-copy-result" data-copy-target="baziDetailAnalysis"><i class="fa-solid fa-copy"></i> 复制命批</button>
+                                    <button class="btn-screenshot" data-target="baziDetailAnalysis" data-action="download"><i class="fa-solid fa-download"></i> 保存图片</button>
+                                    <button class="btn-screenshot" data-target="baziDetailAnalysis" data-action="clipboard"><i class="fa-solid fa-share-nodes"></i> 分享卡片</button>
+                                    <button class="btn-export-pdf" id="btnExportBaziPDF"><i class="fa-solid fa-file-pdf"></i> 导出 PDF</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -648,6 +668,17 @@
                                     <button class="btn-screenshot" data-target="fengshuiResultBody" data-action="download"><i class="fa-solid fa-download"></i> 保存图片</button>
                                     <button class="btn-screenshot" data-target="fengshuiResultBody" data-action="clipboard"><i class="fa-solid fa-share-nodes"></i> 分享卡片</button>
                                 </div>
+                            </div>
+
+                            <!-- 风水深化功能入口 -->
+                            <div class="glass-card" style="margin-top:16px;">
+                                <div class="card-badge">高级功能</div>
+                                <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;">
+                                    <button class="btn-secondary" id="btnShow24Mountains"><i class="fa-solid fa-compass"></i> 24山方位</button>
+                                    <button class="btn-secondary" id="btnShowFeixing"><i class="fa-solid fa-star"></i> 玄空飞星</button>
+                                    <button class="btn-secondary" id="btnShowCompass"><i class="fa-solid fa-location-crosshairs"></i> 指南针</button>
+                                </div>
+                                <div id="fengshuiAdvancedResult" style="display:none;margin-top:16px;"></div>
                             </div>
                         </div>
                     </div>
@@ -969,6 +1000,47 @@
                                 <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
                                     <button class="btn-copy-result" data-copy-target="shuziAnalysis"><i class="fa-solid fa-copy"></i> 复制分析</button>
                                     <button class="btn-screenshot" data-target="shuziResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                                </div>
+                            </div>
+                            <div class="scroll-handle handle-bottom"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 13. 奇门遁甲 -->
+                <section class="view-panel" id="panel-qimen">
+                    <div class="qimen-container">
+                        <div class="glass-card qimen-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-yin-yang"></i> 奇门遁甲排盘</h2>
+                            <p style="color:var(--text-gray);font-size:0.82rem;margin:0 0 14px 0;">奇门遁甲，古代最高层次的预测学，融合天时、地利、人和、神助四大要素，用于择时择方、趋吉避凶。</p>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="qimenDate">占卜时辰 (公历)</label>
+                                    <input type="datetime-local" id="qimenDate">
+                                    <p style="font-size:0.68rem;color:var(--text-gray);margin-top:4px;">选择准确的占卜时辰，奇门遁甲以时家奇门为主</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>占卜事项</label>
+                                    <select id="qimenCategory" class="custom-select">
+                                        <option value="general">诸事问吉</option>
+                                        <option value="career">事业升迁</option>
+                                        <option value="wealth">求财致富</option>
+                                        <option value="love">婚姻恋情</option>
+                                        <option value="travel">出行商旅</option>
+                                        <option value="lawsuit">诉讼官司</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn-primary" id="btnCalculateQimen" style="margin-top:12px;"><i class="fa-solid fa-wand-magic-sparkles"></i> 开始排盘</button>
+                        </div>
+                        <div class="glass-card scroll-card" id="qimenResultCard" style="display:none;">
+                            <div class="scroll-handle handle-top"></div>
+                            <div class="scroll-content">
+                                <h3 class="scroll-title font-shufa" id="qimenResultTitle">奇门遁甲排盘结果</h3>
+                                <div class="scroll-body" id="qimenResultBody"></div>
+                                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+                                    <button class="btn-copy-result" data-copy-target="qimenResultBody"><i class="fa-solid fa-copy"></i> 复制排盘</button>
+                                    <button class="btn-screenshot" data-target="qimenResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
                                 </div>
                             </div>
                             <div class="scroll-handle handle-bottom"></div>
