@@ -24,7 +24,7 @@ import { initQimenModule } from './qimen.js?v=20260624-1';
 import { initSettings, openSettings } from './settings.js?v=20260624-1';
 import { initGuide, startGuide, resetGuide } from './guide.js?v=20260624-1';
 import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?v=20260624-1';
-import { initPDFExport, exportToJSON, importFromJSON } from './export.js?v=20260624-1';
+import { initPDFExport, exportToJSON, importFromJSON, showSelectiveExportDialog, executeSelectiveExport, setupAutoBackup, injectExportStyles } from './export.js?v=20260624-2';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadBaziHistory();
     initGlobalHistoryPanel();
     initDataManagement(); // 初始化数据管理功能
+    setupAutoBackup(7); // 设置自动备份提醒（7天）
 
     // 初始化手势操作
     initGestureNavigation();
@@ -506,15 +507,17 @@ function initGestureNavigation() {
 
 /* ---------- 数据管理 ---------- */
 function initDataManagement() {
-    // 备份按钮
+    // 初始化导出样式
+    injectExportStyles();
+
+    // 备份按钮（使用选择性导出）
     const btnExport = document.getElementById('btnExportJSON');
     if (btnExport) {
-        btnExport.addEventListener('click', () => {
-            exportToJSON({
-                includeHistory: true,
-                includeSettings: true,
-                includeApiKey: false, // 出于安全考虑，默认不包含 API Key
-            });
+        btnExport.addEventListener('click', async () => {
+            const options = await showSelectiveExportDialog();
+            if (options) {
+                await executeSelectiveExport(options);
+            }
         });
     }
 

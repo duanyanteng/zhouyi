@@ -1,4 +1,5 @@
 import { ZI_WEI_STARS } from './utils.js?v=20260624-1';
+import { exportToPDF, formatDate, generateShareLink, showToast } from './export.js?v=20260624-1';
 
 /* ========== 紫微斗数排盘核心 ========== */
 
@@ -287,6 +288,42 @@ function initZiweiModule() {
             </div>
         `;
         document.getElementById("zwResultCard").style.display = "block";
+
+        // 绑定导出按钮事件
+        const btnExportPDF = document.getElementById('btnExportZwPDF');
+        if (btnExportPDF) {
+            btnExportPDF.onclick = () => {
+                exportToPDF('zwResultCard', {
+                    filename: `紫微斗数_${name}_${formatDate(new Date())}.pdf`,
+                    title: '乾坤易道 · 紫微斗数命盘',
+                    subtitle: `${name} 的紫微斗数排盘`,
+                });
+            };
+        }
+
+        // 绑定分享按钮事件
+        const btnShare = document.querySelector('#panel-ziwei [data-action="share"]');
+        if (btnShare) {
+            btnShare.onclick = () => {
+                const zwData = {
+                    name: name,
+                    gender: gender,
+                    date: dateVal,
+                    result: result,
+                    daXian: daXian,
+                };
+                const shareUrl = generateShareLink(zwData, 'ziwei');
+                if (shareUrl) {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        showToast('分享链接已复制到剪贴板！', 2000);
+                    }).catch(() => {
+                        prompt('请复制以下分享链接：', shareUrl);
+                    });
+                } else {
+                    showToast('生成分享链接失败', 2000);
+                }
+            };
+        }
     });
 }
 

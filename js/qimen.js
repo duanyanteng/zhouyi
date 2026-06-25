@@ -5,6 +5,7 @@
  */
 
 import { showToast } from './utils.js?v=20260624-1';
+import { exportToPDF, formatDate, generateShareLink } from './export.js?v=20260624-1';
 
 /* ========== 奇门遁甲核心数据 ========== */
 
@@ -679,6 +680,39 @@ function initQimenModule() {
                 }
 
                 showToast('奇门遁甲排盘完成！', 2000);
+
+                // 绑定导出按钮事件
+                const btnExportPDF = document.getElementById('btnExportQimenPDF');
+                if (btnExportPDF) {
+                    btnExportPDF.onclick = () => {
+                        exportToPDF('qimenResultCard', {
+                            filename: `奇门遁甲_${year}年${month}月${day}日${hour}时_${formatDate(new Date())}.pdf`,
+                            title: '乾坤易道 · 奇门遁甲排盘',
+                            subtitle: `${year}年${month}月${day}日 ${hour}时`,
+                        });
+                    };
+                }
+
+                // 绑定分享按钮事件
+                const btnShare = document.querySelector('#panel-qimen [data-action="share"]');
+                if (btnShare) {
+                    btnShare.onclick = () => {
+                        const shareData = {
+                            year, month, day, hour,
+                            result: result,
+                        };
+                        const shareUrl = generateShareLink(shareData, 'qimen');
+                        if (shareUrl) {
+                            navigator.clipboard.writeText(shareUrl).then(() => {
+                                showToast('分享链接已复制到剪贴板！', 2000);
+                            }).catch(() => {
+                                prompt('请复制以下分享链接：', shareUrl);
+                            });
+                        } else {
+                            showToast('生成分享链接失败', 2000);
+                        }
+                    };
+                }
             } catch (err) {
                 console.error('奇门遁甲排盘失败:', err);
                 if (resultEl) {

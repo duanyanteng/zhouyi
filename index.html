@@ -906,9 +906,11 @@
                             <div class="card-badge" id="zwBoardTitle">紫微斗数命盘</div>
                             <div class="zw-chart" id="zwChart"></div>
                             <div class="scroll-body" id="zwAnalysis"></div>
-                            <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+                            <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
                                 <button class="btn-copy-result" data-copy-target="zwAnalysis"><i class="fa-solid fa-copy"></i> 复制命盘</button>
                                 <button class="btn-screenshot" data-target="zwResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                                <button class="btn-export-pdf" id="btnExportZwPDF"><i class="fa-solid fa-file-pdf"></i> 导出 PDF</button>
+                                <button class="btn-screenshot" data-target="zwAnalysis" data-action="share"><i class="fa-solid fa-share-nodes"></i> 分享链接</button>
                             </div>
                         </div>
                     </div>
@@ -997,9 +999,11 @@
                             <div class="scroll-content">
                                 <h3 class="scroll-title font-shufa" id="shuziResultTitle">数字能量分析</h3>
                                 <div class="scroll-body" id="shuziAnalysis"></div>
-                                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+                                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
                                     <button class="btn-copy-result" data-copy-target="shuziAnalysis"><i class="fa-solid fa-copy"></i> 复制分析</button>
                                     <button class="btn-screenshot" data-target="shuziResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                                    <button class="btn-export-pdf" id="btnExportShuziPDF"><i class="fa-solid fa-file-pdf"></i> 导出 PDF</button>
+                                    <button class="btn-screenshot" data-target="shuziAnalysis" data-action="share"><i class="fa-solid fa-share-nodes"></i> 分享链接</button>
                                 </div>
                             </div>
                             <div class="scroll-handle handle-bottom"></div>
@@ -1038,9 +1042,11 @@
                             <div class="scroll-content">
                                 <h3 class="scroll-title font-shufa" id="qimenResultTitle">奇门遁甲排盘结果</h3>
                                 <div class="scroll-body" id="qimenResultBody"></div>
-                                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+                                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
                                     <button class="btn-copy-result" data-copy-target="qimenResultBody"><i class="fa-solid fa-copy"></i> 复制排盘</button>
                                     <button class="btn-screenshot" data-target="qimenResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                                    <button class="btn-export-pdf" id="btnExportQimenPDF"><i class="fa-solid fa-file-pdf"></i> 导出 PDF</button>
+                                    <button class="btn-screenshot" data-target="qimenResultBody" data-action="share"><i class="fa-solid fa-share-nodes"></i> 分享链接</button>
                                 </div>
                             </div>
                             <div class="scroll-handle handle-bottom"></div>

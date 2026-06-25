@@ -1,4 +1,5 @@
 import { escapeHTML } from './utils.js?v=20260624-1';
+import { exportToPDF, formatDate, generateShareLink, showToast } from './export.js?v=20260624-1';
 
 /* ========== 数字能量学核心 ========== */
 
@@ -293,6 +294,39 @@ function initShuziModule() {
 
         // 滚动到结果区域
         resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // 绑定导出按钮事件
+        const btnExportPDF = document.getElementById('btnExportShuziPDF');
+        if (btnExportPDF) {
+            btnExportPDF.onclick = () => {
+                exportToPDF('shuziResultCard', {
+                    filename: `数字能量_${numberStr}_${formatDate(new Date())}.pdf`,
+                    title: '乾坤易道 · 数字能量分析',
+                    subtitle: `数字组合：${numberStr}`,
+                });
+            };
+        }
+
+        // 绑定分享按钮事件
+        const btnShare = document.querySelector('#panel-shuzi [data-action="share"]');
+        if (btnShare) {
+            btnShare.onclick = () => {
+                const shareData = {
+                    number: numberStr,
+                    analysis: analysis,
+                };
+                const shareUrl = generateShareLink(shareData, 'shuzi');
+                if (shareUrl) {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        showToast('分享链接已复制到剪贴板！', 2000);
+                    }).catch(() => {
+                        prompt('请复制以下分享链接：', shareUrl);
+                    });
+                } else {
+                    showToast('生成分享链接失败', 2000);
+                }
+            };
+        }
     });
 }
 
