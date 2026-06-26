@@ -120,12 +120,13 @@ function initChatModule() {
 
             const history = document.getElementById("chatHistory");
 
-            // 创建助手消息容器（用于流式输出）
+            // 创建助手消息容器（使用唯一 ID）
+            const streamId = 'streamOutput_' + Date.now();
             const assistantMsg = document.createElement("div");
             assistantMsg.className = "chat-message assistant";
             assistantMsg.innerHTML = `
                 <div class="avatar">☯</div>
-                <div class="message-bubble font-shufa" id="streamOutput">
+                <div class="message-bubble font-shufa" id="${streamId}">
                     <i class="fa-solid fa-spinner animate-spin" style="margin-right:6px;"></i> 大师抚须推演天机中...
                 </div>
             `;
@@ -134,11 +135,11 @@ function initChatModule() {
 
             try {
                 // 使用 AI 增强模块（流式输出）
-                const reply = await aiAnalyzer.sendMessageStream(text, 'general', 'streamOutput');
+                const reply = await aiAnalyzer.sendMessageStream(text, 'general', streamId);
                 saveChatHistory();
             } catch (err) {
-                // AI 模块失败，直接降级到本地回复（不尝试 Gemini，避免双重 503）
-                const streamEl = document.getElementById("streamOutput");
+                // AI 模块失败，直接降级到本地回复
+                const streamEl = document.getElementById(streamId);
                 if (streamEl) {
                     const isKeyMissing = err.message && err.message.includes("API Key");
                     const isOverloaded = err.message && (err.message.includes("503") || err.message.includes("high demand"));
