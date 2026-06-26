@@ -1554,3 +1554,911 @@ input:checked + .toggle-slider:before {
         min-width: auto;
     }
 }
+
+/* ========== AI 流式输出样式 ========== */
+
+/* 打字机光标 */
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: #D4AF37;
+    animation: blink 0.7s infinite;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* 流式输出内容 */
+.stream-output {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* AI 对话气泡优化 */
+.chat-message.assistant .message-bubble {
+    line-height: 1.8;
+    font-size: 0.92rem;
+}
+
+.chat-message.assistant .message-bubble strong {
+    color: #D4AF37;
+    font-weight: 600;
+}
+
+.chat-message.assistant .message-bubble h2,
+.chat-message.assistant .message-bubble h3,
+.chat-message.assistant .message-bubble h4 {
+    color: #D4AF37;
+    margin: 16px 0 8px;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.chat-message.assistant .message-bubble ul {
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.chat-message.assistant .message-bubble li {
+    margin: 4px 0;
+}
+
+.chat-message.assistant .message-bubble p {
+    margin: 8px 0;
+}
+
+/* 停止生成按钮 */
+.btn-stop-generation {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(199, 62, 58, 0.15);
+    border: 1px solid rgba(199, 62, 58, 0.4);
+    border-radius: 6px;
+    color: #e86b6b;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-stop-generation:hover {
+    background: rgba(199, 62, 58, 0.25);
+    border-color: rgba(199, 62, 58, 0.6);
+}
+
+/* 加载动画 */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ========== 大六壬模块样式 ========== */
+
+.liuren-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.liuren-input-panel {
+    background: rgba(20, 18, 14, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.liuren-report {
+    font-family: 'Noto Serif SC', serif;
+}
+
+.liuren-header {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.liuren-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+}
+
+.liuren-info span {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #D4AF37;
+    font-weight: 600;
+}
+
+.liuren-section {
+    background: rgba(20, 18, 14, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.liuren-section h4 {
+    font-size: 1rem;
+    color: #D4AF37;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 四课样式 */
+.liuren-four-lessons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.lesson-item {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+.lesson-label {
+    font-size: 0.7rem;
+    color: #A2A2AC;
+    margin-bottom: 8px;
+}
+
+.lesson-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.lesson-base {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #F5F0E8;
+    font-family: 'ZCOOL XiaoWei', serif;
+}
+
+.lesson-arrow {
+    color: #D4AF37;
+    font-size: 0.9rem;
+}
+
+.lesson-top {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #D4AF37;
+    font-family: 'ZCOOL XiaoWei', serif;
+}
+
+/* 三传样式 */
+.liuren-three-trans {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.trans-item {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.trans-item.chu {
+    border-color: rgba(59, 156, 122, 0.4);
+    background: rgba(59, 156, 122, 0.1);
+}
+
+.trans-item.zhong {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.trans-item.mo {
+    border-color: rgba(199, 62, 58, 0.4);
+    background: rgba(199, 62, 58, 0.1);
+}
+
+.trans-label {
+    font-size: 0.75rem;
+    color: #A2A2AC;
+    margin-bottom: 8px;
+}
+
+.trans-content {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #F5F0E8;
+    font-family: 'ZCOOL XiaoWei', serif;
+}
+
+/* 格局样式 */
+.pattern-info {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.pattern-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #D4AF37;
+    margin-bottom: 8px;
+}
+
+.pattern-desc {
+    font-size: 0.88rem;
+    color: #F5F0E8;
+    line-height: 1.6;
+}
+
+/* 建议样式 */
+.advice-content {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.advice-summary {
+    font-size: 0.9rem;
+    color: #F5F0E8;
+    line-height: 1.8;
+    margin: 0 0 12px 0;
+}
+
+.advice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.advice-item {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.advice-item.ji {
+    border-color: rgba(59, 156, 122, 0.4);
+}
+
+.advice-item.xiong {
+    border-color: rgba(199, 62, 58, 0.4);
+}
+
+.advice-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #A2A2AC;
+    margin-bottom: 4px;
+}
+
+.advice-item.ji .advice-label {
+    color: #3B9C7A;
+}
+
+.advice-item.xiong .advice-label {
+    color: #e86b6b;
+}
+
+.advice-value {
+    font-size: 0.88rem;
+    color: #F5F0E8;
+    line-height: 1.6;
+}
+
+.advice-time {
+    font-size: 0.82rem;
+    color: #A2A2AC;
+    font-style: italic;
+    margin: 0;
+}
+
+/* 天盘样式 */
+.liuren-heaven-plate {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.heaven-cell {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+}
+
+.heaven-zhi {
+    font-size: 0.7rem;
+    color: #A2A2AC;
+    margin-bottom: 6px;
+}
+
+.heaven-general {
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.heaven-general.ji {
+    color: #3B9C7A;
+}
+
+.heaven-general.xiong {
+    color: #e86b6b;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .liuren-four-lessons,
+    .liuren-three-trans {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .liuren-heaven-plate {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .liuren-info {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .advice-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========== 太乙神数模块样式 ========== */
+
+.taiyi-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.taiyi-input-panel {
+    background: rgba(20, 18, 14, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.taiyi-report {
+    font-family: 'Noto Serif SC', serif;
+}
+
+.taiyi-header {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.taiyi-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+}
+
+.taiyi-info span {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #D4AF37;
+    font-weight: 600;
+}
+
+.taiyi-pattern.ji,
+.taiyi-pattern.大吉 {
+    background: rgba(59, 156, 122, 0.2);
+    border-color: rgba(59, 156, 122, 0.4);
+    color: #3B9C7A;
+}
+
+.taiyi-pattern.xiong,
+.taiyi-pattern.凶 {
+    background: rgba(199, 62, 58, 0.2);
+    border-color: rgba(199, 62, 58, 0.4);
+    color: #e86b6b;
+}
+
+.taiyi-section {
+    background: rgba(20, 18, 14, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.taiyi-section h4 {
+    font-size: 1rem;
+    color: #D4AF37;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 关键星曜样式 */
+.taiyi-key-stars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.star-item {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.star-name {
+    font-size: 0.75rem;
+    color: #A2A2AC;
+    margin-bottom: 8px;
+}
+
+.star-position {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #F5F0E8;
+    margin-bottom: 6px;
+}
+
+.star-symbol {
+    font-size: 1.5rem;
+}
+
+/* 三基样式 */
+.taiyi-sanji {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.sanji-item {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.sanji-item.junji {
+    border-color: rgba(212, 175, 55, 0.5);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.sanji-item.chenji {
+    border-color: rgba(59, 156, 122, 0.4);
+    background: rgba(59, 156, 122, 0.1);
+}
+
+.sanji-item.minji {
+    border-color: rgba(80, 227, 194, 0.4);
+    background: rgba(80, 227, 194, 0.1);
+}
+
+.sanji-label {
+    font-size: 0.75rem;
+    color: #A2A2AC;
+    margin-bottom: 8px;
+}
+
+.sanji-content {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #F5F0E8;
+    font-family: 'ZCOOL XiaoWei', serif;
+    margin-bottom: 4px;
+}
+
+.sanji-wuxing {
+    font-size: 0.82rem;
+    color: #D4AF37;
+    background: rgba(212, 175, 55, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* 五福样式 */
+.taiyi-wufu {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.wufu-item {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+.wufu-label {
+    font-size: 0.7rem;
+    color: #A2A2AC;
+    margin-bottom: 6px;
+}
+
+.wufu-content {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #D4AF37;
+    font-family: 'ZCOOL XiaoWei', serif;
+}
+
+/* 格局样式 */
+.taiyi-section .pattern-info {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.taiyi-section .pattern-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #D4AF37;
+    margin-bottom: 6px;
+}
+
+.taiyi-section .pattern-nature {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.taiyi-section .pattern-nature.ji,
+.taiyi-section .pattern-nature.大吉 {
+    background: rgba(59, 156, 122, 0.2);
+    color: #3B9C7A;
+}
+
+.taiyi-section .pattern-nature.xiong,
+.taiyi-section .pattern-nature.凶 {
+    background: rgba(199, 62, 58, 0.2);
+    color: #e86b6b;
+}
+
+.taiyi-section .pattern-desc {
+    font-size: 0.88rem;
+    color: #F5F0E8;
+    line-height: 1.6;
+}
+
+/* 建议样式 */
+.taiyi-section .advice-content {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.taiyi-section .advice-summary {
+    font-size: 0.9rem;
+    color: #F5F0E8;
+    line-height: 1.8;
+    margin: 0 0 12px 0;
+}
+
+.taiyi-section .advice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.taiyi-section .advice-item {
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.taiyi-section .advice-item.ji {
+    border-color: rgba(59, 156, 122, 0.4);
+}
+
+.taiyi-section .advice-item.xiong {
+    border-color: rgba(199, 62, 58, 0.4);
+}
+
+.taiyi-section .advice-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #A2A2AC;
+    margin-bottom: 4px;
+}
+
+.taiyi-section .advice-item.ji .advice-label {
+    color: #3B9C7A;
+}
+
+.taiyi-section .advice-item.xiong .advice-label {
+    color: #e86b6b;
+}
+
+.taiyi-section .advice-value {
+    font-size: 0.88rem;
+    color: #F5F0E8;
+    line-height: 1.6;
+}
+
+.taiyi-section .advice-detail {
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.taiyi-section .advice-detail p {
+    font-size: 0.85rem;
+    color: #F5F0E8;
+    margin: 0 0 8px 0;
+    line-height: 1.6;
+}
+
+.taiyi-section .advice-detail p:last-child {
+    margin-bottom: 0;
+}
+
+.taiyi-section .advice-detail strong {
+    color: #D4AF37;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .taiyi-key-stars,
+    .taiyi-sanji {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .taiyi-wufu {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .taiyi-info {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .taiyi-section .advice-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .taiyi-wufu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========== 云端同步样式 ========== */
+
+/* 云端同步状态卡片 */
+.cloud-sync-card {
+    background: rgba(20, 18, 14, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.cloud-sync-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    font-size: 0.82rem;
+}
+
+.cloud-sync-status.online {
+    border-color: rgba(59, 156, 122, 0.4);
+    background: rgba(59, 156, 122, 0.1);
+}
+
+.cloud-sync-status.syncing {
+    border-color: rgba(80, 227, 194, 0.4);
+    background: rgba(80, 227, 194, 0.1);
+}
+
+.cloud-sync-status.offline {
+    border-color: rgba(162, 162, 172, 0.3);
+    background: rgba(162, 162, 172, 0.1);
+}
+
+.sync-icon {
+    font-size: 1rem;
+}
+
+.sync-text {
+    color: var(--text-gold);
+    font-weight: 600;
+}
+
+.sync-time {
+    color: var(--text-gray);
+    font-size: 0.75rem;
+}
+
+/* 登录/注册对话框 */
+.cloud-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.cloud-dialog {
+    background: #14141A;
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: dialogFadeIn 0.3s ease;
+}
+
+@keyframes dialogFadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.cloud-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.cloud-dialog-header h3 {
+    font-size: 1rem;
+    color: #D4AF37;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cloud-dialog-close {
+    background: transparent;
+    border: none;
+    color: #A2A2AC;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.cloud-dialog-close:hover {
+    color: #e86b6b;
+}
+
+.cloud-dialog-body {
+    padding: 20px;
+}
+
+.cloud-form-group {
+    margin-bottom: 16px;
+}
+
+.cloud-form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: #D4AF37;
+    margin-bottom: 6px;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.cloud-form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(10, 10, 12, 0.8);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    color: #F5F0E8;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.cloud-form-group input:focus {
+    border-color: rgba(212, 175, 55, 0.6);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+.cloud-form-error {
+    color: #e86b6b;
+    font-size: 0.78rem;
+    margin-top: 8px;
+    min-height: 20px;
+}
+
+.cloud-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* 动画 */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

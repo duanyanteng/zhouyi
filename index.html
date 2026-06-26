@@ -118,6 +118,16 @@
                         <span class="nav-label">奇门遁甲</span>
                         <span class="nav-icon nav-symbol" aria-hidden="true">☷</span>
                     </li>
+                    <li class="nav-item" data-target="liuren">
+                        <span class="nav-num">拾叁</span>
+                        <span class="nav-label">大六壬</span>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">☯</span>
+                    </li>
+                    <li class="nav-item" data-target="taiyi">
+                        <span class="nav-num">拾肆</span>
+                        <span class="nav-label">太乙神数</span>
+                        <span class="nav-icon nav-symbol" aria-hidden="true">✨</span>
+                    </li>
                     <li class="nav-divider"></li>
                     <li class="nav-item nav-settings" id="btnOpenSettings">
                         <span class="nav-num">⚙</span>
@@ -168,6 +178,30 @@
                                     </div>
                                 </div>
                             </div>
+
+                        <div class="dashboard-grid">
+                            <!-- 云端同步状态卡片 -->
+                            <div class="glass-card cloud-sync-card" style="grid-column:1/-1;margin-bottom:14px;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+                                    <div style="display:flex;align-items:center;gap:12px;">
+                                        <div class="cloud-sync-status" id="cloudSyncStatus">
+                                            <span class="sync-icon">☁️</span>
+                                            <span class="sync-text">未登录</span>
+                                        </div>
+                                        <div style="font-size:0.82rem;color:var(--text-gray);">
+                                            <span id="cloudUserName">未登录</span> · <span id="cloudLastSync">从未同步</span>
+                                        </div>
+                                    </div>
+                                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                        <button class="btn-secondary" id="btnCloudLogin" style="font-size:0.78rem;padding:6px 12px;"><i class="fa-solid fa-right-to-bracket"></i> 登录</button>
+                                        <button class="btn-secondary" id="btnCloudRegister" style="font-size:0.78rem;padding:6px 12px;"><i class="fa-solid fa-user-plus"></i> 注册</button>
+                                        <button class="btn-secondary" id="btnCloudSync" style="font-size:0.78rem;padding:6px 12px;"><i class="fa-solid fa-arrows-rotate"></i> 同步</button>
+                                        <button class="btn-secondary" id="btnCloudRestore" style="font-size:0.78rem;padding:6px 12px;"><i class="fa-solid fa-cloud-arrow-down"></i> 恢复</button>
+                                        <button class="btn-secondary" id="btnCloudLogout" style="font-size:0.78rem;padding:6px 12px;display:none;"><i class="fa-solid fa-right-from-bracket"></i> 登出</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="dashboard-grid">
                             <div class="glass-card feature-link-card" data-goto="bazi">
@@ -1047,6 +1081,89 @@
                                     <button class="btn-screenshot" data-target="qimenResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
                                     <button class="btn-export-pdf" id="btnExportQimenPDF"><i class="fa-solid fa-file-pdf"></i> 导出 PDF</button>
                                     <button class="btn-screenshot" data-target="qimenResultBody" data-action="share"><i class="fa-solid fa-share-nodes"></i> 分享链接</button>
+                                </div>
+                            </div>
+                            <div class="scroll-handle handle-bottom"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 14. 大六壬 -->
+                <section class="view-panel" id="panel-liuren">
+                    <div class="liuren-container">
+                        <div class="glass-card liuren-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-yin-yang"></i> 大六壬排盘</h2>
+                            <p style="color:var(--text-gray);font-size:0.82rem;margin:0 0 14px 0;">大六壬，古代三式之一，以月将加时排天地盘，起四课三传，用于预测事物发展趋势和吉凶。</p>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="liurenDate">占卜时辰 (公历)</label>
+                                    <input type="datetime-local" id="liurenDate">
+                                    <p style="font-size:0.68rem;color:var(--text-gray);margin-top:4px;">选择准确的占卜时辰，六壬以时家为主</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>占卜事项</label>
+                                    <select id="liurenCategory" class="custom-select">
+                                        <option value="general">诸事问吉</option>
+                                        <option value="career">事业升迁</option>
+                                        <option value="wealth">求财致富</option>
+                                        <option value="love">婚姻恋情</option>
+                                        <option value="lawsuit">诉讼官司</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn-primary" id="btnCalculateLiuren" style="margin-top:12px;"><i class="fa-solid fa-wand-magic-sparkles"></i> 开始排盘</button>
+                        </div>
+                        <div class="glass-card scroll-card" id="liurenResultCard" style="display:none;">
+                            <div class="scroll-handle handle-top"></div>
+                            <div class="scroll-content">
+                                <h3 class="scroll-title font-shufa" id="liurenResultTitle">大六壬排盘结果</h3>
+                                <div class="scroll-body" id="liurenResultBody"></div>
+                                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
+                                    <button class="btn-copy-result" data-copy-target="liurenResultBody"><i class="fa-solid fa-copy"></i> 复制排盘</button>
+                                    <button class="btn-screenshot" data-target="liurenResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                                    <button class="btn-export-pdf" id="btnExportLiurenPDF"><i class="fa-solid fa-file-pdf"></i> 导出 PDF</button>
+                                    <button class="btn-screenshot" data-target="liurenResultBody" data-action="share"><i class="fa-solid fa-share-nodes"></i> 分享链接</button>
+                                </div>
+                            </div>
+                            <div class="scroll-handle handle-bottom"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 15. 太乙神数 -->
+                <section class="view-panel" id="panel-taiyi">
+                    <div class="taiyi-container">
+                        <div class="glass-card taiyi-input-panel">
+                            <h2 class="section-title"><i class="fa-solid fa-star"></i> 太乙神数排盘</h2>
+                            <p style="color:var(--text-gray);font-size:0.82rem;margin:0 0 14px 0;">太乙神数，古代三式之一，以太乙为中心，推算国运、战争、大事，用于预测宏观趋势和吉凶。</p>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="taiyiYear">排盘年份</label>
+                                    <input type="number" id="taiyiYear" min="1900" max="2100" value="2026" placeholder="输入年份">
+                                    <p style="font-size:0.68rem;color:var(--text-gray);margin-top:4px;">输入要排盘的年份，默认为当前年份</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>排盘类型</label>
+                                    <select id="taiyiType" class="custom-select">
+                                        <option value="year">年家太乙</option>
+                                        <option value="month">月家太乙</option>
+                                        <option value="day">日家太乙</option>
+                                        <option value="hour">时家太乙</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn-primary" id="btnCalculateTaiyi" style="margin-top:12px;"><i class="fa-solid fa-wand-magic-sparkles"></i> 开始排盘</button>
+                        </div>
+                        <div class="glass-card scroll-card" id="taiyiResultCard" style="display:none;">
+                            <div class="scroll-handle handle-top"></div>
+                            <div class="scroll-content">
+                                <h3 class="scroll-title font-shufa" id="taiyiResultTitle">太乙神数排盘结果</h3>
+                                <div class="scroll-body" id="taiyiResultBody"></div>
+                                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
+                                    <button class="btn-copy-result" data-copy-target="taiyiResultBody"><i class="fa-solid fa-copy"></i> 复制排盘</button>
+                                    <button class="btn-screenshot" data-target="taiyiResultCard"><i class="fa-solid fa-camera"></i> 保存为图片</button>
+                                    <button class="btn-export-pdf" id="btnExportTaiyiPDF"><i class="fa-solid fa-file-pdf"></i> 导出 PDF</button>
+                                    <button class="btn-screenshot" data-target="taiyiResultBody" data-action="share"><i class="fa-solid fa-share-nodes"></i> 分享链接</button>
                                 </div>
                             </div>
                             <div class="scroll-handle handle-bottom"></div>

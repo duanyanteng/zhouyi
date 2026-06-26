@@ -21,8 +21,12 @@ import { initZiweiModule } from './ziwei.js?v=20260624-1';
 import { initHepanModule } from './hepan.js?v=20260624-1';
 import { initShuziModule } from './shuzi.js?v=20260624-1';
 import { initQimenModule } from './qimen.js?v=20260624-1';
+import { initLiurenModule } from './liuren.js?v=20260624-1';
+import { initTaiyiModule } from './taiyi.js?v=20260624-1';
 import { initSettings, openSettings } from './settings.js?v=20260624-1';
 import { initGuide, startGuide, resetGuide } from './guide.js?v=20260624-1';
+import { aiAnalyzer } from './ai-enhanced.js?v=20260624-1';
+import { initCloudSync } from './cloud-sync.js?v=20260624-1';
 import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?v=20260624-1';
 import { initPDFExport, exportToJSON, importFromJSON, showSelectiveExportDialog, executeSelectiveExport, setupAutoBackup, injectExportStyles } from './export.js?v=20260624-2';
 
@@ -32,6 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initAppNavigation();
     initParticleBackground();
     initPDFExport(); // 初始化 PDF 导出功能
+    aiAnalyzer.init(); // 初始化 AI 增强模块
+    initCloudSync(); // 初始化云端同步模块
 
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -51,6 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initHepanModule();
     initShuziModule();
     initQimenModule();
+    initLiurenModule();
+    initTaiyiModule();
     initSettings();
     initSettingsButton();
     initGuide();
@@ -83,6 +91,10 @@ document.addEventListener("DOMContentLoaded", () => {
             dedupeKey: `bazi:${e.detail.name || ''}:${e.detail.gender || ''}:${e.detail.date || ''}`,
             detail: e.detail
         });
+
+        // 注入八字上下文到 AI 分析器
+        aiAnalyzer.injectContext('bazi', e.detail);
+        console.log('八字上下文已注入 AI 分析器');
     });
 
     document.addEventListener('liuyao-analysis-complete', e => {
@@ -93,6 +105,10 @@ document.addEventListener("DOMContentLoaded", () => {
             dedupeKey: `liuyao:${e.detail?.category || ''}:${(e.detail?.lines || []).join('')}`,
             detail: e.detail
         });
+
+        // 注入六爻上下文到 AI 分析器
+        aiAnalyzer.injectContext('liuyao', e.detail);
+        console.log('六爻上下文已注入 AI 分析器');
     });
 
     document.addEventListener('global-history-updated', renderGlobalHistory);

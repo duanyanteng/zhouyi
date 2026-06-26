@@ -1,5 +1,6 @@
 import { restoreChatHistory, saveChatHistory } from './state.js?v=20260624-1';
 import { escapeHTML, sanitizeHTML } from './utils.js?v=20260624-1';
+import { aiAnalyzer } from './ai-enhanced.js?v=20260624-1';
 
 function initChatModule() {
     const btnSend = document.getElementById("btnSendMessage");
@@ -72,30 +73,47 @@ function initChatModule() {
 
         if (chatMode === "api") {
             const history = document.getElementById("chatHistory");
-            const loadingMsg = document.createElement("div");
-            loadingMsg.className = "chat-message assistant loading-msg";
-            loadingMsg.innerHTML = `
+
+            // 创建助手消息容器（用于流式输出）
+            const assistantMsg = document.createElement("div");
+            assistantMsg.className = "chat-message assistant";
+            assistantMsg.innerHTML = `
                 <div class="avatar">☯</div>
-                <div class="message-bubble font-shufa" style="color:var(--text-gray);font-style:italic;">
-                    <i class="fa-solid fa-hourglass-half animate-pulse" style="margin-right:6px;"></i> 大师抚须推演天机中...
+                <div class="message-bubble font-shufa" id="streamOutput">
+                    <i class="fa-solid fa-spinner animate-spin" style="margin-right:6px;"></i> 大师抚须推演天机中...
                 </div>
             `;
-            history.appendChild(loadingMsg);
+            history.appendChild(assistantMsg);
             history.scrollTop = history.scrollHeight;
 
             try {
-                const reply = await generateMasterReplyFromGemini(text);
-                loadingMsg.remove();
-                appendMessage("assistant", reply);
+                // 使用 AI 增强模块（流式输出）
+                const reply = await aiAnalyzer.sendMessageStream(text, 'general', 'streamOutput');
+
+                // 流式输出完成后，保存聊天历史
+                saveChatHistory();
             } catch (err) {
-                console.error("Gemini AI 接口调用失败，启动自动降级:", err);
-                loadingMsg.remove();
-                const isKeyMissing = err.message && err.message.includes("API Key");
-                const errHint = err.message ? err.message.replace(/\b(https?:\/\/[^\s]+)\b/g, '') : '未知错误';
-                const fallbackNotice = isKeyMissing
-                    ? `<p style="color:var(--cinnabar-red);font-style:italic;font-size:0.8rem;margin-bottom:8px;"><i class="fa-solid fa-circle-exclamation"></i> 请输入有效的 Gemini API Key 后重试</p>`
-                    : `<p style="color:var(--cinnabar-red);font-style:italic;font-size:0.7rem;margin-bottom:4px;">⚠ Gemini 返回异常：${escapeHTML(errHint.slice(0, 80))}</p><p style="color:var(--text-gray);font-style:italic;font-size:0.8rem;margin-bottom:8px;"><i class="fa-solid fa-circle-nodes"></i> 老夫已自动接驳传统易理心法为您解答</p>`;
-                appendMessage("assistant", fallbackNotice + generateMasterReply(text));
+                console.error("AI 增强模块调用失败，尝试传统方式:", err);
+
+                // 降级到传统方式
+                try {
+                    const reply = await generateMasterReplyFromGemini(text);
+                    const streamEl = document.getElementById("streamOutput");
+                    if (streamEl) {
+                        streamEl.innerHTML = reply;
+                    }
+                } catch (err2) {
+                    console.error("Gemini AI 接口调用失败，启动本地降级:", err2);
+                    const streamEl = document.getElementById("streamOutput");
+                    if (streamEl) {
+                        const isKeyMissing = err2.message && err2.message.includes("API Key");
+                        const errHint = err2.message ? err2.message.replace(/\b(https?:\/\/[^\s]+)\b/g, '') : '未知错误';
+                        const fallbackNotice = isKeyMissing
+                            ? `<p style="color:var(--cinnabar-red);font-style:italic;font-size:0.8rem;margin-bottom:8px;"><i class="fa-solid fa-circle-exclamation"></i> 请输入有效的 Gemini API Key 后重试</p>`
+                            : `<p style="color:var(--cinnabar-red);font-style:italic;font-size:0.7rem;margin-bottom:4px;">⚠ AI 返回异常：${escapeHTML(errHint.slice(0, 80))}</p><p style="color:var(--text-gray);font-style:italic;font-size:0.8rem;margin-bottom:8px;"><i class="fa-solid fa-circle-nodes"></i> 老夫已自动接驳传统易理心法为您解答</p>`;
+                        streamEl.innerHTML = fallbackNotice + generateMasterReply(text);
+                    }
+                }
             }
         } else {
             const history = document.getElementById("chatHistory");

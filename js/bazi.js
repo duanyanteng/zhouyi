@@ -733,6 +733,28 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
     `;
     analysisEl.innerHTML = htmlContent;
 
+    // 注入八字上下文到 AI 分析器
+    const baziContext = {
+        name: name,
+        gender: gender,
+        date: dateVal,
+        pillars: {
+            year: `${yg}${yz}`,
+            month: `${mg}${mz}`,
+            day: `${dg}${dz}`,
+            time: `${tg}${tz}`,
+        },
+        dayMaster: `${dg}${dayWx}`,
+        wuxing: AppState.wuxingData,
+        shishen: [yearSS, monthSS, timeSS].filter(Boolean),
+        shensha: shenshaList || [],
+    };
+
+    // 触发事件，让 AI 模块可以注入上下文
+    document.dispatchEvent(new CustomEvent('bazi-analysis-complete', {
+        detail: baziContext
+    }));
+
     // 绑定导出按钮事件
     const btnExportPDF = document.getElementById('btnExportBaziPDF');
     if (btnExportPDF) {
