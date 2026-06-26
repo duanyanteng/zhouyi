@@ -1,7 +1,8 @@
 # 乾坤易道 v7.0 版本迭代规划
 
-> 周易数理命理智能分析系统 · 移动优先 · 生态完善
+> 周易数理命理智能分析系统 · 移动优先 · 数据可视化
 > 规划日期：2026-06-25
+> 更新日期：2026-06-25（基于实际情况调整）
 > 基于：v6.0 完成状态
 
 ---
@@ -12,14 +13,22 @@
 
 | 功能 | 状态 | 说明 |
 |------|------|------|
-| AI 增强系统 | ✅ | 上下文管理、流式输出、多模型 |
+| AI 增强系统 | ✅ | 上下文管理、流式输出、多模型、测试连接 |
 | 大六壬模块 | ✅ | 月将、贵人、四课、三传 |
 | 太乙神数模块 | ✅ | 太乙积年、三基五福 |
 | 云端同步系统 | ✅ | 用户认证、数据同步、冲突解决 |
 
+### v5.0 已实现的功能（更新状态）
+
+| 功能 | 状态 | 说明 |
+|------|------|------|
+| 语音输入 | ✅ | Web Speech API 集成 |
+| 数据导出 | ✅ | PDF、JSON、分享链接 |
+| 手势操作 | ✅ | 左右滑动切换模块 |
+
 ### 当前项目规模
 
-- **代码量**：15,473 行
+- **代码量**：15,500+ 行
 - **功能模块**：15 个
 - **核心功能**：50+
 
@@ -28,24 +37,23 @@
 ## 🎯 v7.0 版本定位
 
 ### 版本口号
-**「移动优先，社区共建，智能进化」**
+**「移动优先，数据可视，体验升级」**
 
 ### 核心目标
 1. **移动体验**：PWA 支持，离线优先，原生体验
-2. **社区生态**：用户互动，内容分享，知识共建
-3. **AI 进化**：本地模型，语音交互，智能推荐
-4. **数据可视化**：图表分析，趋势预测，个性化报告
+2. **数据可视化**：图表分析，直观展示命理结果
+3. **性能优化**：加载更快，响应更流畅
+4. **报告生成**：专业级命理分析报告
 
 ### 版本拆分
 
 | 子版本 | 重点 | 预计周期 | 核心功能 |
 |--------|------|----------|----------|
-| **v7.0** | PWA + 移动优化 | 3周 | PWA配置、离线支持、手势增强 |
-| **v7.1** | 社区功能 | 3周 | 用户主页、内容分享、评论互动 |
-| **v7.2** | AI 进化 | 3周 | 本地模型、语音交互、智能推荐 |
-| **v7.3** | 数据可视化 | 2周 | 图表分析、趋势预测、报告生成 |
+| **v7.0** | PWA + 数据可视化 | 4 周 | PWA配置、Chart.js图表、五行雷达图 |
+| **v7.1** | 高级报告 + 可访问性 | 3 周 | 专业报告生成、ARIA标签、键盘导航 |
+| **v7.2** | AI进化 + 性能优化 | 3 周 | 本地模型、语音交互、代码分割 |
 
-**总周期**：约 11 周
+**总周期**：约 10 周（原 11 周，移除社区功能后缩短）
 
 ---
 
@@ -71,16 +79,11 @@
   - 联网后自动同步
   - 离线状态提示
 
-- **推送通知**
-  - 每日运势提醒
-  - 同步状态通知
-  - 新功能通知
-
 - **原生体验**
   - 全屏模式
   - 自定义启动画面
   - 应用内导航
-  - 返回手势支持
+  - 安全区域适配（刘海屏）
 
 **技术方案**：
 ```javascript
@@ -95,240 +98,46 @@
     "theme_color": "#D4AF37",
     "orientation": "portrait",
     "icons": [
-        {
-            "src": "/assets/icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/assets/icon-512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
+        { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+        { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
     ]
 }
-
-// Service Worker 增强
-self.addEventListener('push', event => {
-    const options = {
-        body: event.data.text(),
-        icon: '/assets/icon-192.png',
-        badge: '/assets/badge-72.png'
-    };
-    event.waitUntil(
-        self.registration.showNotification('乾坤易道', options)
-    );
-});
 ```
 
 **UI 设计**：
-- 安装提示弹窗
+- 安装提示弹窗（底部滑出）
 - 离线状态指示器
 - 更新提示
-- 启动画面
 
 ---
 
-#### 2. 移动端优化
-
-**目标**：优化移动端的交互体验
-
-**功能清单**：
-
-- **手势增强**
-  - 左右滑动切换模块
-  - 下拉刷新
-  - 双指缩放（图表）
-  - 长按菜单
-
-- **触摸优化**
-  - 按钮大小优化（最小 44px）
-  - 触摸反馈
-  - 防误触
-  - 滚动优化
-
-- **性能优化**
-  - 图片懒加载
-  - 代码分割
-  - 虚拟滚动（长列表）
-  - 动画性能优化
-
-- **适配优化**
-  - 安全区域适配
-  - 刘海屏适配
-  - 键盘弹出处理
-  - 横屏支持
-
-**技术方案**：
-```javascript
-// 手势增强
-class GestureManager {
-    constructor() {
-        this.startX = 0;
-        this.startY = 0;
-        this.startTime = 0;
-    }
-
-    init() {
-        document.addEventListener('touchstart', this.onTouchStart.bind(this));
-        document.addEventListener('touchmove', this.onTouchMove.bind(this));
-        document.addEventListener('touchend', this.onTouchEnd.bind(this));
-    }
-
-    onTouchStart(e) {
-        this.startX = e.touches[0].clientX;
-        this.startY = e.touches[0].clientY;
-        this.startTime = Date.now();
-    }
-
-    onTouchEnd(e) {
-        const endX = e.changedTouches[0].clientX;
-        const endY = e.changedTouches[0].clientY;
-        const diffX = endX - this.startX;
-        const diffY = endY - this.startY;
-        const duration = Date.now() - this.startTime;
-
-        // 判断手势类型
-        if (Math.abs(diffX) > Math.abs(diffY) && duration < 300) {
-            if (diffX > 50) {
-                this.onSwipeRight();
-            } else if (diffX < -50) {
-                this.onSwipeLeft();
-            }
-        }
-    }
-}
-
-// 安全区域适配
-@supports (padding-top: env(safe-area-inset-top)) {
-    .app-header {
-        padding-top: env(safe-area-inset-top);
-    }
-    .mobile-bottom-nav {
-        padding-bottom: env(safe-area-inset-bottom);
-    }
-}
-```
-
----
-
-### 🥈 优先级 P1（重要）
-
-#### 3. 社区功能
-
-**目标**：建立用户社区，促进内容分享和互动
-
-**功能清单**：
-
-- **用户主页**
-  - 个人资料编辑
-  - 命盘展示
-  - 动态时间线
-  - 粉丝/关注
-
-- **内容分享**
-  - 命盘分享到社区
-  - 分析报告分享
-  - 文章/教程发布
-  - 话题讨论
-
-- **互动功能**
-  - 点赞/收藏
-  - 评论/回复
-  - 私信功能
-  - @提及
-
-- **社区运营**
-  - 热门话题
-  - 精选内容
-  - 专家入驻
-  - 活动运营
-
-**数据结构**：
-```javascript
-// 用户资料
-const UserProfile = {
-    id: 'user_123',
-    username: '易学爱好者',
-    avatar: '/avatars/user123.jpg',
-    bio: '研究命理10年，擅长八字和紫微',
-    followers: 128,
-    following: 56,
-    posts: 24,
-    joinDate: '2024-01-15',
-    level: '高级会员',
-    badges: ['八字达人', '紫微专家']
-};
-
-// 社区帖子
-const Post = {
-    id: 'post_456',
-    userId: 'user_123',
-    type: 'bazi_analysis', // bazi_analysis, liuyao_case, article, question
-    title: '八字分析：某人生辰八字详解',
-    content: '...',
-    images: ['/posts/post456_1.jpg'],
-    likes: 56,
-    comments: 12,
-    shares: 8,
-    createdAt: '2024-06-25T10:30:00Z',
-    tags: ['八字', '命理分析', '五行']
-};
-
-// 评论
-const Comment = {
-    id: 'comment_789',
-    postId: 'post_456',
-    userId: 'user_789',
-    content: '分析得很到位！',
-    likes: 5,
-    replies: [],
-    createdAt: '2024-06-25T11:00:00Z'
-};
-```
-
-**UI 设计**：
-- 社区 Feed 流
-- 帖子详情页
-- 用户主页
-- 评论组件
-- 互动按钮
-
----
-
-#### 4. 数据可视化增强
+#### 2. 数据可视化（Chart.js）
 
 **目标**：用图表直观展示命理分析结果
 
 **功能清单**：
 
-- **八字可视化**
-  - 五行分布雷达图
-  - 十神关系网络图
-  - 大运流年时间轴
-  - 五行旺衰柱状图
+- **五行分布图**
+  - 雷达图展示金木水火土分布
+  - 动态数据绑定
+  - 交互式图表（点击查看详情）
 
-- **紫微可视化**
-  - 星盘交互图
-  - 四化飞星路径图
-  - 大限运势曲线
-  - 宫位关系图
+- **大运流年时间轴**
+  - 折线图展示运势走势
+  - 标注关键节点（转折点）
+  - 悬停显示详细信息
 
-- **运势可视化**
-  - 年度运势折线图
-  - 月度运势热力图
-  - 吉凶分布饼图
-  - 趋势预测图
+- **十神关系图**
+  - 饼图展示十神分布
+  - 柱状图对比旺衰
 
-- **对比分析**
-  - 合婚对比图
-  - 合盘雷达图
-  - 流年对比图
-  - 五行互补图
+- **运势对比图**
+  - 多人八字对比
+  - 合婚五行互补分析
 
 **技术方案**：
 ```javascript
-// Chart.js 配置示例
+// Chart.js 雷达图
 const wuxingChart = new Chart(ctx, {
     type: 'radar',
     data: {
@@ -343,177 +152,97 @@ const wuxingChart = new Chart(ctx, {
         }]
     },
     options: {
+        responsive: true,
+        maintainAspectRatio: false,
         scales: {
             r: {
                 beginAtZero: true,
                 max: 40,
-                ticks: {
-                    stepSize: 10,
-                    color: '#A2A2AC'
-                },
-                grid: {
-                    color: 'rgba(212, 175, 55, 0.1)'
-                },
-                pointLabels: {
-                    color: '#F5F0E8',
-                    font: {
-                        size: 14,
-                        family: 'Noto Serif SC'
-                    }
-                }
+                ticks: { stepSize: 10, color: '#A2A2AC' },
+                grid: { color: 'rgba(212, 175, 55, 0.1)' },
+                pointLabels: { color: '#F5F0E8', font: { size: 14, family: 'Noto Serif SC' } }
             }
         },
         plugins: {
-            legend: {
-                labels: {
-                    color: '#F5F0E8'
-                }
-            }
+            legend: { labels: { color: '#F5F0E8' } }
         }
     }
 });
 ```
 
 **UI 设计**：
-- 图表卡片
-- 交互式图表
-- 数据筛选
-- 导出图表
+- 图表卡片组件
+- 加载状态动画
+- 数据筛选控件
+- 导出图表（PNG/SVG）
 
 ---
 
-### 🥉 优先级 P2（优化）
+#### 3. 移动端优化
 
-#### 5. AI 进化
-
-**目标**：让 AI 更智能、更个性化
+**目标**：优化移动端的交互体验
 
 **功能清单**：
 
-- **本地模型支持**
-  - Ollama 集成
-  - 本地推理
-  - 离线 AI
-  - 隐私保护
+- **触摸优化**
+  - 按钮大小优化（最小 44px）
+  - 触摸反馈动画
+  - 防误触机制
+  - 滚动优化（惯性滚动）
 
-- **语音交互**
-  - 语音输入
-  - 语音输出
-  - 语音对话
-  - 语音导航
+- **性能优化**
+  - 图片懒加载
+  - 虚拟滚动（长列表）
+  - 动画性能优化（requestAnimationFrame）
 
-- **智能推荐**
-  - 个性化运势推送
-  - 基于历史的建议
-  - 学习路径推荐
-  - 内容推荐
-
-- **AI 教程**
-  - 命理知识问答
-  - 学习进度跟踪
-  - 互动教学
-  - 测验评估
+- **适配优化**
+  - 安全区域适配（刘海屏、底部黑条）
+  - 键盘弹出处理
+  - 横屏支持（可选）
 
 **技术方案**：
-```javascript
-// 本地模型集成
-class LocalAI {
-    constructor() {
-        this.model = null;
-        this.isReady = false;
+```css
+/* 安全区域适配 */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .app-header {
+        padding-top: env(safe-area-inset-top);
     }
-
-    async init() {
-        // 连接 Ollama 服务
-        const response = await fetch('http://localhost:11434/api/tags');
-        const models = await response.json();
-        console.log('可用模型:', models);
-    }
-
-    async chat(message, context) {
-        const response = await fetch('http://localhost:11434/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: 'qwen2:7b',
-                prompt: message,
-                context: context,
-                stream: false
-            })
-        });
-        return await response.json();
-    }
-}
-
-// 语音交互
-class VoiceManager {
-    constructor() {
-        this.recognition = null;
-        this.synthesis = window.speechSynthesis;
-    }
-
-    init() {
-        // 语音识别
-        this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        this.recognition.lang = 'zh-CN';
-        this.recognition.continuous = false;
-        this.recognition.interimResults = true;
-    }
-
-    startListening(onResult) {
-        this.recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            onResult(transcript);
-        };
-        this.recognition.start();
-    }
-
-    speak(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        this.synthesis.speak(utterance);
+    .mobile-bottom-nav {
+        padding-bottom: env(safe-area-inset-bottom);
     }
 }
 ```
 
 ---
 
-#### 6. 高级报告生成
+### 🥈 优先级 P1（重要）
+
+#### 4. 高级报告生成
 
 **目标**：生成专业的命理分析报告
 
 **功能清单**：
 
 - **报告模板**
-  - 八字详批报告
-  - 紫微斗数报告
-  - 合婚分析报告
-  - 流年运势报告
+  - 八字详批报告（封面 + 目录 + 详细分析 + 建议）
+  - 紫微斗数报告（星盘 + 四化 + 大限 + 总结）
+  - 合婚分析报告（双方对比 + 互补分析 + 建议）
+  - 流年运势报告（年度运势 + 月度提示）
 
 - **报告内容**
-  - 封面设计
-  - 目录结构
-  - 详细分析
+  - 专业封面设计
+  - 自动生成目录
+  - 详细文字分析
   - 图表配图
-  - 建议总结
+  - 调理建议
 
 - **导出格式**
-  - PDF 报告
-  - Word 文档
-  - HTML 网页
-  - 图片集
-
-- **个性化定制**
-  - 报告封面
-  - 水印设置
-  - 品牌定制
-  - 批量生成
+  - PDF 报告（带封面、水印）
+  - 图片集（每页一张图）
+  - HTML 网页（可分享）
 
 **技术方案**：
 ```javascript
-// 报告生成器
 class ReportGenerator {
     constructor() {
         this.templates = {
@@ -527,128 +256,167 @@ class ReportGenerator {
         const template = this.templates[type];
         const doc = new jsPDF();
 
-        // 封面
+        // 1. 封面
         this.addCover(doc, options.cover);
 
-        // 目录
+        // 2. 目录
         this.addTableOfContents(doc, template.chapters);
 
-        // 内容
+        // 3. 内容
         for (const chapter of template.chapters) {
             doc.addPage();
             this.addChapter(doc, chapter, data);
         }
 
-        // 水印
+        // 4. 水印
         if (options.watermark) {
             this.addWatermark(doc, options.watermark);
         }
 
         return doc;
     }
-
-    addChapter(doc, chapter, data) {
-        // 标题
-        doc.setFontSize(18);
-        doc.text(chapter.title, 20, 30);
-
-        // 内容
-        doc.setFontSize(12);
-        const content = chapter.render(data);
-        doc.text(content, 20, 50);
-
-        // 图表
-        if (chapter.chart) {
-            const chartImage = this.renderChart(chapter.chart, data);
-            doc.addImage(chartImage, 'PNG', 20, 100, 170, 100);
-        }
-    }
 }
 ```
 
+**UI 设计**：
+- 报告类型选择
+- 个性化选项（封面、水印）
+- 生成进度条
+- 预览功能
+
 ---
 
-#### 7. 可访问性优化
+#### 5. 可访问性优化
 
 **目标**：让更多人可以使用应用
 
 **功能清单**：
 
 - **ARIA 标签**
-  - 所有交互元素
-  - 动态内容
-  - 表单元素
+  - 所有交互元素添加 aria-label
+  - 动态内容添加 aria-live
+  - 表单元素关联 label
 
 - **键盘导航**
-  - Tab 顺序
-  - 快捷键
+  - Tab 顺序优化
+  - 快捷键支持
   - 焦点管理
 
 - **屏幕阅读器**
   - 图片 alt 文本
   - 图表描述
-  - 动画控制
+  - 动画暂停选项
 
 - **视觉辅助**
   - 高对比度模式
   - 大字体模式
   - 色盲模式
-  - 动画减弱
+
+---
+
+### 🥉 优先级 P2（优化）
+
+#### 6. AI 进化
+
+**目标**：让 AI 更智能、更个性化
+
+**功能清单**：
+
+- **本地模型支持**
+  - Ollama 集成
+  - 本地推理
+  - 离线 AI
+  - 隐私保护
+
+- **智能推荐**
+  - 个性化运势推送
+  - 基于历史的建议
+  - 学习路径推荐
+
+- **AI 教程**
+  - 命理知识问答
+  - 互动教学
+  - 测验评估
+
+**技术方案**：
+```javascript
+// 本地模型集成（Ollama）
+class LocalAI {
+    constructor() {
+        this.baseUrl = 'http://localhost:11434';
+    }
+
+    async init() {
+        try {
+            const response = await fetch(`${this.baseUrl}/api/tags`);
+            const models = await response.json();
+            console.log('可用本地模型:', models);
+            return true;
+        } catch (err) {
+            console.warn('本地 AI 服务未运行');
+            return false;
+        }
+    }
+
+    async chat(message, context = {}) {
+        const response = await fetch(`${this.baseUrl}/api/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'qwen2:7b',
+                prompt: this.buildPrompt(message, context),
+                stream: false
+            })
+        });
+        return await response.json();
+    }
+}
+```
 
 ---
 
 ## 📅 开发时间表
 
-### 第一阶段：PWA + 移动优化（v7.0）
+### 第一阶段：PWA + 数据可视化（v7.0）
 
 | 周数 | 任务 | 预计工时 |
 |------|------|----------|
-| Week 1 | PWA 配置（manifest, icons） | 16h |
-| Week 1 | Service Worker 增强 | 16h |
-| Week 2 | 离线支持完善 | 16h |
-| Week 2 | 推送通知 | 16h |
-| Week 3 | 手势增强 | 16h |
-| Week 3 | 移动端适配优化 | 16h |
+| Week 1 | PWA 配置（manifest, icons） | 12h |
+| Week 1 | Service Worker 增强 | 12h |
+| Week 2 | 安装提示 + 离线支持 | 16h |
+| Week 2 | 移动端适配优化 | 12h |
+| Week 3 | Chart.js 集成 | 16h |
+| Week 3 | 五行雷达图 | 12h |
+| Week 4 | 大运流年图表 | 12h |
+| Week 4 | 运势对比图表 | 8h |
 
-**小计**：96 小时
+**小计**：100 小时
 
-### 第二阶段：社区功能（v7.1）
-
-| 周数 | 任务 | 预计工时 |
-|------|------|----------|
-| Week 4 | 用户主页 | 24h |
-| Week 4 | 社区 Feed | 24h |
-| Week 5 | 内容分享 | 24h |
-| Week 5 | 评论互动 | 24h |
-| Week 6 | 点赞/收藏 | 16h |
-| Week 6 | 社区运营功能 | 16h |
-
-**小计**：128 小时
-
-### 第三阶段：AI 进化（v7.2）
+### 第二阶段：报告生成 + 可访问性（v7.1）
 
 | 周数 | 任务 | 预计工时 |
 |------|------|----------|
-| Week 7 | 本地模型集成 | 24h |
-| Week 7 | 语音交互 | 24h |
-| Week 8 | 智能推荐 | 24h |
-| Week 8 | AI 教程 | 24h |
-| Week 9 | 语音输出 | 16h |
-
-**小计**：112 小时
-
-### 第四阶段：数据可视化（v7.3）
-
-| 周数 | 任务 | 预计工时 |
-|------|------|----------|
-| Week 10 | 八字可视化 | 24h |
-| Week 10 | 紫微可视化 | 24h |
-| Week 11 | 运势图表 | 16h |
-| Week 11 | 报告生成 | 16h |
+| Week 5 | 报告模板设计 | 16h |
+| Week 5 | PDF 生成引擎 | 16h |
+| Week 6 | 八字详批报告 | 12h |
+| Week 6 | 紫微斗数报告 | 12h |
+| Week 7 | ARIA 标签补全 | 12h |
+| Week 7 | 键盘导航 + 可访问性 | 12h |
 
 **小计**：80 小时
 
-**总计**：~416 小时（11 周）
+### 第三阶段：AI 进化 + 性能优化（v7.2）
+
+| 周数 | 任务 | 预计工时 |
+|------|------|----------|
+| Week 8 | 本地模型集成（Ollama） | 24h |
+| Week 8 | 智能推荐系统 | 16h |
+| Week 9 | 代码分割 + 性能优化 | 16h |
+| Week 9 | 测试 + 文档 | 16h |
+
+**小计**：72 小时
+
+**总计**：~252 小时（9 周）
 
 ---
 
@@ -660,10 +428,7 @@ class ReportGenerator {
 ```json
 {
     "dependencies": {
-        "chart.js": "^4.4.0",
-        "vue-chartjs": "^5.3.0",
-        "workbox-webpack-plugin": "^7.0.0",
-        "firebase": "^10.7.0"
+        "chart.js": "^4.4.0"  // 图表库
     }
 }
 ```
@@ -673,12 +438,9 @@ class ReportGenerator {
 ```html
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 ```
+
+**注意**：移除了 vue-chartjs（不适用于原生 JS 项目）和 Firebase（需要后端服务）
 
 ---
 
@@ -701,93 +463,9 @@ class ReportGenerator {
     z-index: 1000;
     animation: slideUp 0.3s ease;
 }
-
-.install-prompt h4 {
-    color: #D4AF37;
-    margin: 0 0 8px 0;
-}
-
-.install-prompt p {
-    color: #F5F0E8;
-    margin: 0 0 12px 0;
-    font-size: 0.88rem;
-}
-
-.install-prompt .btn-group {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-}
 ```
 
-#### 社区 Feed
-```css
-.community-feed {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.post-card {
-    background: rgba(20, 18, 14, 0.9);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 12px;
-    padding: 16px;
-}
-
-.post-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.post-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #D4AF37;
-}
-
-.post-username {
-    color: #D4AF37;
-    font-weight: 600;
-}
-
-.post-time {
-    color: #A2A2AC;
-    font-size: 0.75rem;
-}
-
-.post-content {
-    color: #F5F0E8;
-    line-height: 1.8;
-    margin-bottom: 12px;
-}
-
-.post-actions {
-    display: flex;
-    gap: 16px;
-    border-top: 1px solid rgba(212, 175, 55, 0.1);
-    padding-top: 12px;
-}
-
-.post-action {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #A2A2AC;
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.post-action:hover {
-    color: #D4AF37;
-}
-```
-
-#### 数据可视化图表
+#### 图表卡片
 ```css
 .chart-container {
     background: rgba(20, 18, 14, 0.9);
@@ -810,27 +488,6 @@ class ReportGenerator {
     width: 100%;
     height: 300px;
 }
-
-.chart-legend {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 12px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.82rem;
-    color: #F5F0E8;
-}
-
-.legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-}
 ```
 
 ---
@@ -840,23 +497,16 @@ class ReportGenerator {
 ### 用户价值
 
 - **移动优先**：手机原生体验，随时使用
-- **社区互动**：分享交流，学习成长
-- **智能 AI**：更懂你，更个性化
 - **数据可视化**：直观易懂，专业呈现
+- **专业报告**：一键生成 PDF，分享方便
+- **性能提升**：加载更快，响应更流畅
 
 ### 技术价值
 
 - **PWA 架构**：现代化，可扩展
-- **社区系统**：用户粘性，内容生态
-- **本地 AI**：隐私保护，离线可用
 - **图表系统**：专业分析，易于理解
-
-### 业务价值
-
-- **用户增长**：移动用户，社区传播
-- **用户留存**：社区互动，内容沉淀
-- **商业化**：高级功能付费，会员体系
-- **品牌影响力**：专业命理平台
+- **可访问性**：支持更多用户群体
+- **本地 AI**：隐私保护，离线可用
 
 ---
 
@@ -865,16 +515,16 @@ class ReportGenerator {
 ```
 v6.0 (当前)
     ↓
-v7.0 - PWA + 移动优化
+v7.0 - PWA + 数据可视化（4周）
     ↓
-v7.1 - 社区功能
+v7.1 - 报告生成 + 可访问性（3周）
     ↓
-v7.2 - AI 进化
+v7.2 - AI 进化 + 性能优化（3周）
     ↓
-v7.3 - 数据可视化
-    ↓
-v8.0 - 原生 App + 更多功能
+v8.0 - 社区功能 + 原生 App
 ```
+
+**说明**：社区功能推迟到 v8.0，因为需要后端服务支持，当前纯前端架构难以实现。
 
 ---
 
@@ -884,31 +534,24 @@ v8.0 - 原生 App + 更多功能
 
 - [ ] PWA 可安装到桌面
 - [ ] 离线模式可用
-- [ ] 社区功能完整
-- [ ] 数据可视化正常
-- [ ] AI 本地模型可用
-- [ ] 语音交互正常
+- [ ] 五行雷达图正常显示
+- [ ] 大运流年图表正常
+- [ ] PDF 报告生成正常
+- [ ] 可访问性基本支持
 
 ### 性能指标
 
 - [ ] 首屏加载时间 < 2 秒
 - [ ] 离线加载时间 < 1 秒
 - [ ] 图表渲染时间 < 500ms
-- [ ] AI 响应时间 < 3 秒
+- [ ] PDF 生成时间 < 5 秒
 
 ### 质量标准
 
 - [ ] 0 个严重 bug
 - [ ] 所有新代码有 JSDoc 注释
-- [ ] 单元测试覆盖率 > 80%
+- [ ] 移动端测试通过
 - [ ] 文档完整
-
-### 可访问性
-
-- [ ] ARIA 标签完整
-- [ ] 键盘导航可用
-- [ ] 屏幕阅读器兼容
-- [ ] 高对比度模式支持
 
 ---
 
@@ -923,9 +566,7 @@ v8.0 - 原生 App + 更多功能
 ### 新增文档
 
 - `PWA_GUIDE.md` - PWA 配置和使用
-- `COMMUNITY_GUIDE.md` - 社区功能指南
-- `VOICE_GUIDE.md` - 语音交互指南
-- `VISUALIZATION_GUIDE.md` - 数据可视化指南
+- `CHARTS_GUIDE.md` - 数据可视化指南
 - `REPORT_GUIDE.md` - 报告生成指南
 
 ---
@@ -935,14 +576,16 @@ v8.0 - 原生 App + 更多功能
 v7.0 将是一个重要的升级版本，重点在于：
 
 1. **移动优先**：PWA 支持，离线优先，原生体验
-2. **社区生态**：用户互动，内容分享，知识共建
-3. **AI 进化**：本地模型，语音交互，智能推荐
-4. **数据可视化**：图表分析，趋势预测，专业报告
+2. **数据可视化**：Chart.js 图表，直观展示命理结果
+3. **专业报告**：PDF 报告生成，一键分享
+4. **性能优化**：加载更快，响应更流畅
+5. **可访问性**：支持更多用户群体
 
-这将使乾坤易道从一个本地应用升级为一个完整的**移动优先的命理社区平台**。
+这将使乾坤易道从一个功能应用升级为一个**专业的移动命理分析平台**。
 
 ---
 
 **规划人**：Claude Assistant
 **规划日期**：2026-06-25
-**预计完成**：2026-09-15（11 周后）
+**预计完成**：2026-09-02（9 周后，原 11 周）
+**总工时**：~252 小时

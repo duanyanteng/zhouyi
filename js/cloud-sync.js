@@ -4,7 +4,7 @@
  * @description 实现多设备数据同步，包括用户认证、数据同步、冲突解决、离线支持
  */
 
-import { showToast } from './utils.js?20260626-4';
+import { showToast } from './utils.js?20260626-5';
 
 /* ========== 云端同步配置 ========== */
 

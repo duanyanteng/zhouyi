@@ -1,5 +1,5 @@
-import { AppState, restoreBaziInput } from './state.js?20260626-4';
-import { getGuaFromDirection, getGanWuxing, getZhiWuxing } from './utils.js?20260626-4';
+import { AppState, restoreBaziInput } from './state.js?20260626-5';
+import { getGuaFromDirection, getGanWuxing, getZhiWuxing } from './utils.js?20260626-5';
 
 function initClock() {
     const clockEl = document.getElementById("headerClock");

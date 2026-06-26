@@ -4,7 +4,7 @@
  * @description 为新用户提供功能引导，帮助快速上手
  */
 
-import { showToast } from './utils.js?20260626-4';
+import { showToast } from './utils.js?20260626-5';
 
 /* ========== 引导步骤定义 ========== */
 

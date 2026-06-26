@@ -1,6 +1,6 @@
-import { restoreChatHistory, saveChatHistory } from './state.js?20260626-4';
-import { escapeHTML, sanitizeHTML, showToast } from './utils.js?20260626-4';
-import { aiAnalyzer } from './ai-enhanced.js?20260626-4';
+import { restoreChatHistory, saveChatHistory } from './state.js?20260626-5';
+import { escapeHTML, sanitizeHTML, showToast } from './utils.js?20260626-5';
+import { aiAnalyzer } from './ai-enhanced.js?20260626-5';
 
 function initChatModule() {
     const btnSend = document.getElementById("btnSendMessage");

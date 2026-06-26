@@ -4,7 +4,7 @@
  * @description 提供智能AI分析功能，包括上下文管理、专业提示词、流式输出、多模型支持
  */
 
-import { showToast } from './utils.js?20260626-4';
+import { showToast } from './utils.js?20260626-5';
 
 /* ========== AI 配置 ========== */
 

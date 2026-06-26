@@ -4,8 +4,8 @@
  * @description 实现太乙神数排盘，包括太乙积年、三基五福、十六宫分析
  */
 
-import { showToast } from './utils.js?20260626-4';
-import { exportToPDF, formatDate, generateShareLink } from './export.js?20260626-4';
+import { showToast } from './utils.js?20260626-5';
+import { exportToPDF, formatDate, generateShareLink } from './export.js?20260626-5';
 
 /* ========== 太乙神数核心数据 ========== */
 

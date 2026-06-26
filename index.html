@@ -2,10 +2,16 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>乾坤易道 - 周易数理命理智能分析系统</title>
+    <meta name="description" content="专业命理分析系统：八字排盘、六爻占卜、黄历择吉、风水布局、紫微斗数、姓名五格、奇门遁甲、大六壬、太乙神数">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="乾坤易道">
+    <link rel="apple-touch-icon" href="assets/icon.svg">
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
     <!-- 引入 Google Fonts 雅致字体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,16 +20,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>!function(){setTimeout(function(){var e=document.createElement('i');e.className='fa-solid fa-moon';e.style.cssText='position:fixed;left:-9999px;top:-9999px;font-size:30px;font-family:inherit';document.body.appendChild(e);var t=e.offsetWidth;document.body.removeChild(e);if(t<10){var l=document.createElement('link');l.rel='stylesheet';l.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';document.head.appendChild(l);console.warn('FontAwesome cdnjs 加载失败，切换 jsdelivr 备用 CDN')}},2500)}()</script>
     <!-- 核心 CSS 样式（模块化并行加载） -->
-    <link rel="stylesheet" href="css/base.css?v=20260626-4">
-    <link rel="stylesheet" href="css/components.css?v=20260626-4">
-    <link rel="stylesheet" href="css/panels.css?v=20260626-4">
-    <link rel="stylesheet" href="style.css?v=20260626-4">
+    <link rel="stylesheet" href="css/base.css?v=20260626-5">
+    <link rel="stylesheet" href="css/components.css?v=20260626-5">
+    <link rel="stylesheet" href="css/panels.css?v=20260626-5">
+    <link rel="stylesheet" href="style.css?v=20260626-5">
     <!-- 引入高精度农历历法与命理计算库 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js" onerror="this.remove(); window.lunarFallback=true; console.warn('lunar-javascript CDN 加载失败，部分历法功能将不可用')"></script>
     <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\/script>');</script>
     <!-- 截图功能 html2canvas（CDN 降级） -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" onerror="window.html2canvasFallback=true; console.warn('html2canvas cdnjs 加载失败，尝试 unpkg 降级')"></script>
     <script>if (window.html2canvasFallback) document.write('<script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"><\/script>');</script>
+    <!-- Chart.js 数据可视化 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <!-- 金沙粒子背景 Canvas -->
@@ -1235,7 +1243,77 @@
         </div>
     </div>
 
+    <!-- PWA 安装提示 -->
+    <div class="install-prompt" id="installPrompt" style="display:none;">
+        <div class="install-prompt-content">
+            <div class="install-prompt-icon">☯</div>
+            <h4>安装乾坤易道</h4>
+            <p>将应用添加到主屏幕，获得原生体验</p>
+            <div class="install-prompt-actions">
+                <button class="btn-secondary" id="installDismiss">稍后</button>
+                <button class="btn-primary" id="installAccept"><i class="fa-solid fa-download"></i> 安装</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 离线状态指示器 -->
+    <div class="offline-indicator" id="offlineIndicator" style="display:none;">
+        <i class="fa-solid fa-wifi-slash"></i> 离线模式
+    </div>
+
     <!-- JS 模块入口 -->
-    <script type="module" src="js/app.js?v=20260626-4"></script>
+    <script type="module" src="js/app.js?20260626-5"></script>
+
+    <!-- PWA 安装提示脚本 -->
+    <script>
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallPrompt();
+        });
+
+        function showInstallPrompt() {
+            const prompt = document.getElementById('installPrompt');
+            if (prompt && !localStorage.getItem('pwa_install_dismissed')) {
+                setTimeout(() => {
+                    prompt.style.display = 'block';
+                }, 3000); // 3秒后显示
+            }
+        }
+
+        document.getElementById('installDismiss')?.addEventListener('click', () => {
+            document.getElementById('installPrompt').style.display = 'none';
+            localStorage.setItem('pwa_install_dismissed', 'true');
+        });
+
+        document.getElementById('installAccept')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('安装结果:', outcome);
+                deferredPrompt = null;
+                document.getElementById('installPrompt').style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('应用已安装');
+            document.getElementById('installPrompt').style.display = 'none';
+            localStorage.removeItem('pwa_install_dismissed');
+        });
+
+        // 离线状态监听
+        window.addEventListener('online', () => {
+            const indicator = document.getElementById('offlineIndicator');
+            if (indicator) indicator.style.display = 'none';
+        });
+
+        window.addEventListener('offline', () => {
+            const indicator = document.getElementById('offlineIndicator');
+            if (indicator) indicator.style.display = 'flex';
+        });
+    </script>
 </body>
 </html>

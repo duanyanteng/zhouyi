@@ -1,5 +1,5 @@
-import { AppState } from './state.js?20260626-4';
-import { SIXTY_FOUR_GUA, getGuaInfo } from './gua-data.js?20260626-4';
+import { AppState } from './state.js?20260626-5';
+import { SIXTY_FOUR_GUA, getGuaInfo } from './gua-data.js?20260626-5';
 
 /**
  * 周易命理系统 - 工具函数库

@@ -1,4 +1,4 @@
-import { getGanWuxing, getZhiWuxing, getWuxingEng, getMaxWuxing, getMinWuxing, getDiShi } from './utils.js?20260626-4';
+import { getGanWuxing, getZhiWuxing, getWuxingEng, getMaxWuxing, getMinWuxing, getDiShi } from './utils.js?20260626-5';
 
 const LIUHE_MAP = {
     '子丑':'合','寅亥':'合','卯戌':'合','辰酉':'合','巳申':'合','午未':'合'

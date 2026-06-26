@@ -1,7 +1,7 @@
-import { AppState, saveBaziInput } from './state.js?20260626-4';
-
-import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js?20260626-4';
-import { exportToPDF, formatDate, generateShareLink } from './export.js?20260626-4';
+import { AppState, saveBaziInput } from './state.js?20260626-5';
+import { getGanWuxing, getZhiWuxing, getWuxingEng, getDiShi, getMaxWuxing, getMinWuxing } from './utils.js?20260626-5';
+import { exportToPDF, formatDate, generateShareLink } from './export.js?20260626-5';
+import { initCharts, createWuxingRadar, formatWuxingData } from './charts.js?20260626-5';
 
 function initBaziModule() {
     const btnCalculate = document.getElementById("btnCalculateBazi");
@@ -131,77 +131,46 @@ function calculateWuxing(yg, yz, mg, mz, dg, dz, tg, tz) {
     }
 }
 
+let wuxingChart = null;
+
 function drawWuxingRadar() {
-    const canvas = document.getElementById("wuxingRadarCanvas");
+    // 先初始化图表库
+    initCharts();
+
+    const canvasId = 'wuxingRadarCanvas';
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const center = canvas.width / 2;
-    const radius = center - 30;
-    const labels = ["金","木","水","火","土"];
-    const values = [
-        AppState.wuxingData["金"] || 20, AppState.wuxingData["木"] || 20,
-        AppState.wuxingData["水"] || 20, AppState.wuxingData["火"] || 20, AppState.wuxingData["土"] || 20
-    ];
-
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.15)";
-    ctx.lineWidth = 1;
-    for (let j = 1; j <= 5; j++) {
-        ctx.beginPath();
-        const r = (radius / 5) * j;
-        for (let i = 0; i < 5; i++) {
-            const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-            const x = center + r * Math.cos(angle);
-            const y = center + r * Math.sin(angle);
-            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-        ctx.stroke();
+    // 如果已存在图表，先销毁
+    if (wuxingChart) {
+        wuxingChart.destroy();
+        wuxingChart = null;
     }
 
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-        const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-        const x = center + radius * Math.cos(angle);
-        const y = center + radius * Math.sin(angle);
-        ctx.moveTo(center, center);
-        ctx.lineTo(x, y);
-    }
-    ctx.stroke();
+    // 获取五行数据
+    const wuxingData = formatWuxingData(AppState.wuxingData);
 
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-        const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-        const valRatio = Math.min(values[i] / 50, 1.0);
-        const r = radius * valRatio;
-        const x = center + r * Math.cos(angle);
-        const y = center + r * Math.sin(angle);
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fillStyle = "rgba(212, 175, 55, 0.25)";
-    ctx.fill();
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.8)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    // 创建雷达图
+    wuxingChart = createWuxingRadar(canvasId, wuxingData);
 
-    ctx.font = "bold 13px 'Noto Serif SC', serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    for (let i = 0; i < 5; i++) {
-        const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-        const x = center + (radius + 15) * Math.cos(angle);
-        const y = center + (radius + 15) * Math.sin(angle);
-        ctx.fillStyle = `var(--color-${getWuxingEng(labels[i])})`;
-        ctx.fillText(labels[i], x, y);
-        const valRatio = Math.min(values[i] / 50, 1.0);
-        const dotX = center + (radius * valRatio) * Math.cos(angle);
-        const dotY = center + (radius * valRatio) * Math.sin(angle);
-        ctx.beginPath();
-        ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
-        ctx.fillStyle = `var(--color-${getWuxingEng(labels[i])})`;
-        ctx.fill();
+    // 更新五行柱状显示
+    const barsContainer = document.getElementById('wuxingBarsContainer');
+    if (barsContainer) {
+        const wuxings = ['金', '木', '水', '火', '土'];
+        const colors = ['#E6C280', '#3B9C7A', '#50E3C2', '#C93C3C', '#D2B48C'];
+        barsContainer.innerHTML = wuxings.map((wx, i) => {
+            const val = AppState.wuxingData[wx] || 20;
+            const percent = Math.min(val / 40 * 100, 100);
+            return `
+                <div class="wuxing-bar-item">
+                    <span class="wuxing-bar-label" style="color:${colors[i]}">${wx}</span>
+                    <div class="wuxing-bar-track">
+                        <div class="wuxing-bar-fill" style="width:${percent}%;background:${colors[i]}"></div>
+                    </div>
+                    <span class="wuxing-bar-value">${val}%</span>
+                </div>
+            `;
+        }).join('');
     }
 }
 
@@ -737,7 +706,7 @@ function generateBaziAnalysis(name, gender, baZi, solar, lunar) {
     const baziContext = {
         name: name,
         gender: gender,
-        date: dateVal,
+        date: baZi.getYear() + "-" + (baZi.getMonth() + 1) + "-" + baZi.getDay() + " " + baZi.getTime(),
         pillars: {
             year: `${yg}${yz}`,
             month: `${mg}${mz}`,

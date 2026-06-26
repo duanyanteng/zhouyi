@@ -7,28 +7,30 @@ import {
     addHistoryRecord,
     deleteHistoryRecord,
     toggleHistoryFavorite
-} from './state.js?20260626-4';
-import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?20260626-4';
-import { initBaziModule, drawWuxingRadar } from './bazi.js?20260626-4';
-import { initLiuyaoModule } from './liuyao.js?20260626-4';
-import { initFengshuiModule } from './fengshui.js?20260626-4';
-import { initFengshuiAdvancedModule } from './fengshui-advanced.js?20260626-4';
-import { initChatModule } from './chat.js?20260626-4';
-import { initXingmingModule } from './xingming.js?20260626-4';
-import { initMeihuaModule } from './meihua.js?20260626-4';
-import { initHehunModule } from './hehun.js?20260626-4';
-import { initZiweiModule } from './ziwei.js?20260626-4';
-import { initHepanModule } from './hepan.js?20260626-4';
-import { initShuziModule } from './shuzi.js?20260626-4';
-import { initQimenModule } from './qimen.js?20260626-4';
-import { initLiurenModule } from './liuren.js?20260626-4';
-import { initTaiyiModule } from './taiyi.js?20260626-4';
-import { initSettings, openSettings } from './settings.js?20260626-4';
-import { initGuide, startGuide, resetGuide } from './guide.js?20260626-4';
-import { aiAnalyzer } from './ai-enhanced.js?20260626-4';
-import { initCloudSync } from './cloud-sync.js?20260626-4';
-import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?20260626-4';
-import { initPDFExport, exportToJSON, importFromJSON, showSelectiveExportDialog, executeSelectiveExport, setupAutoBackup, injectExportStyles } from './export.js?20260626-4';
+} from './state.js?20260626-5';
+import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?20260626-5';
+import { initBaziModule, drawWuxingRadar } from './bazi.js?20260626-5';
+import { initLiuyaoModule } from './liuyao.js?20260626-5';
+import { initFengshuiModule } from './fengshui.js?20260626-5';
+import { initFengshuiAdvancedModule } from './fengshui-advanced.js?20260626-5';
+import { initChatModule } from './chat.js?20260626-5';
+import { initXingmingModule } from './xingming.js?20260626-5';
+import { initMeihuaModule } from './meihua.js?20260626-5';
+import { initHehunModule } from './hehun.js?20260626-5';
+import { initZiweiModule } from './ziwei.js?20260626-5';
+import { initHepanModule } from './hepan.js?20260626-5';
+import { initShuziModule } from './shuzi.js?20260626-5';
+import { initQimenModule } from './qimen.js?20260626-5';
+import { initLiurenModule } from './liuren.js?20260626-5';
+import { initTaiyiModule } from './taiyi.js?20260626-5';
+import { initSettings, openSettings } from './settings.js?20260626-5';
+import { initGuide, startGuide, resetGuide } from './guide.js?20260626-5';
+import { aiAnalyzer } from './ai-enhanced.js?20260626-5';
+import { initCloudSync } from './cloud-sync.js?20260626-5';
+import { initCharts } from './charts.js?20260626-5';
+import { initMobileOptimizer } from './mobile-optimizer.js?20260626-5';
+import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?20260626-5';
+import { initPDFExport, exportToJSON, importFromJSON, showSelectiveExportDialog, executeSelectiveExport, setupAutoBackup, injectExportStyles } from './export.js?20260626-5';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -36,6 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initAppNavigation();
     initParticleBackground();
     initPDFExport(); // 初始化 PDF 导出功能
+    initCharts(); // 初始化图表模块
+    initMobileOptimizer(); // 初始化移动端优化
     aiAnalyzer.init(); // 初始化 AI 增强模块
     initCloudSync(); // 初始化云端同步模块
 
@@ -728,8 +732,15 @@ document.addEventListener("click", (e) => {
     const targetId = btn.getAttribute("data-copy-target");
     const el = document.getElementById(targetId);
     if (!el) return;
-    const text = el.innerText || el.textContent;
-    navigator.clipboard.writeText(text).then(() => {
-        showToast("已复制到剪贴板");
-    }).catch(() => alert("复制失败，请手动选择文本复制"));
+    navigator.clipboard.writeText(el.innerText).then(() => {
+        showToast("已复制到剪贴板", 1500);
+    }).catch(() => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges();
+        showToast("已复制到剪贴板", 1500);
+    });
 });

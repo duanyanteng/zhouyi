@@ -1,4 +1,4 @@
-import { escapeHTML } from './utils.js?20260626-4';
+import { escapeHTML } from './utils.js?20260626-5';
 
 const AppState = {
     wuxingData: { 金: 20, 木: 20, 水: 20, 火: 20, 土: 20 },

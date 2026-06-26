@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1510;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0A0A0C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1510;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E6C280;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#D4AF37;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8941F;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="100" fill="url(#gradient)"/>
+  <circle cx="256" cy="256" r="180" fill="none" stroke="url(#gold)" stroke-width="8"/>
+  <circle cx="256" cy="256" r="140" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="2"/>
+  <text x="256" y="200" font-family="serif" font-size="120" fill="url(#gold)" text-anchor="middle" dominant-baseline="middle">☯</text>
+  <text x="256" y="350" font-family="serif" font-size="48" fill="url(#gold)" text-anchor="middle" dominant-baseline="middle" letter-spacing="8">乾坤易道</text>
+  <text x="256" y="400" font-family="serif" font-size="20" fill="rgba(245,240,232,0.7)" text-anchor="middle" dominant-baseline="middle">周易命理智能分析系统</text>
+</svg>

@@ -4,8 +4,8 @@
  * @description 实现时家奇门遁甲排盘，包括天地人神四盘、格局判断、用事建议
  */
 
-import { showToast } from './utils.js?20260626-4';
-import { exportToPDF, formatDate, generateShareLink } from './export.js?20260626-4';
+import { showToast } from './utils.js?20260626-5';
+import { exportToPDF, formatDate, generateShareLink } from './export.js?20260626-5';
 
 /* ========== 奇门遁甲核心数据 ========== */
 

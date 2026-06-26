@@ -4,7 +4,7 @@
  * @description 管理用户偏好设置，包括主题、AI配置、模块管理、交互设置等
  */
 
-import { showToast } from './utils.js?20260626-4';
+import { showToast } from './utils.js?20260626-5';
 
 /* ========== 默认设置 ========== */
 
