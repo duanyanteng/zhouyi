@@ -299,6 +299,40 @@
 .btn-clear-chat { background: transparent; border: none; color: rgba(255, 255, 255, 0.25); font-size: 0.7rem; cursor: pointer; padding: 2px 8px; border-radius: 4px; transition: all 0.3s ease; font-family: 'Noto Serif SC', serif; }
 .btn-clear-chat:hover { color: var(--cinnabar-red); background: rgba(201, 60, 60, 0.1); }
 
+/* 聊天导出区域 */
+.chat-export-bar {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px;
+    border-top: 1px solid rgba(212, 175, 55, 0.08);
+    background: rgba(10, 10, 12, 0.3);
+}
+
+.btn-chat-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(10, 10, 12, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 6px;
+    color: var(--text-gray);
+    font-size: 0.75rem;
+    font-family: 'Noto Serif SC', serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-chat-export:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.4);
+    color: var(--text-gold);
+}
+
+.btn-chat-export i {
+    font-size: 0.85rem;
+}
+
 .chat-toolbar { padding: 4px 16px; display: flex; justify-content: flex-end; border-bottom: 1px solid rgba(212, 175, 55, 0.08); }
 .chat-history { flex: 1; overflow-y: auto; padding-right: 8px; display: flex; flex-direction: column; gap: 20px; margin-top: 15px; margin-bottom: 15px; }
 .chat-message { display: flex; gap: 15px; max-width: 85%; align-self: flex-start; }

@@ -1,5 +1,5 @@
 import { restoreChatHistory, saveChatHistory } from './state.js?20260626-4';
-import { escapeHTML, sanitizeHTML } from './utils.js?20260626-4';
+import { escapeHTML, sanitizeHTML, showToast } from './utils.js?20260626-4';
 import { aiAnalyzer } from './ai-enhanced.js?20260626-4';
 
 function initChatModule() {
@@ -52,6 +52,78 @@ function initChatModule() {
             welcome.innerHTML = `<div class="avatar">☯</div><div class="message-bubble font-shufa"><p>善信你好，老夫在此稽首了。若有任何不解，皆可向老夫追问。</p></div>`;
             history.appendChild(welcome);
             localStorage.removeItem("chat_history");
+        });
+    }
+
+    // 导出聊天记录为文本
+    const btnExportChatText = document.getElementById('btnExportChatText');
+    if (btnExportChatText) {
+        btnExportChatText.addEventListener('click', () => {
+            const history = document.getElementById('chatHistory');
+            if (!history) return;
+            const messages = history.querySelectorAll('.chat-message');
+            let textContent = `乾坤易道 · 问卜记录\n导出时间：${new Date().toLocaleString('zh-CN')}\n${'═'.repeat(50)}\n\n`;
+            messages.forEach(msg => {
+                const role = msg.classList.contains('user') ? '善信' : 'AI大师';
+                const content = msg.querySelector('.message-bubble')?.innerText || '';
+                if (content.trim()) {
+                    textContent += `【${role}】\n${content.trim()}\n\n${'─'.repeat(30)}\n\n`;
+                }
+            });
+            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `乾坤易道_问卜记录_${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('聊天记录已导出', 1500);
+        });
+    }
+
+    // 导出聊天记录为图片
+    const btnExportChatImage = document.getElementById('btnExportChatImage');
+    if (btnExportChatImage) {
+        btnExportChatImage.addEventListener('click', async () => {
+            const history = document.getElementById('chatHistory');
+            if (!history) {
+                showToast('没有聊天记录可保存', 1500);
+                return;
+            }
+
+            // 检查 html2canvas 是否已加载
+            if (typeof html2canvas === 'undefined') {
+                showToast('图片库正在加载，请稍等几秒后再试', 2000);
+                return;
+            }
+
+            // 禁用按钮，防止重复点击
+            btnExportChatImage.disabled = true;
+            btnExportChatImage.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 生成中...';
+            showToast('正在生成聊天截图...', 2000);
+
+            try {
+                const canvas = await html2canvas(history, {
+                    backgroundColor: '#0A0A0C',
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                });
+
+                const url = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `乾坤易道_问卜记录_${new Date().toISOString().slice(0,10)}.png`;
+                a.click();
+                showToast('截图已保存', 1500);
+            } catch (err) {
+                console.error('生成图片失败:', err);
+                showToast('生成图片失败，请重试', 2000);
+            } finally {
+                // 恢复按钮
+                btnExportChatImage.disabled = false;
+                btnExportChatImage.innerHTML = '<i class="fa-solid fa-camera"></i> 保存截图';
+            }
         });
     }
 
