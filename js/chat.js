@@ -314,6 +314,7 @@ async function generateMasterReplyFromGemini(userQuestion) {
 /* ---------- 本地规则回复 ---------- */
 
 /* ---------- 本地规则回复 ---------- */
+/* ---------- 本地规则回复 ---------- */
 function generateMasterReply(q) {
     q = q.toLowerCase();
 
@@ -323,4 +324,7 @@ function generateMasterReply(q) {
     if (q.includes("事业") || q.includes("工作")) {
         return `<p>事业之道，当观官杀星与印星之强弱。善信今年宜稳中求进，把握机遇。</p>`;
     }
-    return `<p>善信所问之事，命理之道，在于知命而修己。建议善信结合八字排盘，从五行调和、方位选择、时
+    return `<p>善信所问之事，命理之道，在于知命而修己。建议善信结合八字排盘，从五行调和、方位选择、时机把握三方面综合考量。</p>`;
+}
+
+export { initChatModule };
