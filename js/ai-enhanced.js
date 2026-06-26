@@ -4,31 +4,50 @@
  * @description 提供智能AI分析功能，包括上下文管理、专业提示词、流式输出、多模型支持
  */
 
-import { showToast } from './utils.js?v=20260624-1';
+import { showToast } from './utils.js?20260626-4';
 
 /* ========== AI 配置 ========== */
 
 const AI_CONFIG = {
     // 模型配置
     models: {
-        gemini: {
-            name: 'Gemini Pro',
-            endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+        'gemini-3.5-flash': {
+            name: 'Gemini 3.5 Flash',
+            endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent',
             maxTokens: 8192,
             temperature: 0.7,
+            desc: '最新快速模型，性能优秀',
         },
-        gemini_flash: {
-            name: 'Gemini Flash',
-            endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+        'gemini-3.1-flash-lite': {
+            name: 'Gemini 3.1 Flash Lite',
+            endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent',
             maxTokens: 4096,
             temperature: 0.7,
+            desc: '轻量级模型，速度快',
+        },
+        'gemini-2.5-pro': {
+            name: 'Gemini 2.5 Pro',
+            endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
+            maxTokens: 16384,
+            temperature: 0.7,
+            desc: '高质量模型（如果可用）',
+        },
+        'gemini-2.0-flash': {
+            name: 'Gemini 2.0 Flash',
+            endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+            maxTokens: 8192,
+            temperature: 0.7,
+            desc: '稳定版本，兼容性好',
         },
     },
 
     // 默认配置
-    defaultModel: 'gemini',
+    defaultModel: 'gemini-3.5-flash',
     maxHistory: 10, // 保留最近10轮对话
     streamDelay: 50, // 流式输出延迟（毫秒）
+
+    // 自定义模型存储键
+    customModelsKey: 'qky_custom_ai_models',
 
     // 系统提示词模板
     systemPrompts: {
@@ -503,6 +522,7 @@ class ModelManager {
     constructor() {
         this.currentModel = AI_CONFIG.defaultModel;
         this.apiKey = null;
+        this.customModels = this.loadCustomModels();
     }
 
     /**
@@ -527,10 +547,19 @@ class ModelManager {
      * 设置当前模型
      */
     setModel(modelId) {
+        // 检查内置模型
         if (AI_CONFIG.models[modelId]) {
             this.currentModel = modelId;
             localStorage.setItem('ai_model', modelId);
+            return;
         }
+        // 检查自定义模型
+        if (this.customModels[modelId]) {
+            this.currentModel = modelId;
+            localStorage.setItem('ai_model', modelId);
+            return;
+        }
+        console.warn('模型不存在:', modelId);
     }
 
     /**
@@ -538,7 +567,7 @@ class ModelManager {
      */
     getModel() {
         const saved = localStorage.getItem('ai_model');
-        if (saved && AI_CONFIG.models[saved]) {
+        if (saved && (AI_CONFIG.models[saved] || this.customModels[saved])) {
             this.currentModel = saved;
         }
         return this.currentModel;
@@ -548,7 +577,150 @@ class ModelManager {
      * 获取模型配置
      */
     getModelConfig() {
-        return AI_CONFIG.models[this.currentModel];
+        // 优先返回内置模型
+        if (AI_CONFIG.models[this.currentModel]) {
+            return AI_CONFIG.models[this.currentModel];
+        }
+        // 其次返回自定义模型
+        if (this.customModels[this.currentModel]) {
+            return this.customModels[this.currentModel];
+        }
+        // 默认返回第一个内置模型
+        return Object.values(AI_CONFIG.models)[0];
+    }
+
+    /**
+     * 获取所有模型列表
+     */
+    getAllModels() {
+        const models = {};
+        // 内置模型
+        for (const [id, config] of Object.entries(AI_CONFIG.models)) {
+            models[id] = { ...config, type: 'builtin' };
+        }
+        // 自定义模型
+        for (const [id, config] of Object.entries(this.customModels)) {
+            models[id] = { ...config, type: 'custom' };
+        }
+        return models;
+    }
+
+    /**
+     * 添加自定义模型
+     */
+    addCustomModel(id, config) {
+        // 验证配置
+        if (!id || !config.name || !config.endpoint) {
+            throw new Error('模型 ID、名称和端点是必填项');
+        }
+
+        // 检查是否与内置模型冲突
+        if (AI_CONFIG.models[id]) {
+            throw new Error('不能覆盖内置模型');
+        }
+
+        // 添加模型
+        this.customModels[id] = {
+            name: config.name,
+            endpoint: config.endpoint,
+            maxTokens: config.maxTokens || 4096,
+            temperature: config.temperature || 0.7,
+            desc: config.desc || '自定义模型',
+        };
+
+        // 保存到 localStorage
+        this.saveCustomModels();
+        console.log('自定义模型已添加:', id);
+        return true;
+    }
+
+    /**
+     * 删除自定义模型
+     */
+    removeCustomModel(id) {
+        if (!this.customModels[id]) {
+            console.warn('模型不存在:', id);
+            return false;
+        }
+
+        // 如果是当前模型，切换到默认模型
+        if (this.currentModel === id) {
+            this.currentModel = AI_CONFIG.defaultModel;
+            localStorage.setItem('ai_model', this.currentModel);
+        }
+
+        // 删除模型
+        delete this.customModels[id];
+        this.saveCustomModels();
+        console.log('自定义模型已删除:', id);
+        return true;
+    }
+
+    /**
+     * 获取自定义模型列表
+     */
+    getCustomModels() {
+        return { ...this.customModels };
+    }
+
+    /**
+     * 保存自定义模型到 localStorage
+     */
+    saveCustomModels() {
+        try {
+            localStorage.setItem(AI_CONFIG.customModelsKey, JSON.stringify(this.customModels));
+        } catch (e) {
+            console.error('保存自定义模型失败:', e);
+        }
+    }
+
+    /**
+     * 从 localStorage 加载自定义模型
+     */
+    loadCustomModels() {
+        try {
+            const saved = localStorage.getItem(AI_CONFIG.customModelsKey);
+            return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            console.error('加载自定义模型失败:', e);
+            return {};
+        }
+    }
+
+    /**
+     * 从 API 获取可用模型列表
+     */
+    async fetchAvailableModels() {
+        const apiKey = this.getApiKey();
+        if (!apiKey) {
+            throw new Error('请先配置 API Key');
+        }
+
+        try {
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
+            );
+
+            if (!response.ok) {
+                throw new Error('获取模型列表失败');
+            }
+
+            const data = await response.json();
+            const models = data.models || [];
+
+            // 过滤出可用的模型
+            return models
+                .filter(model => model.supportedGenerationMethods?.includes('generateContent'))
+                .map(model => ({
+                    id: model.name.replace('models/', ''),
+                    name: model.displayName,
+                    desc: model.description,
+                    maxTokens: model.outputTokenLimit || 4096,
+                }));
+        } catch (err) {
+            console.error('获取模型列表失败:', err);
+            throw err;
+        }
     }
 
     /**
@@ -689,51 +861,32 @@ class AIAnalyzer {
         this.streamManager = null;
     }
 
-    /**
-     * 初始化
-     */
     init() {
-        // 从 localStorage 加载配置
         const apiKey = localStorage.getItem('gemini_api_key');
         if (apiKey) {
             this.modelManager.setApiKey(apiKey);
         }
-
         const model = localStorage.getItem('ai_model');
         if (model) {
             this.modelManager.setModel(model);
         }
     }
 
-    /**
-     * 注入上下文
-     */
     injectContext(module, data) {
         this.contextManager.injectContext(module, data);
     }
 
-    /**
-     * 发送消息（非流式）
-     */
     async sendMessage(userMessage, module = 'general') {
         const systemPrompt = this.contextManager.generateSystemPrompt(module);
         const history = this.contextManager.getHistory();
-
-        // 添加用户消息到历史
         this.contextManager.addHistory('user', userMessage);
-
-        // 构建消息列表
         const messages = [
             ...history.slice(-AI_CONFIG.maxHistory * 2),
             { role: 'user', content: userMessage },
         ];
-
         try {
             const response = await this.modelManager.sendMessage(systemPrompt, messages);
-
-            // 添加助手回复到历史
             this.contextManager.addHistory('assistant', response);
-
             return response;
         } catch (err) {
             console.error('AI 请求失败:', err);
@@ -741,43 +894,24 @@ class AIAnalyzer {
         }
     }
 
-    /**
-     * 发送消息（流式）
-     */
     async sendMessageStream(userMessage, module = 'general', elementId) {
         const systemPrompt = this.contextManager.generateSystemPrompt(module);
         const history = this.contextManager.getHistory();
-
-        // 添加用户消息到历史
         this.contextManager.addHistory('user', userMessage);
-
-        // 构建消息列表
         const messages = [
             ...history.slice(-AI_CONFIG.maxHistory * 2),
             { role: 'user', content: userMessage },
         ];
-
-        // 创建流式输出管理器
         this.streamManager = new StreamOutputManager(elementId);
         this.streamManager.start();
-
         let fullResponse = '';
-
         try {
-            await this.modelManager.sendMessageStream(
-                systemPrompt,
-                messages,
-                (chunk) => {
-                    fullResponse += chunk;
-                    this.streamManager.append(chunk);
-                }
-            );
-
+            await this.modelManager.sendMessageStream(systemPrompt, messages, (chunk) => {
+                fullResponse += chunk;
+                this.streamManager.append(chunk);
+            });
             this.streamManager.finish();
-
-            // 添加助手回复到历史
             this.contextManager.addHistory('assistant', fullResponse);
-
             return fullResponse;
         } catch (err) {
             this.streamManager.finish();
@@ -786,18 +920,12 @@ class AIAnalyzer {
         }
     }
 
-    /**
-     * 中断流式输出
-     */
     abortStream() {
         if (this.streamManager) {
             this.streamManager.abort();
         }
     }
 
-    /**
-     * 清除上下文
-     */
     clearContext(module) {
         if (module) {
             this.contextManager.clearContext(module);
@@ -806,23 +934,16 @@ class AIAnalyzer {
         }
     }
 
-    /**
-     * 获取当前模型
-     */
-    getCurrentModel() {
-        return this.modelManager.getModel();
-    }
-
-    /**
-     * 设置模型
-     */
-    setModel(modelId) {
-        this.modelManager.setModel(modelId);
-    }
+    getCurrentModel() { return this.modelManager.getModel(); }
+    setModel(modelId) { this.modelManager.setModel(modelId); }
+    getAllModels() { return this.modelManager.getAllModels(); }
+    addCustomModel(id, config) { return this.modelManager.addCustomModel(id, config); }
+    removeCustomModel(id) { return this.modelManager.removeCustomModel(id); }
+    getCustomModels() { return this.modelManager.getCustomModels(); }
+    async fetchAvailableModels() { return await this.modelManager.fetchAvailableModels(); }
 }
 
 /* ========== 全局实例 ========== */
-
 const aiAnalyzer = new AIAnalyzer();
 
 /* ========== 导出 ========== */

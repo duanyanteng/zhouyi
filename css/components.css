@@ -2462,3 +2462,36 @@ input:checked + .toggle-slider:before {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+
+/* 测试 API 按钮和结果样式 */
+.btn-test-api {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 16px !important;
+    background: rgba(59, 156, 122, 0.15) !important;
+    border: 1px solid rgba(59, 156, 122, 0.4) !important;
+    border-radius: 6px !important;
+    color: #3B9C7A !important;
+    font-size: 0.82rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-test-api:hover {
+    background: rgba(59, 156, 122, 0.25) !important;
+    border-color: rgba(59, 156, 122, 0.6) !important;
+}
+
+.btn-test-api:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+.api-test-result {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    margin-left: 10px;
+}

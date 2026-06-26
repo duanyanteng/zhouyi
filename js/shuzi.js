@@ -1,5 +1,5 @@
-import { escapeHTML, showToast } from './utils.js?v=20260624-1';
-import { exportToPDF, formatDate, generateShareLink } from './export.js?v=20260624-1';
+import { escapeHTML, showToast } from './utils.js?20260626-4';
+import { exportToPDF, formatDate, generateShareLink } from './export.js?20260626-4';
 
 /* ========== 数字能量学核心 ========== */
 

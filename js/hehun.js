@@ -1,4 +1,4 @@
-import { getGanWuxing, getZhiWuxing } from './utils.js?v=20260624-1';
+import { getGanWuxing, getZhiWuxing } from './utils.js?20260626-4';
 
 function initHehunModule() {
     const btn = document.getElementById("btnCalcHehun");

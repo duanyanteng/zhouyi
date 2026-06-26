@@ -14,10 +14,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>!function(){setTimeout(function(){var e=document.createElement('i');e.className='fa-solid fa-moon';e.style.cssText='position:fixed;left:-9999px;top:-9999px;font-size:30px;font-family:inherit';document.body.appendChild(e);var t=e.offsetWidth;document.body.removeChild(e);if(t<10){var l=document.createElement('link');l.rel='stylesheet';l.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';document.head.appendChild(l);console.warn('FontAwesome cdnjs 加载失败，切换 jsdelivr 备用 CDN')}},2500)}()</script>
     <!-- 核心 CSS 样式（模块化并行加载） -->
-    <link rel="stylesheet" href="css/base.css?v=20260624-2">
-    <link rel="stylesheet" href="css/components.css?v=20260624-2">
-    <link rel="stylesheet" href="css/panels.css?v=20260624-2">
-    <link rel="stylesheet" href="style.css?v=20260624-2">
+    <link rel="stylesheet" href="css/base.css?v=20260626-4">
+    <link rel="stylesheet" href="css/components.css?v=20260626-4">
+    <link rel="stylesheet" href="css/panels.css?v=20260626-4">
+    <link rel="stylesheet" href="style.css?v=20260626-4">
     <!-- 引入高精度农历历法与命理计算库 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js" onerror="this.remove(); window.lunarFallback=true; console.warn('lunar-javascript CDN 加载失败，部分历法功能将不可用')"></script>
     <script>if (window.lunarFallback) document.write('<script src="https://unpkg.com/lunar-javascript@1.7.7/lunar.min.js"><\/script>');</script>
@@ -749,14 +749,20 @@
                                 <div class="config-row">
                                     <label for="modelSelect">模型：</label>
                                     <select id="modelSelect" class="mini-select config-select">
-                                        <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option>
+                                        <option value="gemini-3.5-flash" selected>Gemini 3.5 Flash ⚡</option>
+                                        <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite</option>
                                         <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
                                         <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                                        <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
                                     </select>
                                 </div>
+                                <div class="config-row">
+                                    <button class="btn-chat-test-api" id="btnChatTestApi" style="padding:6px 12px;font-size:0.75rem;background:rgba(59,156,122,0.15);border:1px solid rgba(59,156,122,0.4);border-radius:4px;color:#3B9C7A;cursor:pointer;">
+                                        <i class="fa-solid fa-plug"></i> 测试连接
+                                    </button>
+                                    <span class="chat-api-test-result" id="chatApiTestResult" style="font-size:0.72rem;margin-left:8px;"></span>
+                                </div>
                             </div>
-                            
+
                             <div class="chat-toolbar">
                                 <button class="btn-clear-chat" id="btnClearChat"><i class="fa-solid fa-trash-can"></i> 清除对话</button>
                             </div>
@@ -1212,13 +1218,14 @@
                 <button class="mobile-more-item" data-target="hehun"><span class="nav-icon nav-symbol">♥</span><span>合婚匹配</span></button>
                 <button class="mobile-more-item" data-target="ziwei"><span class="nav-icon nav-symbol">★</span><span>紫微斗数</span></button>
                 <button class="mobile-more-item" data-target="hepan"><span class="nav-icon nav-symbol">⚖</span><span>八字合盘</span></button>
+                <button class="mobile-more-item" data-target="qimen"><span class="nav-icon nav-symbol">☷</span><span>奇门遁甲</span></button>
+                <button class="mobile-more-item" data-target="liuren"><span class="nav-icon nav-symbol">☯</span><span>大六壬</span></button>
+                <button class="mobile-more-item" data-target="taiyi"><span class="nav-icon nav-symbol">✨</span><span>太乙神数</span></button>
             </div>
         </div>
     </div>
 
-    <!-- html2canvas 截图库 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- 核心 JS 逻辑 (ES Modules) -->
-    <script type="module" src="js/app.js?v=20260624-1"></script>
+    <!-- JS 模块入口 -->
+    <script type="module" src="js/app.js?v=20260626-4"></script>
 </body>
 </html>

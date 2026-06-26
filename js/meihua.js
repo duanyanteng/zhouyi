@@ -1,4 +1,4 @@
-import { getGuaInfo, SIXTY_FOUR_GUA } from './utils.js?v=20260624-1';
+import { getGuaInfo, SIXTY_FOUR_GUA } from './utils.js?20260626-4';
 
 function initMeihuaModule() {
     const btnCalc = document.getElementById("btnCalcMeihua");

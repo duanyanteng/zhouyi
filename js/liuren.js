@@ -4,8 +4,8 @@
  * @description 实现大六壬排盘，包括月将、贵人、四课、三传、格局判断
  */
 
-import { showToast } from './utils.js?v=20260624-1';
-import { exportToPDF, formatDate, generateShareLink } from './export.js?v=20260624-1';
+import { showToast } from './utils.js?20260626-4';
+import { exportToPDF, formatDate, generateShareLink } from './export.js?20260626-4';
 
 /* ========== 六壬核心数据 ========== */
 

@@ -7,28 +7,28 @@ import {
     addHistoryRecord,
     deleteHistoryRecord,
     toggleHistoryFavorite
-} from './state.js?v=20260624-1';
-import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?v=20260624-1';
-import { initBaziModule, drawWuxingRadar } from './bazi.js?v=20260624-1';
-import { initLiuyaoModule } from './liuyao.js?v=20260624-1';
-import { initFengshuiModule } from './fengshui.js?v=20260624-1';
-import { initFengshuiAdvancedModule } from './fengshui-advanced.js?v=20260624-1';
-import { initChatModule } from './chat.js?v=20260624-1';
-import { initXingmingModule } from './xingming.js?v=20260624-1';
-import { initMeihuaModule } from './meihua.js?v=20260624-1';
-import { initHehunModule } from './hehun.js?v=20260624-1';
-import { initZiweiModule } from './ziwei.js?v=20260624-1';
-import { initHepanModule } from './hepan.js?v=20260624-1';
-import { initShuziModule } from './shuzi.js?v=20260624-1';
-import { initQimenModule } from './qimen.js?v=20260624-1';
-import { initLiurenModule } from './liuren.js?v=20260624-1';
-import { initTaiyiModule } from './taiyi.js?v=20260624-1';
-import { initSettings, openSettings } from './settings.js?v=20260624-1';
-import { initGuide, startGuide, resetGuide } from './guide.js?v=20260624-1';
-import { aiAnalyzer } from './ai-enhanced.js?v=20260624-1';
-import { initCloudSync } from './cloud-sync.js?v=20260624-1';
-import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?v=20260624-1';
-import { initPDFExport, exportToJSON, importFromJSON, showSelectiveExportDialog, executeSelectiveExport, setupAutoBackup, injectExportStyles } from './export.js?v=20260624-2';
+} from './state.js?20260626-4';
+import { initClock, initHuangliModule, renderHuangliCard } from './calendar.js?20260626-4';
+import { initBaziModule, drawWuxingRadar } from './bazi.js?20260626-4';
+import { initLiuyaoModule } from './liuyao.js?20260626-4';
+import { initFengshuiModule } from './fengshui.js?20260626-4';
+import { initFengshuiAdvancedModule } from './fengshui-advanced.js?20260626-4';
+import { initChatModule } from './chat.js?20260626-4';
+import { initXingmingModule } from './xingming.js?20260626-4';
+import { initMeihuaModule } from './meihua.js?20260626-4';
+import { initHehunModule } from './hehun.js?20260626-4';
+import { initZiweiModule } from './ziwei.js?20260626-4';
+import { initHepanModule } from './hepan.js?20260626-4';
+import { initShuziModule } from './shuzi.js?20260626-4';
+import { initQimenModule } from './qimen.js?20260626-4';
+import { initLiurenModule } from './liuren.js?20260626-4';
+import { initTaiyiModule } from './taiyi.js?20260626-4';
+import { initSettings, openSettings } from './settings.js?20260626-4';
+import { initGuide, startGuide, resetGuide } from './guide.js?20260626-4';
+import { aiAnalyzer } from './ai-enhanced.js?20260626-4';
+import { initCloudSync } from './cloud-sync.js?20260626-4';
+import { getGanWuxing, getWuxingEng, showToast, initGestureHandler, switchToNextModule, switchToPrevModule } from './utils.js?20260626-4';
+import { initPDFExport, exportToJSON, importFromJSON, showSelectiveExportDialog, executeSelectiveExport, setupAutoBackup, injectExportStyles } from './export.js?20260626-4';
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();

@@ -4,7 +4,7 @@
  * @description 管理用户偏好设置，包括主题、AI配置、模块管理、交互设置等
  */
 
-import { showToast } from './utils.js?v=20260624-1';
+import { showToast } from './utils.js?20260626-4';
 
 /* ========== 默认设置 ========== */
 
@@ -18,7 +18,7 @@ const DEFAULT_SETTINGS = {
 
     // AI 配置
     ai: {
-        model: 'gemini',        // 'gemini' | 'local'
+        model: 'gemini-3.5-flash',        // 'gemini-3.5-flash' | 'gemini-3.1-flash-lite' | 'gemini-2.5-pro' | 'gemini-2.0-flash' | 'local'
         apiKey: '',
         proxyUrl: '',
         autoSaveKey: false,
@@ -374,7 +374,10 @@ class SettingsManager {
                             <label>AI 模型</label>
                             <div class="setting-control">
                                 <select id="settingAiModel">
-                                    <option value="gemini">Gemini (云端)</option>
+                                    <option value="gemini-3.5-flash">Gemini 3.5 Flash ⚡（推荐，速度快）</option>
+                                    <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite（轻量级）</option>
+                                    <option value="gemini-2.5-pro">Gemini 2.5 Pro（高质量）</option>
+                                    <option value="gemini-2.0-flash">Gemini 2.0 Flash（稳定版）</option>
                                     <option value="local">本地模型</option>
                                 </select>
                             </div>
@@ -392,6 +395,15 @@ class SettingsManager {
                                     <input type="checkbox" id="settingAutoSaveKey">
                                     <span class="toggle-slider"></span>
                                 </label>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label></label>
+                            <div class="setting-control">
+                                <button class="btn-secondary btn-test-api" id="btnTestApi">
+                                    <i class="fa-solid fa-plug"></i> 测试连接
+                                </button>
+                                <span class="api-test-result" id="apiTestResult"></span>
                             </div>
                         </div>
                     </div>
@@ -530,9 +542,17 @@ class SettingsManager {
         // API Key
         const apiKey = document.getElementById('settingApiKey');
         if (apiKey) {
-            apiKey.value = this.get('ai.apiKey');
+            // 同步读取 localStorage 中的 key（问卜模块可能已设置）
+            const savedKey = localStorage.getItem('gemini_api_key') || this.get('ai.apiKey') || '';
+            apiKey.value = savedKey;
+            if (savedKey) {
+                this.set('ai.apiKey', savedKey);
+            }
             apiKey.addEventListener('change', (e) => {
-                this.set('ai.apiKey', e.target.value);
+                const key = e.target.value.trim();
+                this.set('ai.apiKey', key);
+                // 同步到 localStorage（AI 模块从这里读取）
+                localStorage.setItem('gemini_api_key', key);
             });
         }
 
@@ -542,6 +562,68 @@ class SettingsManager {
             autoSaveKey.checked = this.get('ai.autoSaveKey');
             autoSaveKey.addEventListener('change', (e) => {
                 this.set('ai.autoSaveKey', e.target.checked);
+            });
+        }
+
+        // 测试 API 连接
+        const btnTestApi = document.getElementById('btnTestApi');
+        const apiTestResult = document.getElementById('apiTestResult');
+        if (btnTestApi && apiTestResult) {
+            btnTestApi.addEventListener('click', async () => {
+                const apiKey = document.getElementById('settingApiKey')?.value?.trim();
+                const model = document.getElementById('settingAiModel')?.value;
+
+                if (!apiKey) {
+                    apiTestResult.innerHTML = '<span style="color: #e86b6b;"><i class="fa-solid fa-circle-xmark"></i> 请输入 API Key</span>';
+                    return;
+                }
+
+                // 显示测试中状态
+                btnTestApi.disabled = true;
+                btnTestApi.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 测试中...';
+                apiTestResult.innerHTML = '<span style="color: var(--text-gray);">正在测试连接...</span>';
+
+                try {
+                    // 构建测试请求 URL
+                    let endpoint = '';
+                    if (model === 'local') {
+                        // 本地模型
+                        endpoint = 'http://localhost:11434/api/tags';
+                        const response = await fetch(endpoint, { signal: AbortSignal.timeout(5000) });
+                        if (response.ok) {
+                            const data = await response.json();
+                            apiTestResult.innerHTML = `<span style="color: #3B9C7A;"><i class="fa-solid fa-circle-check"></i> 连接成功！本地模型数量: ${data.models?.length || 0}</span>`;
+                        } else {
+                            throw new Error('连接失败');
+                        }
+                    } else {
+                        // Gemini API
+                        endpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+                        const response = await fetch(endpoint, { signal: AbortSignal.timeout(10000) });
+                        if (response.ok) {
+                            const data = await response.json();
+                            const modelCount = data.models?.length || 0;
+                            apiTestResult.innerHTML = `<span style="color: #3B9C7A;"><i class="fa-solid fa-circle-check"></i> 连接成功！可用模型: ${modelCount} 个</span>`;
+                        } else {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+                        }
+                    }
+                } catch (err) {
+                    console.error('API 测试失败:', err);
+                    let errorMsg = '连接失败';
+                    if (err.name === 'TimeoutError' || err.message?.includes('timeout')) {
+                        errorMsg = '连接超时';
+                    } else if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError')) {
+                        errorMsg = '网络错误';
+                    } else if (err.message) {
+                        errorMsg = err.message.slice(0, 50);
+                    }
+                    apiTestResult.innerHTML = `<span style="color: #e86b6b;"><i class="fa-solid fa-circle-xmark"></i> ${errorMsg}</span>`;
+                } finally {
+                    btnTestApi.disabled = false;
+                    btnTestApi.innerHTML = '<i class="fa-solid fa-plug"></i> 测试连接';
+                }
             });
         }
 
@@ -710,344 +792,116 @@ class SettingsManager {
     }
 }
 
-/* ========== 设置面板 CSS ========== */
+/* ========== 全局实例和初始化 ========== */
 
+const settingsManager = new SettingsManager();
+
+/**
+ * 初始化设置模块
+ */
+function initSettings() {
+    settingsManager.init();
+}
+
+/**
+ * 打开设置面板
+ */
+function openSettings() {
+    settingsManager.openSettings();
+}
+
+
+/* ========== 设置面板样式注入 ========== */
 const settingsCSS = `
-/* 设置面板 */
 .settings-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10000;
-    display: flex;
-    justify-content: flex-end;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 10000; display: flex; justify-content: flex-end;
 }
-
 .settings-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
 }
-
 .settings-drawer {
-    position: relative;
-    width: 360px;
-    max-width: 90vw;
-    height: 100%;
-    background: #14141A;
-    border-left: 1px solid rgba(212, 175, 55, 0.3);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+    position: relative; width: 400px; max-width: 90vw; height: 100%;
+    background: #14141A; border-left: 1px solid rgba(212,175,55,0.3);
+    overflow-y: auto; padding: 24px; animation: slideInRight 0.3s ease;
 }
-
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 .settings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    background: rgba(212, 175, 55, 0.1);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid rgba(212,175,55,0.2);
 }
-
-.settings-header h2 {
-    font-size: 1.1rem;
-    color: #D4AF37;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.settings-header h2 { font-size: 1.2rem; color: #D4AF37; margin: 0; display: flex; align-items: center; gap: 8px; }
+.btn-close-settings { background: transparent; border: none; color: #A2A2AC; font-size: 1.2rem; cursor: pointer; padding: 4px; }
+.btn-close-settings:hover { color: #e86b6b; }
+.settings-section { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(212,175,55,0.1); }
+.settings-section h3 { font-size: 0.95rem; color: #D4AF37; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.setting-hint { font-size: 0.75rem; color: #A2A2AC; margin-top: 4px; }
+.setting-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 8px 0; }
+.setting-item label { font-size: 0.85rem; color: var(--text-gold); min-width: 80px; }
+.setting-control { flex: 1; display: flex; align-items: center; gap: 8px; }
+.setting-control select, .setting-control input[type="password"] {
+    flex: 1; background: rgba(10,10,12,0.8); border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 6px; padding: 8px 12px; color: var(--text-white); font-size: 0.85rem; outline: none;
 }
-
-.btn-close-settings {
-    background: transparent;
-    border: none;
-    color: #A2A2AC;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.btn-close-settings:hover {
-    background: rgba(212, 175, 55, 0.2);
-    color: #D4AF37;
-}
-
-.settings-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-}
-
-/* 设置分组 */
-.settings-section {
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-}
-
-.settings-section:last-child {
-    border-bottom: none;
-}
-
-.settings-section h3 {
-    font-size: 0.95rem;
-    color: #D4AF37;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.settings-section h3 i {
-    font-size: 1rem;
-}
-
-.setting-hint {
-    font-size: 0.75rem;
-    color: #A2A2AC;
-    margin-bottom: 12px;
-}
-
-/* 设置项 */
-.setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-}
-
-.setting-item label {
-    font-size: 0.85rem;
-    color: #F5F0E8;
-}
-
-.setting-control {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.setting-control select,
-.setting-control input[type="text"],
-.setting-control input[type="password"] {
-    background: rgba(10, 10, 12, 0.8);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 6px;
-    color: #F5F0E8;
-    font-size: 0.82rem;
-    padding: 6px 10px;
-    min-width: 140px;
-}
-
-.setting-control select:focus,
-.setting-control input:focus {
-    outline: none;
-    border-color: #D4AF37;
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
-}
-
-/* 颜色选择按钮 */
-.color-options {
-    display: flex;
-    gap: 8px;
-}
-
-.color-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.color-btn:hover {
-    transform: scale(1.1);
-}
-
-.color-btn.active {
-    border-color: #F5F0E8;
-    box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
-}
-
-/* 开关样式 */
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 44px;
-    height: 24px;
-}
-
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
+.setting-control select:focus, .setting-control input[type="password"]:focus { border-color: rgba(212,175,55,0.6); }
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
 .toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(10, 10, 12, 0.8);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 24px;
-    transition: 0.3s;
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10,10,12,0.8); border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 24px; transition: all 0.3s ease;
 }
-
 .toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 2px;
-    bottom: 2px;
-    background-color: #A2A2AC;
-    border-radius: 50%;
-    transition: 0.3s;
+    content: ""; position: absolute; height: 18px; width: 18px;
+    left: 2px; bottom: 2px; background: #A2A2AC; border-radius: 50%;
+    transition: all 0.3s ease;
 }
-
-input:checked + .toggle-slider {
-    background-color: rgba(212, 175, 55, 0.3);
-    border-color: #D4AF37;
-}
-
-input:checked + .toggle-slider:before {
-    transform: translateX(20px);
-    background-color: #D4AF37;
-}
-
-/* 模块列表 */
-.module-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.module-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    background: rgba(10, 10, 12, 0.4);
-    border: 1px solid rgba(212, 175, 55, 0.1);
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.module-item:hover {
-    background: rgba(212, 175, 55, 0.05);
-    border-color: rgba(212, 175, 55, 0.2);
-}
-
-.module-name {
-    font-size: 0.85rem;
-    color: #F5F0E8;
-}
-
-/* 操作按钮 */
-.setting-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
+input:checked + .toggle-slider { background: rgba(212,175,55,0.2); border-color: #D4AF37; }
+input:checked + .toggle-slider:before { transform: translateX(20px); background: #D4AF37; }
+.module-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.module-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(10,10,12,0.6); border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; cursor: pointer; }
+.module-item:hover { border-color: rgba(212,175,55,0.4); }
+.module-item.hidden { opacity: 0.5; }
+.setting-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .btn-setting-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 6px;
-    color: #D4AF37;
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+    background: rgba(10,10,12,0.6); border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 6px; color: var(--text-gold); font-size: 0.78rem; cursor: pointer;
 }
-
-.btn-setting-action:hover {
-    background: rgba(212, 175, 55, 0.2);
-    border-color: rgba(212, 175, 55, 0.5);
+.btn-setting-action:hover { background: rgba(212,175,55,0.1); border-color: rgba(212,175,55,0.5); }
+.btn-setting-action.btn-danger { border-color: rgba(199,62,58,0.4); color: #e86b6b; }
+.btn-setting-action.btn-danger:hover { background: rgba(199,62,58,0.1); }
+.btn-test-api {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+    background: rgba(59,156,122,0.15); border: 1px solid rgba(59,156,122,0.4);
+    border-radius: 6px; color: #3B9C7A; font-size: 0.82rem; cursor: pointer;
 }
-
-.btn-setting-action.btn-danger {
-    background: rgba(199, 62, 58, 0.1);
-    border-color: rgba(199, 62, 58, 0.3);
-    color: #e86b6b;
-}
-
-.btn-setting-action.btn-danger:hover {
-    background: rgba(199, 62, 58, 0.2);
-    border-color: rgba(199, 62, 58, 0.5);
-}
-
-/* 响应式 */
-@media (max-width: 480px) {
-    .settings-drawer {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .setting-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-    .setting-control {
-        width: 100%;
-    }
-
-    .setting-control select,
-    .setting-control input[type="text"],
-    .setting-control input[type="password"] {
-        width: 100%;
-    }
+.btn-test-api:hover { background: rgba(59,156,122,0.25); }
+.btn-test-api:disabled { opacity: 0.6; cursor: not-allowed; }
+.api-test-result { font-size: 0.78rem; margin-left: 10px; }
+.color-options { display: flex; gap: 8px; }
+.color-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease; }
+.color-btn:hover { transform: scale(1.1); }
+.color-btn.active { border-color: white; box-shadow: 0 0 8px rgba(212,175,55,0.5); }
+@media (max-width: 768px) {
+    .settings-drawer { width: 100%; max-width: 100%; }
+    .setting-actions { flex-direction: column; }
+    .btn-setting-action { width: 100%; justify-content: center; }
 }
 `;
 
-/* ========== 注入 CSS ========== */
-
-function injectSettingsCSS() {
+function injectSettingsStyles() {
     const style = document.createElement('style');
     style.textContent = settingsCSS;
     document.head.appendChild(style);
 }
 
-/* ========== 初始化函数 ========== */
-
-const settingsManager = new SettingsManager();
-
-function initSettings() {
-    injectSettingsCSS();
-    settingsManager.init();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectSettingsStyles);
+} else {
+    injectSettingsStyles();
 }
 
-function openSettings() {
-    settingsManager.openSettings();
-}
-
-function closeSettings() {
-    settingsManager.closeSettings();
-}
-
-/* ========== 导出 ========== */
-export {
-    initSettings,
-    openSettings,
-    closeSettings,
-    settingsManager,
-    SettingsManager,
-};
+export { initSettings, openSettings, settingsManager, SettingsManager };

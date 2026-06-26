@@ -4,7 +4,7 @@
  * @description 实现24山方位细分、玄空飞星、指南针API等高级风水功能
  */
 
-import { showToast } from './utils.js?v=20260624-1';
+import { showToast } from './utils.js?20260626-4';
 
 /* ========== 24山方位数据 ========== */
 
