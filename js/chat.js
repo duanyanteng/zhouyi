@@ -327,4 +327,5 @@ function generateMasterReply(q) {
     return `<p>善信所问之事，命理之道，在于知命而修己。建议善信结合八字排盘，从五行调和、方位选择、时机把握三方面综合考量。</p>`;
 }
 
+
 export { initChatModule };
